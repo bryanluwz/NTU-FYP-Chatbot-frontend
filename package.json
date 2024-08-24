@@ -1,7 +1,6 @@
 {
-  "homepage": "https://bryanluwz.github.io/<sum ting wong>",
-  "name": "name",
-  "description": "description",
+  "name": "chatbot-for-education",
+  "description": "Chatbot for Education",
   "dependencies": {
     "@fortawesome/react-fontawesome": "^0.2.0",
     "@testing-library/jest-dom": "^5.16.5",
