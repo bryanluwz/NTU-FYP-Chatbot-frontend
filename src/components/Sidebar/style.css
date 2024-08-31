@@ -1,0 +1,10 @@
+.MuiPaper-root {
+  width: 20rem;
+  height: 100% !important;
+  padding: 2rem;
+
+  display: flex;
+  flex-direction: column;
+
+  gap: 2rem;
+}

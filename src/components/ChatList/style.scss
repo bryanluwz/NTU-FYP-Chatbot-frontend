@@ -1,0 +1,23 @@
+.chat-list-item {
+  width: 100%;
+
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: space-between;
+
+  border-radius: 1rem;
+  padding: 0.5rem 1rem 0.5rem 2rem;
+
+  transition: all 0.3s ease;
+
+  cursor: pointer;
+
+  &.active {
+    background-color: #d1d4ea;
+  }
+
+  &:hover {
+    background-color: #d1d4ea;
+  }
+}

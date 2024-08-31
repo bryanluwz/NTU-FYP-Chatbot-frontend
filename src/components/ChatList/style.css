@@ -1,0 +1,9 @@
+.MuiList-root {
+  display: flex;
+  flex-direction: column;
+  gap: 0.2rem;
+}
+
+.MuiListItem-root {
+  padding: 0 !important;
+}
