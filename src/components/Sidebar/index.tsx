@@ -4,7 +4,7 @@ import { Button, Drawer, List, ListItem } from "@mui/material";
 import { AccountBox } from "../AccountBox";
 import { ChatList } from "../ChatList";
 
-import "./style.css";
+import * as styles from "./style.scss";
 
 interface SidebarProps {}
 
@@ -20,18 +20,10 @@ export const Sidebar: React.FC<SidebarProps> = ({}) => {
   };
 
   return (
-    <Drawer
-      variant="permanent"
-      anchor="left"
-      ModalProps={{
-        keepMounted: true,
-      }}
-      open={open}
-      onClose={handleSidebarClose}
-    >
+    <div className={styles.sidebarContainer}>
       <AccountBox />
       <ChatList chatList={[{ title: "bruh" }, { title: "bruh2" }]} />
       <Button onClick={() => {}}>New Chat</Button>
-    </Drawer>
+    </div>
   );
 };

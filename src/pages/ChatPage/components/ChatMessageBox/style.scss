@@ -1,0 +1,33 @@
+.message-box-container {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+
+  gap: 0.5rem;
+
+  &.non-user {
+    flex-direction: row;
+  }
+
+  &.user {
+    flex-direction: row-reverse;
+  }
+
+  .message-box {
+    border-radius: 1rem;
+    flex: 1;
+    justify-content: flex-start;
+
+    min-width: 4rem;
+    max-width: 40rem;
+    padding: 0.5rem 1rem;
+
+    &.non-user {
+      background-color: lightgrey;
+    }
+
+    &.user {
+      background-color: var(--primary-backround-color);
+    }
+  }
+}

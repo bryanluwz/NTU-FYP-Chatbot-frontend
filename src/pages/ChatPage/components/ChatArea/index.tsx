@@ -1,6 +1,7 @@
 import React from "react";
-import { ChatBox } from "../ChatBox";
+import { ChatMessageBox } from "../ChatMessageBox";
 import { UserTypeEnum } from "../../../../enums";
+import * as styles from "./style.scss";
 
 interface ChatAreaProps {
   messages: { userType: UserTypeEnum; message: string }[];
@@ -8,9 +9,9 @@ interface ChatAreaProps {
 
 export const ChatArea: React.FC<ChatAreaProps> = ({ messages }) => {
   return (
-    <div>
+    <div className={styles.chatAreaContainer}>
       {messages.map((message) => (
-        <ChatBox userType={message.userType} message={message.message} />
+        <ChatMessageBox userType={message.userType} message={message.message} />
       ))}
     </div>
   );
