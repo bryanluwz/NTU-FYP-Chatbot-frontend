@@ -1,6 +1,6 @@
 .sidebar-container {
   width: 20rem;
-  height: 100% !important;
+  height: calc(100% - 4rem) !important;
   padding: 2rem;
 
   display: flex;

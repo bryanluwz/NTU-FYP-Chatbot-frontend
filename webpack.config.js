@@ -30,6 +30,7 @@ module.exports = {
 						options: {
 							modules: {
 								exportLocalsConvention: 'camelCase',  // Export class names in camelCase
+								localIdentName: '[name]__[local]--[hash:base64:5]',  // Customize class name pattern
 							}
 						},
 					},

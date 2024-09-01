@@ -14,7 +14,7 @@ export const AccountBox: React.FC<AccountBoxProps> = ({
   return (
     <div className={styles.avatarContainer}>
       <Avatar />
-      <Typography variant="h6">Hello there, {username}!</Typography>
+      <Typography variant="h6">Hi, {username}!</Typography>
     </div>
   );
 };

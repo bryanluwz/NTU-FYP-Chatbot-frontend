@@ -7,6 +7,11 @@ import { Sidebar } from "../../components/Sidebar";
 import * as styles from "./style.scss";
 
 const fakeConversation = [
+  {
+    userType: UserTypeEnum.AI,
+    message:
+      "Hello, how can I help you today? Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.",
+  },
   { userType: UserTypeEnum.User, message: "Hello" },
   { userType: UserTypeEnum.AI, message: "Hi, how can I help you today?" },
   { userType: UserTypeEnum.User, message: "I need help with my account" },
