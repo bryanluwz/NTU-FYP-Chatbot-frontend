@@ -18,8 +18,8 @@
     flex: 1;
     justify-content: flex-start;
 
-    min-width: 4rem;
-    max-width: 40rem;
+    min-width: max(30%, 20rem);
+    max-width: min(70%, 80rem);
     padding: 0.5rem 1rem;
 
     &.non-user {

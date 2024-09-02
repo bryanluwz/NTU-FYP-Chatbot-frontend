@@ -29,23 +29,33 @@ export const AccountBox: React.FC<AccountBoxProps> = ({
 
   const handleAvatarClick = (event: React.MouseEvent<HTMLElement>) => {
     setAnchorEl(event.currentTarget);
+    if (event.currentTarget === null) {
+      setIsMenuOpen(false);
+    } else {
+      setIsMenuOpen(true);
+    }
   };
 
   const handleClose = () => {
     setAnchorEl(null);
+    setIsMenuOpen(false);
   };
-
-  React.useEffect(() => {
-    if (anchorEl) {
-      setIsMenuOpen(true);
-    } else {
-      setIsMenuOpen(false);
-    }
-  }, [anchorEl]);
 
   return (
     <div className={styles.accountContainer}>
       <Menu open={isMenuOpen} onClose={handleClose} anchorEl={anchorEl}>
+        <MenuItem>
+          <ListItemIcon>
+            <DashboardIcon />
+          </ListItemIcon>
+          <ListItemText>Dashboard</ListItemText>
+        </MenuItem>
+        <MenuItem>
+          <ListItemIcon>
+            <SettingsIcon />
+          </ListItemIcon>
+          <ListItemText>Settings</ListItemText>
+        </MenuItem>
         <MenuItem>
           <ListItemIcon>
             <DeleteForeverIcon />

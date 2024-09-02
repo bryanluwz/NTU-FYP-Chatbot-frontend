@@ -1,5 +1,6 @@
 .sidebar-container {
-  width: 20rem;
+  width: min(15%, 20rem);
+  // max-width: min(10%, 10rem);
   height: calc(100% - 4rem) !important;
   padding: 2rem;
 
