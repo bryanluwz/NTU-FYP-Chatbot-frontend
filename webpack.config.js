@@ -38,6 +38,7 @@ module.exports = {
 						loader: 'sass-loader',
 						options: {
 							additionalData: `@import "${path.resolve(__dirname, 'src/theme.css')}";`,  // Automatically import theme.css in SCSS files
+							sourceMap: true,
 						},
 					},
 				],
