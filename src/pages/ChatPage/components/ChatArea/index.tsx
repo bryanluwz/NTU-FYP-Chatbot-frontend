@@ -20,8 +20,9 @@ export const ChatArea: React.FC<ChatAreaProps> = ({ messages }) => {
   return (
     <div className={styles.chatAreaContainer}>
       <div className={styles.chatMessageBoxContainer}>
-        {messages.map((message) => (
+        {messages.map((message, index) => (
           <ChatMessageBox
+            key={index}
             userType={message.userType}
             message={message.message}
           />
