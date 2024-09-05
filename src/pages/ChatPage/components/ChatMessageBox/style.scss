@@ -15,12 +15,15 @@
 
   .message-box {
     border-radius: 1.2rem;
-    flex: 1;
     justify-content: flex-start;
 
-    min-width: max(30%, 20rem);
+    min-width: max(10%, 10rem);
     max-width: min(70%, 80rem);
     padding: 0.5rem 1rem;
+
+    &.non-color {
+      background-color: none;
+    }
 
     &.non-user {
       background-color: lightgrey;
@@ -29,5 +32,28 @@
     &.user {
       background-color: var(--primary-backround-color);
     }
+  }
+}
+
+@keyframes typing {
+  0% {
+    content: "";
+  }
+  33% {
+    content: ".";
+  }
+  66% {
+    content: "..";
+  }
+  100% {
+    content: "...";
+  }
+}
+
+.typing-indicator {
+  font-size: 1.5em;
+  &::after {
+    content: "";
+    animation: typing 1s steps(3, end) infinite;
   }
 }
