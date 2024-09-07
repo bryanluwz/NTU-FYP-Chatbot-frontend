@@ -15,6 +15,8 @@ import DeleteForeverIcon from "@mui/icons-material/DeleteForever";
 
 import * as styles from "./style.scss";
 
+import DefaultAvatar from "../../assets/chonk.png";
+
 interface AccountBoxProps {
   username?: string;
   userAvatar?: string;
@@ -22,7 +24,7 @@ interface AccountBoxProps {
 
 export const AccountBox: React.FC<AccountBoxProps> = ({
   username = "Lyon the Lion",
-  userAvatar = "../../../assets/chonk.png",
+  userAvatar = DefaultAvatar,
 }) => {
   const [isMenuOpen, setIsMenuOpen] = React.useState(false);
   const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);

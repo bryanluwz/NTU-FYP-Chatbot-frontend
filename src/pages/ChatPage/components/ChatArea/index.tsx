@@ -72,7 +72,7 @@ export const ChatArea: React.FC<ChatAreaProps> = ({
   };
 
   // Only render the chat message box when the messages change
-  const renderChatMessageBox = React.useMemo(() => {
+  const chatMessageBoxes = React.useMemo(() => {
     return (
       <>
         {messages.map((message, index) => {
@@ -87,12 +87,17 @@ export const ChatArea: React.FC<ChatAreaProps> = ({
                 message.userType === UserTypeEnum.AI
               }
               onTypingAnimationEnd={onReplyEnd}
+              isToolboxVisibleOnHover={!isAIResponding}
+              isToolboxVisible={
+                index === messages.length - 1 &&
+                message.userType !== UserTypeEnum.User
+              }
             />
           );
         })}
       </>
     );
-  }, [isAITyping, messages]);
+  }, [isAIResponding, isAITyping, messages]);
 
   // Scroll to bottom when messages change
   React.useEffect(() => {
@@ -131,7 +136,7 @@ export const ChatArea: React.FC<ChatAreaProps> = ({
   return (
     <div className={styles.chatAreaContainer}>
       <div className={styles.chatMessageBoxContainer}>
-        {renderChatMessageBox}
+        {chatMessageBoxes}
         {isAIResponding && (
           <ChatMessageBox
             userType={UserTypeEnum.AI}
@@ -187,7 +192,9 @@ export const ChatArea: React.FC<ChatAreaProps> = ({
             <InputAdornment
               className={styles.inputAdornment}
               position="end"
-              disablePointerEvents={isAIResponding || isAITyping}
+              disablePointerEvents={
+                isAIResponding || isAITyping || inputValue === ""
+              }
             >
               <IconButton onMouseDown={handleInputSubmit}>
                 <ArrowUpward />

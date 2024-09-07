@@ -21,6 +21,8 @@
     max-width: min(70%, 80rem);
     padding: 0.5rem 1rem;
 
+    position: relative;
+
     &.non-color {
       background-color: none;
     }
@@ -31,6 +33,19 @@
 
     &.user {
       background-color: var(--primary-backround-color);
+    }
+  }
+
+  .action-menu {
+    transform: translateY(25%);
+    position: absolute;
+
+    &.left {
+      left: 0;
+    }
+
+    &.right {
+      right: 0;
     }
   }
 }

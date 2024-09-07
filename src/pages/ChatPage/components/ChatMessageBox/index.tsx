@@ -1,17 +1,22 @@
-import React, { ReactElement } from "react";
+import React from "react";
 import cx from "classnames";
 
 import { UserTypeEnum } from "../../../../apis/enums";
-import { Avatar, Typography } from "@mui/material";
+import { Avatar, ButtonGroup, IconButton, Typography } from "@mui/material";
+import { ContentCopy, ContentPaste, VolumeUp } from "@mui/icons-material";
 
 import * as styles from "./style.scss";
 
 interface ChatMessageBoxProps {
   userType: UserTypeEnum;
   message: string;
-  typingIndicatorAnimation?: boolean;
-  typingAnimation?: boolean;
+
+  typingIndicatorAnimation?: boolean; // Show the bot is responding in progress
+  typingAnimation?: boolean; // Show the message is being typed out
   onTypingAnimationEnd?: () => void;
+
+  isToolboxVisible?: boolean;
+  isToolboxVisibleOnHover?: boolean;
 }
 
 export const ChatMessageBox: React.FC<ChatMessageBoxProps> = ({
@@ -20,8 +25,13 @@ export const ChatMessageBox: React.FC<ChatMessageBoxProps> = ({
   typingIndicatorAnimation = false,
   typingAnimation = false,
   onTypingAnimationEnd,
+  isToolboxVisible,
+  isToolboxVisibleOnHover = true,
 }) => {
   const [displayedText, setDisplayedText] = React.useState("");
+  const [isMenuVisible, setIsMenuVisible] = React.useState(false);
+  const [hoverDebounceId, setHoverDebounceId] =
+    React.useState<NodeJS.Timeout>();
 
   React.useEffect(() => {
     if (typingAnimation) {
@@ -42,7 +52,37 @@ export const ChatMessageBox: React.FC<ChatMessageBoxProps> = ({
     } else {
       setDisplayedText(message);
     }
-  }, []);
+  }, [message, onTypingAnimationEnd, typingAnimation]);
+
+  // Handle mouse enter or leave the chat message box or the toolbox
+  const handleMouseEnter = () => {
+    if (!isToolboxVisibleOnHover) {
+      return;
+    }
+
+    if (hoverDebounceId) {
+      clearTimeout(hoverDebounceId);
+    }
+    setIsMenuVisible(true);
+  };
+
+  const handleMouseLeave = () => {
+    if (!isToolboxVisibleOnHover) {
+      return;
+    }
+
+    if (hoverDebounceId) {
+      clearTimeout(hoverDebounceId);
+    }
+
+    const id = setTimeout(() => {
+      if (hoverDebounceId) {
+        clearTimeout(hoverDebounceId);
+      }
+      setIsMenuVisible(false);
+    }, 500);
+    setHoverDebounceId(id);
+  };
 
   return (
     <div
@@ -60,6 +100,8 @@ export const ChatMessageBox: React.FC<ChatMessageBoxProps> = ({
           [styles.nonColor]:
             userType !== UserTypeEnum.User && typingIndicatorAnimation,
         })}
+        onMouseOver={handleMouseEnter}
+        onMouseLeave={handleMouseLeave}
       >
         <Typography
           variant="body1"
@@ -69,6 +111,28 @@ export const ChatMessageBox: React.FC<ChatMessageBoxProps> = ({
         >
           {displayedText}
         </Typography>
+        {(isMenuVisible || isToolboxVisible) && (
+          <div
+            className={cx(styles.actionMenu, {
+              [styles.left]: userType !== UserTypeEnum.User,
+              [styles.right]: userType === UserTypeEnum.User,
+            })}
+            onMouseOver={handleMouseEnter}
+            onMouseLeave={handleMouseLeave}
+          >
+            <ButtonGroup variant="outlined">
+              <IconButton onClick={() => console.log("Copy")}>
+                <ContentCopy />
+              </IconButton>
+              <IconButton onClick={() => console.log("Paste")}>
+                <ContentPaste />
+              </IconButton>
+              <IconButton onClick={() => console.log("Speak")}>
+                <VolumeUp />
+              </IconButton>
+            </ButtonGroup>
+          </div>
+        )}
       </div>
     </div>
   );
