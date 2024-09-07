@@ -1,3 +1,3 @@
 # What needs to be done
 
-[ ] Zustand state management
+[ ] Extra functions at the bottom of the chat box

@@ -12,10 +12,24 @@
     display: flex;
     flex-direction: column;
     gap: 0.5rem;
+    padding-right: 0.5rem;
+
+    .scroll-to-bottom {
+      width: max-content;
+      margin-left: auto;
+      position: sticky;
+      bottom: 0;
+      right: 0;
+
+      &.hidden {
+        visibility: hidden;
+      }
+    }
   }
 
   .chat-input-container {
     width: 100%;
+    padding-top: 1rem;
     display: flex;
     flex-direction: column;
     align-items: center;

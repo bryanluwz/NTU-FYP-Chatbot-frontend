@@ -1,8 +1,10 @@
 import React from "react";
+import cx from "classnames";
 
 import { ChatMessageBox } from "../ChatMessageBox";
 import { FilledInput, IconButton, InputAdornment } from "@mui/material";
 import ArrowUpward from "@mui/icons-material/ArrowUpward";
+import ArrowDownward from "@mui/icons-material/ArrowDownward";
 import AttachFileIcon from "@mui/icons-material/AttachFile";
 
 import { useChatPageStore } from "../../../../zustand/apis/ChatPage";
@@ -22,6 +24,8 @@ export const ChatArea: React.FC<ChatAreaProps> = ({
 }) => {
   const [isAIResponding, setIsAIResponding] = React.useState(false);
   const [isAITyping, setIsAITyping] = React.useState(false);
+  const [isToBottomButtonVisible, setIsToBottomButtonVisible] =
+    React.useState(false);
 
   const [inputValue, setInputValue] = React.useState("");
   const { postQueryMessage } = useChatPageStore.getState();
@@ -88,12 +92,41 @@ export const ChatArea: React.FC<ChatAreaProps> = ({
         })}
       </>
     );
-  }, [messages]);
+  }, [isAITyping, messages]);
 
   // Scroll to bottom when messages change
   React.useEffect(() => {
     chatContainerBottomRef.current?.scrollIntoView({ behavior: "smooth" });
+    // Show the scroll to bottom button when the user is not at the bottom
+    // Hide it when the chat area is not big enough to scroll
+    // if (chatContainerBottomRef.current) {
+    //   const scrollableHeight = chatContainerBottomRef.current.scrollHeight;
+    //   const visibleHeight = chatContainerBottomRef.current.clientHeight;
+    //   const scrolledAmount = chatContainerBottomRef.current.scrollTop;
+
+    //   const isScrollable = scrollableHeight > visibleHeight;
+    //   const isAtBottom =
+    //     scrolledAmount + visibleHeight >= scrollableHeight - 10;
+
+    //   setIsToBottomButtonVisible(!isAtBottom && isScrollable);
+    // }
   }, [messages, isAIResponding, isAITyping]);
+
+  // Scroll observer
+  React.useEffect(() => {
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        setIsToBottomButtonVisible(!entry.isIntersecting);
+      },
+      { threshold: 1 }
+    );
+
+    observer.observe(chatContainerBottomRef.current!);
+
+    return () => {
+      observer.disconnect();
+    };
+  }, []);
 
   return (
     <div className={styles.chatAreaContainer}>
@@ -107,6 +140,21 @@ export const ChatArea: React.FC<ChatAreaProps> = ({
           />
         )}
         <div ref={chatContainerBottomRef} />
+        <div
+          className={cx(styles.scrollToBottom, {
+            [styles.hidden]: !isToBottomButtonVisible,
+          })}
+        >
+          <IconButton
+            onClick={() => {
+              chatContainerBottomRef.current?.scrollIntoView({
+                behavior: "smooth",
+              });
+            }}
+          >
+            <ArrowDownward />
+          </IconButton>
+        </div>
       </div>
       <div className={styles.chatInputContainer}>
         <FilledInput
