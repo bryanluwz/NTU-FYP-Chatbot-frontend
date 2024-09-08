@@ -1,18 +1,40 @@
 import { createStore, create } from "zustand";
 import { checkStatus, handleError } from "../../../apis/utils";
-import { postQueryMessageApi } from "../../../apis/ChatPage";
-import { ChatMessageModel } from "../../../apis/ChatPage/typings";
+import { getChatListApi, postQueryMessageApi } from "../../../apis/ChatPage";
+import {
+  ChatInfoModel,
+  ChatListModel,
+  ChatMessageModel,
+} from "../../../apis/ChatPage/typings";
+import { UserTypeEnum } from "../../../apis/enums";
+import {
+  getChatInfoMockData,
+  getChatListMockData,
+  postQueryMessageMockData,
+} from "./mockdata";
 
 interface ChatPageState {
   messages: ChatMessageModel[];
+  chatList: ChatListModel[];
+  currentChatInfo: ChatInfoModel;
+
   setMessages: (messages: ChatMessageModel[]) => void;
   appendMessage: (message: ChatMessageModel) => void;
   replaceLastMessage: (message: ChatMessageModel) => void;
-  postQueryMessage: (message: string) => Promise<string>;
+  postQueryMessage: (userMessage: string) => Promise<string>;
+
+  getChatList: () => Promise<ChatListModel[]>;
+  getChatInfo: (chatId: string) => Promise<ChatInfoModel>;
 }
 
 const initialStates = {
   messages: [],
+  chatList: [],
+  currentChatInfo: {
+    chatId: "",
+    chatName: "",
+    messages: [],
+  },
 };
 
 export const useChatPageStore = create<ChatPageState>((set) => ({
@@ -29,34 +51,71 @@ export const useChatPageStore = create<ChatPageState>((set) => ({
       messages[messages.length - 1] = message;
       return { messages };
     }),
-  postQueryMessage: async (message: string) => {
+  postQueryMessage: async (userMessage: string) => {
     try {
-      // This is the response from the API, right now not functional
-      // const response = checkStatus(await postQueryMessageApi({ message }));
-      // const responseMessage = response.message;
-      const fakeResponseList = [
-        "I'm sorry, I don't understand.",
-        "If only I could understand you.",
-        "明月几时有，把酒问青天。不知天上宫阙，今夕是何年。我欲乘风过去，惟恐琼楼玉宇。高处不胜寒，起舞弄清影，何似在人间。",
-        "对不起，我不明白。",
-        "申し訳ございません、英語は全然わかりません。",
-        "これは超長いの返事みたいね、ここで私と一緒に待ってね？いやなの？( ,,`･ω･´)ﾝﾝﾝ？",
-        `Somebody once told me the world is gonna roll me,
-I ain't the sharpest tool in the shed,
-She was looking kind of dumb with her finger and her thumb,
-In the shape of an "L" on her forehead`,
-      ];
+      // Append the user message to the messages
+      set((state) => ({
+        messages: [
+          ...state.messages,
+          {
+            messageId: Date.now().toString(),
+            userType: UserTypeEnum.User,
+            message: userMessage,
+          },
+        ],
+      }));
 
-      const responseMessage =
-        fakeResponseList[Math.floor(Math.random() * fakeResponseList.length)];
+      // Receive the AI response, should update the database with the user message and ai response
+      // const response = checkStatus(await postQueryMessageApi({ userMessage }));
+
+      const response = checkStatus(await postQueryMessageMockData());
+      const { message: responseMessage } = response.data;
 
       // Simulate a delay using a Promise
       await new Promise((resolve) => setTimeout(resolve, 1000));
+
+      // Append the AI response to the messages
+      set((state) => ({
+        messages: [
+          ...state.messages,
+          {
+            messageId: Date.now().toString(),
+            userType: UserTypeEnum.AI,
+            message: responseMessage,
+          },
+        ],
+      }));
 
       return responseMessage;
     } catch (error) {
       handleError(error);
       return "";
+    }
+  },
+  getChatList: async () => {
+    try {
+      // const response = checkStatus(await getChatListApi());
+      const response = checkStatus(getChatListMockData);
+      set({ chatList: response.data.chatList });
+      return response.data.chatList;
+    } catch (error) {
+      handleError(error);
+      return [];
+    }
+  },
+  getChatInfo: async (chatId: string) => {
+    try {
+      // const response = checkStatus(await getChatInfoApi(chatId));
+      const response = checkStatus(await getChatInfoMockData(chatId));
+      set({ currentChatInfo: response.data.chatInfo });
+      return response.data.chatInfo;
+    } catch (error) {
+      handleError(error);
+      return {
+        chatId: "",
+        chatName: "",
+        messages: [],
+      };
     }
   },
 }));

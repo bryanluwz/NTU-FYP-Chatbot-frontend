@@ -1,36 +1,42 @@
-import { List, ListItem } from "@mui/material";
 import React from "react";
+
+import { List, ListItem } from "@mui/material";
 import { ChatListItem } from "./ChatListItem";
+import { ChatListModel } from "../../apis/ChatPage/typings";
+
 import "./style.css";
 
 interface ChatListProps {
-  chatList: { title: string; [key: string]: string }[];
+  chatList: ChatListModel[];
+  selectedChatId: string;
+  setSelectedChatId: (chatId: string) => void;
 }
 
-export const ChatList: React.FC<ChatListProps> = ({ chatList = [] }) => {
-  const [activeChat, setActiveChat] = React.useState<string | null>(null);
-
-  const handleSelectActiveChat = (title: string) => {
-    setActiveChat(title);
-  };
-
+export const ChatList: React.FC<ChatListProps> = ({
+  chatList = [],
+  selectedChatId,
+  setSelectedChatId,
+}) => {
   React.useEffect(() => {
-    if (chatList.length > 0) {
-      setActiveChat(chatList[0].title);
-    }
-  }, [chatList]);
+    setSelectedChatId(selectedChatId);
+  }, [selectedChatId]);
+
+  const handleSelectActiveChat = (chatId: string) => {
+    setSelectedChatId(chatId);
+  };
 
   return (
     <List>
       {chatList.map((chatListItem) => {
         return (
-          <ListItem key={chatListItem.title}>
+          <ListItem key={chatListItem.chatId}>
             <ChatListItem
-              title={chatListItem.title}
+              id={chatListItem.chatId}
+              title={chatListItem.chatName}
               onDelete={() => {
-                console.log("[?] Delete chat", chatListItem.title);
+                console.log("[?] Delete chat", chatListItem.chatName);
               }}
-              isActive={activeChat === chatListItem.title}
+              isActive={selectedChatId === chatListItem.chatId}
               setActiveChat={handleSelectActiveChat}
             />
           </ListItem>

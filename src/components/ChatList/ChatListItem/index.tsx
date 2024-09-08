@@ -8,6 +8,7 @@ import * as styles from "../style.scss";
 
 interface ChatListItemProps {
   title: string;
+  id: string;
   onDelete?: () => void;
   isActive?: boolean;
   setActiveChat?: (title: string) => void;
@@ -15,6 +16,7 @@ interface ChatListItemProps {
 
 export const ChatListItem: React.FC<ChatListItemProps> = ({
   title,
+  id,
   onDelete = () => {},
   isActive = false,
   setActiveChat = () => {},
@@ -30,7 +32,7 @@ export const ChatListItem: React.FC<ChatListItemProps> = ({
   };
 
   const handleMouseDown = () => {
-    setActiveChat(title);
+    setActiveChat(id);
   };
 
   return (

@@ -1,28 +1,31 @@
 import React from "react";
 
-import { Button, Drawer, List, ListItem } from "@mui/material";
+import { Button } from "@mui/material";
 import { AccountBox } from "../AccountBox";
 import { ChatList } from "../ChatList";
 
 import * as styles from "./style.scss";
+import { ChatListModel } from "../../apis/ChatPage/typings";
 
-interface SidebarProps {}
+interface SidebarProps {
+  chatList: ChatListModel[];
+  selectedChatId: string;
+  setSelectedChatId: (chatId: string) => void;
+}
 
-export const Sidebar: React.FC<SidebarProps> = ({}) => {
-  const [open, setOpen] = React.useState(true);
-
-  const handleSidebarOpen = () => {
-    setOpen(true);
-  };
-
-  const handleSidebarClose = () => {
-    setOpen(false);
-  };
-
+export const Sidebar: React.FC<SidebarProps> = ({
+  chatList = [],
+  selectedChatId,
+  setSelectedChatId,
+}) => {
   return (
     <div className={styles.sidebarContainer}>
       <AccountBox />
-      <ChatList chatList={[{ title: "bruh" }, { title: "bruh2" }]} />
+      <ChatList
+        chatList={chatList}
+        selectedChatId={selectedChatId}
+        setSelectedChatId={setSelectedChatId}
+      />
       <Button onClick={() => {}}>New Chat</Button>
     </div>
   );

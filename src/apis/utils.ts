@@ -1,6 +1,8 @@
 import { HTTPStatusBody } from "./typings";
 
-export const checkStatus = (response: any) => {
+export const checkStatus = <T>(
+  response: T & { status?: HTTPStatusBody; statusText?: string }
+): T => {
   const { code } = response?.status as HTTPStatusBody;
   const statusCode = Number(code);
   if (statusCode >= 200 && statusCode < 300) {

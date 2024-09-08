@@ -35,24 +35,15 @@ export const ChatArea: React.FC<ChatAreaProps> = ({
 
   // Handle submit input
   const handleInputSubmit = () => {
-    appendMessage({
-      messageId: Date.now().toString(),
-      userType: UserTypeEnum.User,
-      message: inputValue,
-    });
+    const userMessage = inputValue.trim();
 
     setInputValue("");
     setIsAITyping(true);
     setIsAIResponding(true);
 
-    postQueryMessage(inputValue)
-      .then((responseMessage) => {
+    postQueryMessage(userMessage)
+      .then(() => {
         setIsAIResponding(false);
-        appendMessage({
-          messageId: Date.now().toString(),
-          userType: UserTypeEnum.AI,
-          message: responseMessage,
-        });
       })
       .catch(() => {
         setIsAITyping(false);
@@ -73,6 +64,9 @@ export const ChatArea: React.FC<ChatAreaProps> = ({
 
   // Only render the chat message box when the messages change
   const chatMessageBoxes = React.useMemo(() => {
+    if (!messages || messages.length === 0) {
+      return <></>;
+    }
     return (
       <>
         {messages.map((message, index) => {
@@ -102,19 +96,6 @@ export const ChatArea: React.FC<ChatAreaProps> = ({
   // Scroll to bottom when messages change
   React.useEffect(() => {
     chatContainerBottomRef.current?.scrollIntoView({ behavior: "smooth" });
-    // Show the scroll to bottom button when the user is not at the bottom
-    // Hide it when the chat area is not big enough to scroll
-    // if (chatContainerBottomRef.current) {
-    //   const scrollableHeight = chatContainerBottomRef.current.scrollHeight;
-    //   const visibleHeight = chatContainerBottomRef.current.clientHeight;
-    //   const scrolledAmount = chatContainerBottomRef.current.scrollTop;
-
-    //   const isScrollable = scrollableHeight > visibleHeight;
-    //   const isAtBottom =
-    //     scrolledAmount + visibleHeight >= scrollableHeight - 10;
-
-    //   setIsToBottomButtonVisible(!isAtBottom && isScrollable);
-    // }
   }, [messages, isAIResponding, isAITyping]);
 
   // Scroll observer
