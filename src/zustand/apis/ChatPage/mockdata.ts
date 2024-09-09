@@ -53,6 +53,74 @@ export const getChatListMockData: GetChatListResponseModel = {
         chatId: "3",
         chatName: "Chat 3",
       },
+      {
+        chatId: "4",
+        chatName: "Chat 4",
+      },
+      {
+        chatId: "5",
+        chatName: "Chat 5",
+      },
+      {
+        chatId: "6",
+        chatName: "Chat 6",
+      },
+      {
+        chatId: "7",
+        chatName: "Chat 7",
+      },
+      {
+        chatId: "8",
+        chatName: "Chat 8",
+      },
+      {
+        chatId: "9",
+        chatName: "Chat 9",
+      },
+      {
+        chatId: "10",
+        chatName: "Chat 10",
+      },
+      {
+        chatId: "11",
+        chatName: "Chat 11",
+      },
+      {
+        chatId: "12",
+        chatName: "Chat 12",
+      },
+      {
+        chatId: "13",
+        chatName: "Chat 13",
+      },
+      {
+        chatId: "14",
+        chatName: "Chat 14",
+      },
+      {
+        chatId: "15",
+        chatName: "Chat 15",
+      },
+      {
+        chatId: "16",
+        chatName: "Chat 16",
+      },
+      {
+        chatId: "17",
+        chatName: "Chat 17",
+      },
+      {
+        chatId: "18",
+        chatName: "Chat 18",
+      },
+      {
+        chatId: "19",
+        chatName: "Chat 19",
+      },
+      {
+        chatId: "20",
+        chatName: "Chat 20",
+      },
     ],
   },
 };

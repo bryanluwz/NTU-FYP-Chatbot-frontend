@@ -30,7 +30,7 @@
   "scripts": {
     "start": "concurrently \"yarn scss:types\" \"yarn dev\"",
     "dev": "webpack serve --open --mode development",
-    "scss:types": "typed-scss-modules src --watch",
+    "scss:types": "typed-scss-modules src --watch > NUL 2>&1",
     "build": "webpack --mode production",
     "test": "react-scripts test",
     "eject": "react-scripts eject",

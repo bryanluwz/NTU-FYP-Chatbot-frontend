@@ -17,6 +17,7 @@ interface ChatPageState {
   messages: ChatMessageModel[];
   chatList: ChatListModel[];
   currentChatInfo: ChatInfoModel;
+  isLoading: boolean;
 
   setMessages: (messages: ChatMessageModel[]) => void;
   appendMessage: (message: ChatMessageModel) => void;
@@ -35,6 +36,7 @@ const initialStates = {
     chatName: "",
     messages: [],
   },
+  isLoading: false,
 };
 
 export const useChatPageStore = create<ChatPageState>((set) => ({
@@ -65,6 +67,8 @@ export const useChatPageStore = create<ChatPageState>((set) => ({
         ],
       }));
 
+      set({ isLoading: true });
+
       // Receive the AI response, should update the database with the user message and ai response
       // const response = checkStatus(await postQueryMessageApi({ userMessage }));
 
@@ -86,31 +90,48 @@ export const useChatPageStore = create<ChatPageState>((set) => ({
         ],
       }));
 
+      set({ isLoading: false });
+
       return responseMessage;
     } catch (error) {
       handleError(error);
+      set({ isLoading: false });
       return "";
     }
   },
   getChatList: async () => {
     try {
+      set({ isLoading: true });
+
       // const response = checkStatus(await getChatListApi());
       const response = checkStatus(getChatListMockData);
+      await new Promise((resolve) => setTimeout(resolve, 1000));
+
       set({ chatList: response.data.chatList });
+      set({ isLoading: false });
+
       return response.data.chatList;
     } catch (error) {
       handleError(error);
+      set({ isLoading: false });
       return [];
     }
   },
   getChatInfo: async (chatId: string) => {
     try {
+      set({ isLoading: true });
+
       // const response = checkStatus(await getChatInfoApi(chatId));
       const response = checkStatus(await getChatInfoMockData(chatId));
+      await new Promise((resolve) => setTimeout(resolve, 1000));
+
       set({ currentChatInfo: response.data.chatInfo });
+      set({ isLoading: false });
+
       return response.data.chatInfo;
     } catch (error) {
       handleError(error);
+      set({ isLoading: false });
       return {
         chatId: "",
         chatName: "",

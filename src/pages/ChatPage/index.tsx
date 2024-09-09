@@ -11,6 +11,7 @@ export const ChatPage: React.FC = () => {
     messages,
     chatList,
     currentChatInfo,
+    isLoading,
     setMessages,
     appendMessage,
     getChatList,
@@ -18,20 +19,37 @@ export const ChatPage: React.FC = () => {
   } = useChatPageStore();
 
   const [selectedChatId, setSelectedChatId] = React.useState("");
+  const [selectedChatInfo, setSelectedChatInfo] =
+    React.useState(currentChatInfo);
 
+  // 1. Load chat list
   React.useEffect(() => {
-    getChatList().then((chatList) => {
-      if (chatList.length > 0) {
-        setSelectedChatId(chatList[0].chatId);
-      }
-    });
+    getChatList();
   }, []);
 
+  // 2. Update selected chat list id when chat list is loaded
   React.useEffect(() => {
-    getChatInfo(selectedChatId).then((chatInfo) => {
-      setMessages(chatInfo.messages);
-    });
+    if (chatList.length > 0) {
+      setSelectedChatId(chatList[0].chatId);
+    }
+  }, [chatList]);
+
+  // 3. Load chat info when selected chat id is updated
+  React.useEffect(() => {
+    getChatInfo(selectedChatId);
   }, [selectedChatId]);
+
+  // 4. Update selected chat info when chat info is loaded
+  React.useEffect(() => {
+    setSelectedChatInfo(currentChatInfo);
+  }, [currentChatInfo]);
+
+  // 5. Update messages when selected chat info is updated
+  React.useEffect(() => {
+    if (selectedChatInfo?.messages) {
+      setMessages(selectedChatInfo.messages);
+    }
+  }, [selectedChatInfo]);
 
   return (
     <div className={styles.chatPageContainer}>
@@ -40,7 +58,7 @@ export const ChatPage: React.FC = () => {
         selectedChatId={selectedChatId}
         setSelectedChatId={setSelectedChatId}
       />
-      <ChatArea messages={messages} appendMessage={appendMessage} />
+      <ChatArea isLoading={isLoading} messages={messages} />
     </div>
   );
 };

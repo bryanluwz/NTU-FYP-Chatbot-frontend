@@ -10,4 +10,15 @@
   background-color: var(--primary-backround-color);
 
   gap: 2rem;
+
+  > :not(:first-child),
+  > :not(:last-child) {
+    overflow-y: auto;
+    flex: 1;
+  }
+
+  > :first-child,
+  > :last-child {
+    flex: 0 1 auto;
+  }
 }

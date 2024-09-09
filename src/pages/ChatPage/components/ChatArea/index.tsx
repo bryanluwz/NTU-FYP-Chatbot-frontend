@@ -2,7 +2,13 @@ import React from "react";
 import cx from "classnames";
 
 import { ChatMessageBox } from "../ChatMessageBox";
-import { FilledInput, IconButton, InputAdornment } from "@mui/material";
+import {
+  CircularProgress,
+  FilledInput,
+  IconButton,
+  InputAdornment,
+  Typography,
+} from "@mui/material";
 import ArrowUpward from "@mui/icons-material/ArrowUpward";
 import ArrowDownward from "@mui/icons-material/ArrowDownward";
 import AttachFileIcon from "@mui/icons-material/AttachFile";
@@ -14,13 +20,15 @@ import { UserTypeEnum } from "../../../../apis/enums";
 import * as styles from "./style.scss";
 
 interface ChatAreaProps {
+  isLoading: boolean;
+  loadingMessage?: string;
   messages: ChatMessageModel[];
-  appendMessage: (message: ChatMessageModel) => void;
 }
 
 export const ChatArea: React.FC<ChatAreaProps> = ({
+  isLoading,
+  loadingMessage,
   messages,
-  appendMessage,
 }) => {
   const [isAIResponding, setIsAIResponding] = React.useState(false);
   const [isAITyping, setIsAITyping] = React.useState(false);
@@ -116,74 +124,87 @@ export const ChatArea: React.FC<ChatAreaProps> = ({
 
   return (
     <div className={styles.chatAreaContainer}>
-      <div className={styles.chatMessageBoxContainer}>
-        {chatMessageBoxes}
-        {isAIResponding && (
-          <ChatMessageBox
-            userType={UserTypeEnum.AI}
-            message=""
-            typingIndicatorAnimation={isAIResponding}
-          />
-        )}
-        <div ref={chatContainerBottomRef} />
-        <div
-          className={cx(styles.scrollToBottom, {
-            [styles.hidden]: !isToBottomButtonVisible,
-          })}
-        >
-          <IconButton
-            onClick={() => {
-              chatContainerBottomRef.current?.scrollIntoView({
-                behavior: "smooth",
-              });
-            }}
-          >
-            <ArrowDownward />
-          </IconButton>
+      {isLoading ? (
+        <div className={styles.loadingContainer}>
+          {
+            <Typography variant="h6">
+              {loadingMessage ?? "Loading..."}
+            </Typography>
+          }
+          <CircularProgress color="primary" />
         </div>
-      </div>
-      <div className={styles.chatInputContainer}>
-        <FilledInput
-          inputRef={inputRef}
-          value={inputValue}
-          disabled={isAIResponding || isAITyping}
-          onChange={(e) => setInputValue(e.target.value)}
-          onKeyDown={(e) => {
-            if (e.key === "Enter" && !e.shiftKey) {
-              e.preventDefault();
-              handleInputSubmit();
-            }
-          }}
-          className={styles.chatInput}
-          placeholder="Enter your question"
-          multiline
-          disableUnderline
-          startAdornment={
-            <InputAdornment
-              className={styles.inputAdornment}
-              position="start"
-              disablePointerEvents={isAIResponding || isAITyping}
+      ) : (
+        <>
+          <div className={styles.chatMessageBoxContainer}>
+            {chatMessageBoxes}
+            {isAIResponding && (
+              <ChatMessageBox
+                userType={UserTypeEnum.AI}
+                message=""
+                typingIndicatorAnimation={isAIResponding}
+              />
+            )}
+            <div ref={chatContainerBottomRef} />
+            <div
+              className={cx(styles.scrollToBottom, {
+                [styles.hidden]: !isToBottomButtonVisible,
+              })}
             >
-              <IconButton>
-                <AttachFileIcon />
+              <IconButton
+                onClick={() => {
+                  chatContainerBottomRef.current?.scrollIntoView({
+                    behavior: "smooth",
+                  });
+                }}
+              >
+                <ArrowDownward />
               </IconButton>
-            </InputAdornment>
-          }
-          endAdornment={
-            <InputAdornment
-              className={styles.inputAdornment}
-              position="end"
-              disablePointerEvents={
-                isAIResponding || isAITyping || inputValue === ""
+            </div>
+          </div>
+          <div className={styles.chatInputContainer}>
+            <FilledInput
+              inputRef={inputRef}
+              value={inputValue}
+              disabled={isAIResponding || isAITyping}
+              onChange={(e) => setInputValue(e.target.value)}
+              onKeyDown={(e) => {
+                if (e.key === "Enter" && !e.shiftKey) {
+                  e.preventDefault();
+                  handleInputSubmit();
+                }
+              }}
+              className={styles.chatInput}
+              placeholder="Enter your question"
+              multiline
+              disableUnderline
+              startAdornment={
+                <InputAdornment
+                  className={styles.inputAdornment}
+                  position="start"
+                  disablePointerEvents={isAIResponding || isAITyping}
+                >
+                  <IconButton>
+                    <AttachFileIcon />
+                  </IconButton>
+                </InputAdornment>
               }
-            >
-              <IconButton onMouseDown={handleInputSubmit}>
-                <ArrowUpward />
-              </IconButton>
-            </InputAdornment>
-          }
-        />
-      </div>
+              endAdornment={
+                <InputAdornment
+                  className={styles.inputAdornment}
+                  position="end"
+                  disablePointerEvents={
+                    isAIResponding || isAITyping || inputValue === ""
+                  }
+                >
+                  <IconButton onMouseDown={handleInputSubmit}>
+                    <ArrowUpward />
+                  </IconButton>
+                </InputAdornment>
+              }
+            />
+          </div>
+        </>
+      )}
     </div>
   );
 };

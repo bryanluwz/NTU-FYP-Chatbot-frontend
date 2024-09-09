@@ -6,6 +6,17 @@
   margin: 4rem 0rem;
   background-color: var(--secondary-backround-color);
 
+  .loading-container {
+    width: 100%;
+    height: 100%;
+
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    gap: 1rem;
+  }
+
   .chat-message-box-container {
     flex: 1;
     overflow-y: scroll;
