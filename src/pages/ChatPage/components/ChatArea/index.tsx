@@ -39,6 +39,7 @@ export const ChatArea: React.FC<ChatAreaProps> = ({
   const { postQueryMessage } = useChatPageStore.getState();
 
   const inputRef = React.useRef<HTMLInputElement>(null);
+  const chatContainerRef = React.useRef<HTMLDivElement>(null);
   const chatContainerBottomRef = React.useRef<HTMLDivElement>(null);
 
   // Handle submit input
@@ -106,13 +107,21 @@ export const ChatArea: React.FC<ChatAreaProps> = ({
     chatContainerBottomRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [messages, isAIResponding, isAITyping]);
 
-  // Scroll observer
   React.useEffect(() => {
+    if (!chatContainerBottomRef.current || !chatContainerRef.current) return;
+
     const observer = new IntersectionObserver(
       ([entry]) => {
-        setIsToBottomButtonVisible(!entry.isIntersecting);
+        const isChatContainerScrollable =
+          (chatContainerRef.current?.scrollHeight ?? 1) >
+          (chatContainerRef.current?.clientHeight ?? 0); // Don't touch this, i don't know why it works
+        setIsToBottomButtonVisible(
+          !entry.isIntersecting && isChatContainerScrollable
+        );
       },
-      { threshold: 1 }
+      {
+        threshold: 1,
+      }
     );
 
     observer.observe(chatContainerBottomRef.current!);
@@ -120,7 +129,7 @@ export const ChatArea: React.FC<ChatAreaProps> = ({
     return () => {
       observer.disconnect();
     };
-  }, []);
+  }, [chatContainerBottomRef.current, chatContainerRef.current]);
 
   return (
     <div className={styles.chatAreaContainer}>
@@ -135,7 +144,10 @@ export const ChatArea: React.FC<ChatAreaProps> = ({
         </div>
       ) : (
         <>
-          <div className={styles.chatMessageBoxContainer}>
+          <div
+            ref={chatContainerRef}
+            className={styles.chatMessageBoxContainer}
+          >
             {chatMessageBoxes}
             {isAIResponding && (
               <ChatMessageBox
@@ -144,7 +156,6 @@ export const ChatArea: React.FC<ChatAreaProps> = ({
                 typingIndicatorAnimation={isAIResponding}
               />
             )}
-            <div ref={chatContainerBottomRef} />
             <div
               className={cx(styles.scrollToBottom, {
                 [styles.hidden]: !isToBottomButtonVisible,
@@ -160,6 +171,7 @@ export const ChatArea: React.FC<ChatAreaProps> = ({
                 <ArrowDownward />
               </IconButton>
             </div>
+            <div ref={chatContainerBottomRef} />
           </div>
           <div className={styles.chatInputContainer}>
             <FilledInput

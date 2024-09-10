@@ -67,8 +67,6 @@ export const useChatPageStore = create<ChatPageState>((set) => ({
         ],
       }));
 
-      set({ isLoading: true });
-
       // Receive the AI response, should update the database with the user message and ai response
       // const response = checkStatus(await postQueryMessageApi({ userMessage }));
 
@@ -89,8 +87,6 @@ export const useChatPageStore = create<ChatPageState>((set) => ({
           },
         ],
       }));
-
-      set({ isLoading: false });
 
       return responseMessage;
     } catch (error) {
