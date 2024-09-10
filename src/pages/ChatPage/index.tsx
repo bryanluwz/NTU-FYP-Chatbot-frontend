@@ -5,6 +5,8 @@ import { Sidebar } from "../../components/Sidebar";
 
 import * as styles from "./style.scss";
 import { useChatPageStore } from "../../zustand/apis/ChatPage";
+import { TabEnum } from "../../apis/enums";
+import { Dashboard } from "./components/Dashboard";
 
 export const ChatPage: React.FC = () => {
   const {
@@ -12,6 +14,7 @@ export const ChatPage: React.FC = () => {
     chatList,
     currentChatInfo,
     isLoading,
+    currentTab,
     setMessages,
     appendMessage,
     getChatList,
@@ -22,6 +25,7 @@ export const ChatPage: React.FC = () => {
   const [selectedChatInfo, setSelectedChatInfo] =
     React.useState(currentChatInfo);
 
+  // To handle chat loading
   // 1. Load chat list
   React.useEffect(() => {
     getChatList();
@@ -51,6 +55,18 @@ export const ChatPage: React.FC = () => {
     }
   }, [selectedChatInfo]);
 
+  // To handle switch between dashboard and chat area
+  const tabContent = React.useMemo(() => {
+    switch (currentTab) {
+      case TabEnum.Chat:
+        return <ChatArea isLoading={isLoading} messages={messages} />;
+      case TabEnum.Dashboard:
+        return <Dashboard />;
+      default:
+        return <></>;
+    }
+  }, [currentTab, isLoading, messages]);
+
   return (
     <div className={styles.chatPageContainer}>
       <Sidebar
@@ -58,7 +74,7 @@ export const ChatPage: React.FC = () => {
         selectedChatId={selectedChatId}
         setSelectedChatId={setSelectedChatId}
       />
-      <ChatArea isLoading={isLoading} messages={messages} />
+      {tabContent}
     </div>
   );
 };

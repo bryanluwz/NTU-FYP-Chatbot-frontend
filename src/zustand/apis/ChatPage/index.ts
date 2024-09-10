@@ -6,7 +6,7 @@ import {
   ChatListModel,
   ChatMessageModel,
 } from "../../../apis/ChatPage/typings";
-import { UserTypeEnum } from "../../../apis/enums";
+import { TabEnum, UserTypeEnum } from "../../../apis/enums";
 import {
   getChatInfoMockData,
   getChatListMockData,
@@ -18,6 +18,7 @@ interface ChatPageState {
   chatList: ChatListModel[];
   currentChatInfo: ChatInfoModel;
   isLoading: boolean;
+  currentTab: TabEnum;
 
   setMessages: (messages: ChatMessageModel[]) => void;
   appendMessage: (message: ChatMessageModel) => void;
@@ -26,6 +27,8 @@ interface ChatPageState {
 
   getChatList: () => Promise<ChatListModel[]>;
   getChatInfo: (chatId: string) => Promise<ChatInfoModel>;
+
+  setCurrentTab: (tab: TabEnum) => void;
 }
 
 const initialStates = {
@@ -37,6 +40,7 @@ const initialStates = {
     messages: [],
   },
   isLoading: false,
+  currentTab: TabEnum.Chat,
 };
 
 export const useChatPageStore = create<ChatPageState>((set) => ({
@@ -134,5 +138,8 @@ export const useChatPageStore = create<ChatPageState>((set) => ({
         messages: [],
       };
     }
+  },
+  setCurrentTab: (currentTab: TabEnum) => {
+    set({ currentTab });
   },
 }));

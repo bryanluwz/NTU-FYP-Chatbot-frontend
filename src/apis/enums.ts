@@ -3,3 +3,8 @@ export enum UserTypeEnum {
   User = "user",
   AI = "ai",
 }
+
+export enum TabEnum {
+  Chat = "chat",
+  Dashboard = "dashboard",
+}

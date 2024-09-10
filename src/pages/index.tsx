@@ -1,10 +1,16 @@
 import React from "react";
-import * as styles from "./style.scss";
+
 import { ChatPage } from "./ChatPage";
+
+import * as styles from "./style.scss";
+import { Route, Router, Routes } from "react-router-dom";
+
 const App: React.FC = () => {
   return (
     <div className={styles.container}>
-      <ChatPage />
+      <Routes>
+        <Route path="/" element={<ChatPage />}></Route>
+      </Routes>
     </div>
   );
 };

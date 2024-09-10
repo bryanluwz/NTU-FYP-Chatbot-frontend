@@ -16,6 +16,8 @@ import DeleteForeverIcon from "@mui/icons-material/DeleteForever";
 import * as styles from "./style.scss";
 
 import DefaultAvatar from "../../assets/chonk.png";
+import { useChatPageStore } from "../../zustand/apis/ChatPage";
+import { TabEnum } from "../../apis/enums";
 
 interface AccountBoxProps {
   username?: string;
@@ -28,6 +30,8 @@ export const AccountBox: React.FC<AccountBoxProps> = ({
 }) => {
   const [isMenuOpen, setIsMenuOpen] = React.useState(false);
   const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
+
+  const { currentTab, setCurrentTab } = useChatPageStore();
 
   const handleAvatarClick = (event: React.MouseEvent<HTMLElement>) => {
     setAnchorEl(event.currentTarget);
@@ -46,7 +50,13 @@ export const AccountBox: React.FC<AccountBoxProps> = ({
   return (
     <div className={styles.accountContainer}>
       <Menu open={isMenuOpen} onClose={handleClose} anchorEl={anchorEl}>
-        <MenuItem>
+        <MenuItem
+          onClick={() => {
+            if (currentTab !== TabEnum.Dashboard) {
+              setCurrentTab(TabEnum.Dashboard);
+            }
+          }}
+        >
           <ListItemIcon>
             <DashboardIcon />
           </ListItemIcon>

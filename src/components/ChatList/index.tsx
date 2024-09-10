@@ -5,6 +5,8 @@ import { ChatListItem } from "./ChatListItem";
 import { ChatListModel } from "../../apis/ChatPage/typings";
 
 import "./style.css";
+import { useChatPageStore } from "../../zustand/apis/ChatPage";
+import { TabEnum } from "../../apis/enums";
 
 interface ChatListProps {
   chatList: ChatListModel[];
@@ -17,11 +19,16 @@ export const ChatList: React.FC<ChatListProps> = ({
   selectedChatId,
   setSelectedChatId,
 }) => {
+  const { currentTab, setCurrentTab } = useChatPageStore();
+
   React.useEffect(() => {
     setSelectedChatId(selectedChatId);
   }, [selectedChatId]);
 
   const handleSelectActiveChat = (chatId: string) => {
+    if (currentTab !== TabEnum.Chat) {
+      setCurrentTab(TabEnum.Chat);
+    }
     setSelectedChatId(chatId);
   };
 
