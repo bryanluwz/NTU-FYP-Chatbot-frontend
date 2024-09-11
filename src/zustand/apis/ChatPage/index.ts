@@ -1,4 +1,4 @@
-import { createStore, create } from "zustand";
+import { create } from "zustand";
 import { checkStatus, handleError } from "../../../apis/utils";
 import {
   getChatListApi,

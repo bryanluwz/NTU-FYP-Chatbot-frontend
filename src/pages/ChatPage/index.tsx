@@ -3,10 +3,11 @@ import React from "react";
 import { ChatArea } from "./components/ChatArea";
 import { Sidebar } from "../../components/Sidebar";
 
-import * as styles from "./style.scss";
 import { useChatPageStore } from "../../zustand/apis/ChatPage";
-import { TabEnum } from "../../apis/enums";
 import { Dashboard } from "./components/Dashboard";
+import { TabEnum } from "../../apis/enums";
+
+import * as styles from "./style.scss";
 
 export const ChatPage: React.FC = () => {
   const {
