@@ -4,9 +4,11 @@ import { List, ListItem } from "@mui/material";
 import { ChatListItem } from "./ChatListItem";
 import { ChatListModel } from "../../apis/ChatPage/typings";
 
-import "./style.css";
 import { useChatPageStore } from "../../zustand/apis/ChatPage";
 import { TabEnum } from "../../apis/enums";
+
+import * as styles from "./style.scss";
+import "./style.css";
 
 interface ChatListProps {
   chatList: ChatListModel[];
@@ -33,7 +35,7 @@ export const ChatList: React.FC<ChatListProps> = ({
   };
 
   return (
-    <List>
+    <List className={styles.chatListContainer}>
       {chatList.map((chatListItem) => {
         return (
           <ListItem key={chatListItem.chatId}>
