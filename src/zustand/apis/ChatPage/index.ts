@@ -1,17 +1,24 @@
 import { createStore, create } from "zustand";
 import { checkStatus, handleError } from "../../../apis/utils";
-import { getChatListApi, postQueryMessageApi } from "../../../apis/ChatPage";
+import {
+  getChatListApi,
+  getUserInfoApi,
+  postQueryMessageApi,
+} from "../../../apis/ChatPage";
 import {
   ChatInfoModel,
   ChatListModel,
   ChatMessageModel,
+  UserInfoModel,
 } from "../../../apis/ChatPage/typings";
 import { TabEnum, UserTypeEnum } from "../../../apis/enums";
 import {
   getChatInfoMockData,
   getChatListMockData,
+  getUserInfoMockData,
   postQueryMessageMockData,
 } from "./mockdata";
+import DefaultUserAvatar from "../../../assets/user-avatar-default.png";
 
 interface ChatPageState {
   messages: ChatMessageModel[];
@@ -19,6 +26,8 @@ interface ChatPageState {
   currentChatInfo: ChatInfoModel;
   isLoading: boolean;
   currentTab: TabEnum;
+
+  userInfo: UserInfoModel;
 
   setMessages: (messages: ChatMessageModel[]) => void;
   appendMessage: (message: ChatMessageModel) => void;
@@ -29,6 +38,8 @@ interface ChatPageState {
   getChatInfo: (chatId: string) => Promise<ChatInfoModel>;
 
   setCurrentTab: (tab: TabEnum) => void;
+
+  getUserInfo: () => Promise<UserInfoModel>;
 }
 
 const initialStates = {
@@ -41,6 +52,11 @@ const initialStates = {
   },
   isLoading: false,
   currentTab: TabEnum.Chat,
+  userInfo: {
+    username: "",
+    email: "",
+    avatar: DefaultUserAvatar,
+  },
 };
 
 export const useChatPageStore = create<ChatPageState>((set) => ({
@@ -141,5 +157,22 @@ export const useChatPageStore = create<ChatPageState>((set) => ({
   },
   setCurrentTab: (currentTab: TabEnum) => {
     set({ currentTab });
+  },
+  getUserInfo: async () => {
+    try {
+      // const response = checkStatus(await getUserInfoApi());
+      const response = checkStatus(await getUserInfoMockData);
+      await new Promise((resolve) => setTimeout(resolve, 1000));
+
+      set({ userInfo: response.data.userInfo });
+      return response.data.userInfo;
+    } catch (error) {
+      handleError(error);
+      return {
+        username: "",
+        email: "",
+        avatar: DefaultUserAvatar,
+      };
+    }
   },
 }));

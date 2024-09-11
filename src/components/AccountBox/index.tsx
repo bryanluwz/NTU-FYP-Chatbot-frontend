@@ -13,11 +13,11 @@ import SettingsIcon from "@mui/icons-material/Settings";
 import LogoutIcon from "@mui/icons-material/Logout";
 import DeleteForeverIcon from "@mui/icons-material/DeleteForever";
 
-import * as styles from "./style.scss";
-
-import DefaultAvatar from "../../assets/chonk.png";
 import { useChatPageStore } from "../../zustand/apis/ChatPage";
 import { TabEnum } from "../../apis/enums";
+
+import DefaultAvatar from "../../assets/user-avatar-default.png";
+import * as styles from "./style.scss";
 
 interface AccountBoxProps {
   username?: string;

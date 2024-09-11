@@ -5,7 +5,11 @@ import { UserTypeEnum } from "../../../../apis/enums";
 import { Avatar, ButtonGroup, IconButton, Typography } from "@mui/material";
 import { ContentCopy, ContentPaste, VolumeUp } from "@mui/icons-material";
 
+import DefaultUserAvatar from "../../../../assets/user-avatar-default.png";
+import DefaultAIAvatar from "../../../../assets/ai-avatar-default.png";
+
 import * as styles from "./style.scss";
+import { useChatPageStore } from "../../../../zustand/apis/ChatPage";
 
 interface ChatMessageBoxProps {
   userType: UserTypeEnum;
@@ -32,6 +36,7 @@ export const ChatMessageBox: React.FC<ChatMessageBoxProps> = ({
   const [isMenuVisible, setIsMenuVisible] = React.useState(false);
   const [hoverDebounceId, setHoverDebounceId] =
     React.useState<NodeJS.Timeout>();
+  const { userInfo } = useChatPageStore();
 
   React.useEffect(() => {
     if (typingAnimation) {
@@ -91,7 +96,15 @@ export const ChatMessageBox: React.FC<ChatMessageBoxProps> = ({
         [styles.nonUser]: userType !== UserTypeEnum.User,
       })}
     >
-      <Avatar>{userType === UserTypeEnum.User ? "U" : "A"}</Avatar>
+      <Avatar
+        src={
+          userType === UserTypeEnum.User
+            ? userInfo.avatar ?? DefaultUserAvatar
+            : DefaultAIAvatar
+        }
+      >
+        {userType === UserTypeEnum.User ? "U" : "A"}
+      </Avatar>
       <div
         className={cx(styles.messageBox, {
           [styles.user]: userType === UserTypeEnum.User,

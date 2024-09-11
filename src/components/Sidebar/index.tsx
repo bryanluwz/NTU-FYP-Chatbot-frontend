@@ -6,6 +6,7 @@ import { ChatList } from "../ChatList";
 
 import * as styles from "./style.scss";
 import { ChatListModel } from "../../apis/ChatPage/typings";
+import { useChatPageStore } from "../../zustand/apis/ChatPage";
 
 interface SidebarProps {
   chatList: ChatListModel[];
@@ -18,9 +19,11 @@ export const Sidebar: React.FC<SidebarProps> = ({
   selectedChatId,
   setSelectedChatId,
 }) => {
+  const { userInfo } = useChatPageStore();
+
   return (
     <div className={styles.sidebarContainer}>
-      <AccountBox />
+      <AccountBox username={userInfo.username} userAvatar={userInfo.avatar} />
       <ChatList
         chatList={chatList}
         selectedChatId={selectedChatId}

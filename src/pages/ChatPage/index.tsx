@@ -16,9 +16,9 @@ export const ChatPage: React.FC = () => {
     isLoading,
     currentTab,
     setMessages,
-    appendMessage,
     getChatList,
     getChatInfo,
+    getUserInfo,
   } = useChatPageStore();
 
   const [selectedChatId, setSelectedChatId] = React.useState("");
@@ -26,6 +26,11 @@ export const ChatPage: React.FC = () => {
     React.useState(currentChatInfo);
 
   // To handle chat loading
+  // 0. Initial load
+  React.useEffect(() => {
+    getUserInfo();
+  }, []);
+
   // 1. Load chat list
   React.useEffect(() => {
     getChatList();

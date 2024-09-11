@@ -7,7 +7,8 @@
   justify-content: space-between;
 
   border-radius: 1rem;
-  padding: 0.5rem 1rem 0.5rem 2rem;
+  padding: 0.5rem 1rem 0.5rem 1rem;
+  margin-right: 1rem;
 
   transition: all 0.3s ease;
 
@@ -24,10 +25,10 @@
 
 .chat-list-container {
   &::-webkit-scrollbar-track {
-    background-color: var(--secondary-selection-color);
+    background-color: transparent;
   }
 
   &::-webkit-scrollbar-thumb {
-    background-color: var(--primary-selection-color);
+    background-color: var(--secondary-selection-color);
   }
 }
