@@ -52,6 +52,7 @@ export const AccountBox: React.FC<AccountBoxProps> = ({
   };
 
   const handleSettingsOpen = () => {
+    setIsMenuOpen(false);
     setIsSettingsOpen(true);
   };
 
@@ -67,6 +68,7 @@ export const AccountBox: React.FC<AccountBoxProps> = ({
             onClick={() => {
               if (currentTab !== TabEnum.Dashboard) {
                 setCurrentTab(TabEnum.Dashboard);
+                setIsMenuOpen(false);
               }
             }}
           >

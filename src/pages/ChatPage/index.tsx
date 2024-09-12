@@ -46,7 +46,13 @@ export const ChatPage: React.FC = () => {
 
   // 3. Load chat info when selected chat id is updated
   React.useEffect(() => {
-    getChatInfo(selectedChatId);
+    if (
+      selectedChatId &&
+      selectedChatId !== "" &&
+      currentChatInfo.chatId !== selectedChatId
+    ) {
+      getChatInfo(selectedChatId);
+    }
   }, [selectedChatId]);
 
   // 4. Update selected chat info when chat info is loaded
@@ -72,6 +78,12 @@ export const ChatPage: React.FC = () => {
         return <></>;
     }
   }, [currentTab, isLoading, messages]);
+
+  React.useEffect(() => {
+    if (currentTab !== TabEnum.Chat) {
+      setSelectedChatId("");
+    }
+  }, [currentTab]);
 
   return (
     <div className={styles.chatPageContainer}>

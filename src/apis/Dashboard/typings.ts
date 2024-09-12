@@ -4,6 +4,9 @@ export interface AvailableChatModel {
   chatId: string;
   chatName: string;
   chatDescription: string;
+  chatAvatar?: string;
+  createdAt: number; // timestamp epoch
+  updatedAt: number;
 }
 
 export interface GetAvailableChatsResponseModel {

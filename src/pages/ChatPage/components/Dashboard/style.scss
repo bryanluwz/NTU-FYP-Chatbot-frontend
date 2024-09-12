@@ -4,5 +4,14 @@
   width: 100%;
   height: calc(100% - 4rem);
   margin: 4rem 0rem;
+  padding-right: 2rem;
   background-color: var(--secondary-backround-color);
+  overflow-y: auto;
+
+  .dashboard-card-container {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    padding: 1rem;
+  }
 }
