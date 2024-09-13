@@ -20,6 +20,38 @@ const themeOptions: ThemeOptions = {
       fontSize: "1.4rem",
       fontWeight: 500,
     },
+    h5: {
+      fontSize: "1.4rem",
+      fontWeight: 600,
+    },
+    body2: {
+      fontSize: "1rem",
+      fontWeight: 600,
+    },
+    subtitle1: {
+      fontSize: "0.9rem",
+      fontWeight: 400,
+    },
+  },
+  components: {
+    MuiModal: {
+      styleOverrides: {
+        root: {
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "center",
+        },
+      },
+      defaultProps: {
+        slotProps: {
+          backdrop: {
+            sx: {
+              opacity: "0.8 !important",
+            },
+          },
+        },
+      },
+    },
   },
 };
 

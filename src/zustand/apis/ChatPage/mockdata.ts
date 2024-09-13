@@ -5,6 +5,7 @@ import {
   PostQueryMessageResponseModel,
 } from "../../../apis/ChatPage/typings";
 import { UserTypeEnum } from "../../../apis/enums";
+import DefaultUserAvatar from "../../../assets/user-avatar-default.png";
 
 export const postQueryMessageMockData =
   async (): Promise<PostQueryMessageResponseModel> => {
@@ -183,4 +184,18 @@ export const getChatInfoMockData = async (
       },
     },
   };
+};
+
+export const getUserInfoMockData = {
+  status: {
+    code: 200,
+    message: "OK",
+  },
+  data: {
+    userInfo: {
+      username: "Gorlock the Destroyer",
+      email: "gorlock.destroyer@e.nut.edu.sg",
+      avatar: DefaultUserAvatar,
+    },
+  },
 };

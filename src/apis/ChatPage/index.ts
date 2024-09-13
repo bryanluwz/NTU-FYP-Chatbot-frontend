@@ -3,7 +3,12 @@ import {
   PostQueryMessageResponseModel,
 } from "./typings";
 import { HTTPMethod } from "../typings";
-import { getChatInfoUrl, getChatListUrl, queryChatMessageUrl } from "../urls";
+import {
+  getChatInfoUrl,
+  getChatListUrl,
+  getUserInfoUrl,
+  queryChatMessageUrl,
+} from "../urls";
 
 export const postQueryMessageApi = async (data: any) => {
   return (await fetch(queryChatMessageUrl, {
@@ -23,6 +28,12 @@ export const getChatListApi = async () => {
 
 export const getChatInfoApi = async (chatId: string) => {
   return (await fetch(getChatInfoUrl(chatId), {
+    method: HTTPMethod.GET,
+  })) as unknown as GetChatListResponseModel;
+};
+
+export const getUserInfoApi = async () => {
+  return (await fetch(getUserInfoUrl, {
     method: HTTPMethod.GET,
   })) as unknown as GetChatListResponseModel;
 };

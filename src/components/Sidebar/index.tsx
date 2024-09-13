@@ -1,11 +1,15 @@
 import React from "react";
 
-import { Button } from "@mui/material";
+import { Button, ListItemIcon, ListItemText } from "@mui/material";
 import { AccountBox } from "../AccountBox";
 import { ChatList } from "../ChatList";
 
-import * as styles from "./style.scss";
 import { ChatListModel } from "../../apis/ChatPage/typings";
+import { useChatPageStore } from "../../zustand/apis/ChatPage";
+
+import AddIcon from "@mui/icons-material/Add";
+
+import * as styles from "./style.scss";
 
 interface SidebarProps {
   chatList: ChatListModel[];
@@ -18,15 +22,22 @@ export const Sidebar: React.FC<SidebarProps> = ({
   selectedChatId,
   setSelectedChatId,
 }) => {
+  const { userInfo } = useChatPageStore();
+
   return (
     <div className={styles.sidebarContainer}>
-      <AccountBox />
+      <AccountBox username={userInfo.username} userAvatar={userInfo.avatar} />
       <ChatList
         chatList={chatList}
         selectedChatId={selectedChatId}
         setSelectedChatId={setSelectedChatId}
       />
-      <Button onClick={() => {}}>New Chat</Button>
+      <Button onClick={() => {}}>
+        <ListItemText>New Chat</ListItemText>
+        <ListItemIcon>
+          <AddIcon />
+        </ListItemIcon>
+      </Button>
     </div>
   );
 };

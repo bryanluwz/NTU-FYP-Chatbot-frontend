@@ -11,6 +11,8 @@ body {
   /* Colors */
   --primary-backround-color: #dbdeea;
   --secondary-background-color: #f0f0f0;
+  --primary-selection-color: #f0f0f0;
+  --secondary-selection-color: #d6d9e3;
 
   /* Font */
   --font-family: "Open Sans", "Roboto", sans-serif;
@@ -25,7 +27,7 @@ body {
 }
 
 ::-webkit-scrollbar-track {
-  background: var(--secondary-background-color);
+  background: transparent;
 }
 
 ::-webkit-scrollbar-thumb {

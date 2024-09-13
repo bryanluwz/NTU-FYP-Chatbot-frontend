@@ -2,7 +2,7 @@ import React from "react";
 import ReactDOM from "react-dom/client";
 import { HashRouter } from "react-router-dom";
 
-import App from "./pages";
+import App from "..";
 import { ThemeProvider } from "@mui/material";
 import { theme } from "./theme";
 

@@ -20,6 +20,12 @@ export interface ChatInfoModel {
   messages: ChatMessageModel[];
 }
 
+export interface UserInfoModel {
+  username: string;
+  email: string;
+  avatar: string;
+}
+
 // Return types
 export interface PostQueryMessageResponseModel {
   status: HTTPStatusBody;
@@ -39,5 +45,12 @@ export interface GetChatInfoResponseModel {
   status: HTTPStatusBody;
   data: {
     chatInfo: ChatInfoModel;
+  };
+}
+
+export interface GetUserInfoResponseModel {
+  status: HTTPStatusBody;
+  data: {
+    userInfo: UserInfoModel;
   };
 }

@@ -3,10 +3,11 @@ import React from "react";
 import { ChatArea } from "./components/ChatArea";
 import { Sidebar } from "../../components/Sidebar";
 
-import * as styles from "./style.scss";
 import { useChatPageStore } from "../../zustand/apis/ChatPage";
-import { TabEnum } from "../../apis/enums";
 import { Dashboard } from "./components/Dashboard";
+import { TabEnum } from "../../apis/enums";
+
+import * as styles from "./style.scss";
 
 export const ChatPage: React.FC = () => {
   const {
@@ -16,9 +17,9 @@ export const ChatPage: React.FC = () => {
     isLoading,
     currentTab,
     setMessages,
-    appendMessage,
     getChatList,
     getChatInfo,
+    getUserInfo,
   } = useChatPageStore();
 
   const [selectedChatId, setSelectedChatId] = React.useState("");
@@ -26,6 +27,11 @@ export const ChatPage: React.FC = () => {
     React.useState(currentChatInfo);
 
   // To handle chat loading
+  // 0. Initial load
+  React.useEffect(() => {
+    getUserInfo();
+  }, []);
+
   // 1. Load chat list
   React.useEffect(() => {
     getChatList();
@@ -40,7 +46,13 @@ export const ChatPage: React.FC = () => {
 
   // 3. Load chat info when selected chat id is updated
   React.useEffect(() => {
-    getChatInfo(selectedChatId);
+    if (
+      selectedChatId &&
+      selectedChatId !== "" &&
+      currentChatInfo.chatId !== selectedChatId
+    ) {
+      getChatInfo(selectedChatId);
+    }
   }, [selectedChatId]);
 
   // 4. Update selected chat info when chat info is loaded
@@ -66,6 +78,12 @@ export const ChatPage: React.FC = () => {
         return <></>;
     }
   }, [currentTab, isLoading, messages]);
+
+  React.useEffect(() => {
+    if (currentTab !== TabEnum.Chat) {
+      setSelectedChatId("");
+    }
+  }, [currentTab]);
 
   return (
     <div className={styles.chatPageContainer}>
