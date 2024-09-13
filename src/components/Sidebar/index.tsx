@@ -1,12 +1,15 @@
 import React from "react";
 
-import { Button } from "@mui/material";
+import { Button, ListItemIcon, ListItemText } from "@mui/material";
 import { AccountBox } from "../AccountBox";
 import { ChatList } from "../ChatList";
 
-import * as styles from "./style.scss";
 import { ChatListModel } from "../../apis/ChatPage/typings";
 import { useChatPageStore } from "../../zustand/apis/ChatPage";
+
+import AddIcon from "@mui/icons-material/Add";
+
+import * as styles from "./style.scss";
 
 interface SidebarProps {
   chatList: ChatListModel[];
@@ -29,7 +32,12 @@ export const Sidebar: React.FC<SidebarProps> = ({
         selectedChatId={selectedChatId}
         setSelectedChatId={setSelectedChatId}
       />
-      <Button onClick={() => {}}>New Chat</Button>
+      <Button onClick={() => {}}>
+        <ListItemText>New Chat</ListItemText>
+        <ListItemIcon>
+          <AddIcon />
+        </ListItemIcon>
+      </Button>
     </div>
   );
 };

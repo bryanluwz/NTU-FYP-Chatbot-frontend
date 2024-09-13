@@ -1,4 +1,5 @@
 import React from "react";
+import cx from "classnames";
 
 import { useDashboardStore } from "../../../../zustand/apis/Dashboard";
 import {
@@ -91,6 +92,7 @@ export const Dashboard: React.FC = () => {
             .slice(0, Math.min(filteredChats.length, visibleChatsCount))
             .map((chat) => (
               <ListItem
+                className={styles.availableChatsListItem}
                 key={chat.chatId}
                 onClick={() => {
                   selectAvailableChat(chat.chatId);
@@ -100,8 +102,8 @@ export const Dashboard: React.FC = () => {
                   <Avatar src={chat.chatAvatar ?? DefaultChatAvatar} />
                 </ListItemAvatar>
                 <ListItemText>
-                  <Typography variant="body1">{chat.chatName}</Typography>
-                  <Typography variant="body2">
+                  <Typography variant="body2">{chat.chatName}</Typography>
+                  <Typography variant="subtitle1">
                     {chat.chatDescription}
                   </Typography>
                   <Typography variant="caption">
@@ -119,21 +121,20 @@ export const Dashboard: React.FC = () => {
               </ListItem>
             ))}
         </List>
-        <Button
-          variant="contained"
-          color="primary"
-          onClick={handleSeeMore}
-          disabled={filteredChats.length < visibleChatsCount}
-        >
-          See more
-        </Button>
+        <div className={cx(styles.buttonContainer, styles.center)}>
+          <Button
+            onClick={handleSeeMore}
+            disabled={filteredChats.length < visibleChatsCount}
+          >
+            See more
+          </Button>
+        </div>
       </div>
       <div className={styles.dashboardCardContainer}>
-        <Typography variant="h5">New GPT</Typography>
-        <Typography variant="body1">Create your own GPT!</Typography>
-        <Button variant="contained" color="primary" onClick={handleNewGPTClick}>
-          New GPT
-        </Button>
+        <Typography variant="h5">Create your own GPT!</Typography>
+        <div className={cx(styles.buttonContainer, styles.left)}>
+          <Button onClick={handleNewGPTClick}>New GPT</Button>
+        </div>
         {isNewGPTModalOpen && (
           <Modal open={isNewGPTModalOpen} onClose={handleNewGPTClose}>
             <div>Bruh</div>
