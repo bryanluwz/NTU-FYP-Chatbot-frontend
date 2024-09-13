@@ -16,6 +16,7 @@ import {
 
 import DefaultChatAvatar from "../../../../assets/ai-avatar-default.png";
 import * as styles from "./style.scss";
+import { NewGPTModal } from "../NewGPTModal";
 
 export const Dashboard: React.FC = () => {
   // For available chats
@@ -137,7 +138,7 @@ export const Dashboard: React.FC = () => {
         </div>
         {isNewGPTModalOpen && (
           <Modal open={isNewGPTModalOpen} onClose={handleNewGPTClose}>
-            <div>Bruh</div>
+            <NewGPTModal />
           </Modal>
         )}
       </div>

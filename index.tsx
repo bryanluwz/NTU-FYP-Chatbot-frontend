@@ -1,8 +1,8 @@
 import React from "react";
 
-import { ChatPage } from "./ChatPage";
+import { ChatPage } from "./src/pages/ChatPage";
 
-import * as styles from "./style.scss";
+import * as styles from "./src/pages/style.scss";
 import { Route, Router, Routes } from "react-router-dom";
 
 const App: React.FC = () => {

@@ -102,9 +102,12 @@ export const AccountBox: React.FC<AccountBoxProps> = ({
         </div>
         <Typography variant="h6">Hi, {username}!</Typography>
       </div>
-      <Modal open={isSettingsOpen} onClose={handleSettingsClose}>
-        <Settings />
-      </Modal>
+
+      {isSettingsOpen && (
+        <Modal open={isSettingsOpen} onClose={handleSettingsClose}>
+          <Settings />
+        </Modal>
+      )}
     </>
   );
 };

@@ -33,6 +33,26 @@ const themeOptions: ThemeOptions = {
       fontWeight: 400,
     },
   },
+  components: {
+    MuiModal: {
+      styleOverrides: {
+        root: {
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "center",
+        },
+      },
+      defaultProps: {
+        slotProps: {
+          backdrop: {
+            sx: {
+              opacity: "0.8 !important",
+            },
+          },
+        },
+      },
+    },
+  },
 };
 
 export const theme = createTheme(themeOptions);
