@@ -8,6 +8,7 @@ import {
   ListItem,
   ListItemAvatar,
   ListItemText,
+  Modal,
   TextField,
   Typography,
 } from "@mui/material";
@@ -63,8 +64,14 @@ export const Dashboard: React.FC = () => {
   };
 
   // For new GPT
+  const [isNewGPTModalOpen, setIsNewGPTModalOpen] = React.useState(false);
+
   const handleNewGPTClick = () => {
-    console.log("New GPT clicked");
+    setIsNewGPTModalOpen(true);
+  };
+
+  const handleNewGPTClose = () => {
+    setIsNewGPTModalOpen(false);
   };
 
   return (
@@ -127,6 +134,11 @@ export const Dashboard: React.FC = () => {
         <Button variant="contained" color="primary" onClick={handleNewGPTClick}>
           New GPT
         </Button>
+        {isNewGPTModalOpen && (
+          <Modal open={isNewGPTModalOpen} onClose={handleNewGPTClose}>
+            <div>Bruh</div>
+          </Modal>
+        )}
       </div>
     </div>
   );
