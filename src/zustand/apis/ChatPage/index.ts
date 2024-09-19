@@ -118,10 +118,7 @@ export const useChatPageStore = create<ChatPageState>((set) => ({
   getChatList: async () => {
     try {
       set({ isLoading: true });
-
-      // const response = checkStatus(await getChatListApi());
-      const response = checkStatus(getChatListMockData);
-      await new Promise((resolve) => setTimeout(resolve, 1000));
+      const response = checkStatus(await getChatListApi());
 
       set({ chatList: response.data.chatList });
       set({ isLoading: false });
@@ -160,9 +157,7 @@ export const useChatPageStore = create<ChatPageState>((set) => ({
   },
   getUserInfo: async () => {
     try {
-      // const response = checkStatus(await getUserInfoApi());
-      const response = checkStatus(await getUserInfoMockData);
-      await new Promise((resolve) => setTimeout(resolve, 1000));
+      const response = checkStatus(await getUserInfoApi());
 
       set({ userInfo: response.data.userInfo });
       return response.data.userInfo;

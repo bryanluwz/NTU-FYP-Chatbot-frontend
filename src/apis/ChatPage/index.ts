@@ -1,5 +1,6 @@
 import {
   GetChatListResponseModel,
+  GetUserInfoResponseModel,
   PostQueryMessageResponseModel,
 } from "./typings";
 import { HTTPMethod } from "../typings";
@@ -21,9 +22,11 @@ export const postQueryMessageApi = async (data: any) => {
 };
 
 export const getChatListApi = async () => {
-  return (await fetch(getChatListUrl, {
-    method: HTTPMethod.GET,
-  })) as unknown as GetChatListResponseModel;
+  return (
+    await fetch(getChatListUrl, {
+      method: HTTPMethod.GET,
+    })
+  ).json() as unknown as GetChatListResponseModel;
 };
 
 export const getChatInfoApi = async (chatId: string) => {
@@ -33,7 +36,9 @@ export const getChatInfoApi = async (chatId: string) => {
 };
 
 export const getUserInfoApi = async () => {
-  return (await fetch(getUserInfoUrl, {
-    method: HTTPMethod.GET,
-  })) as unknown as GetChatListResponseModel;
+  return (
+    await fetch(getUserInfoUrl, {
+      method: HTTPMethod.GET,
+    })
+  ).json() as unknown as GetUserInfoResponseModel;
 };
