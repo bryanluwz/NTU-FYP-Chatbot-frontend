@@ -50,8 +50,15 @@ export const ChatArea: React.FC<ChatAreaProps> = ({
     setIsAITyping(true);
     setIsAIResponding(true);
 
-    postQueryMessage(userMessage)
-      .then((msg) => {
+    const userMessageModel: ChatMessageModel = {
+      messageId: Date.now().toString(),
+      userType: UserTypeEnum.User,
+      message: userMessage,
+    };
+
+    postQueryMessage(userMessageModel)
+      .then((responseMessage) => {
+        const msg = responseMessage.message.trim();
         if (msg === "") {
           throw new Error("No response from AI :/ Are they sleeping?");
         }

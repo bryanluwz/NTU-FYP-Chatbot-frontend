@@ -13,12 +13,6 @@ import {
   UserInfoModel,
 } from "../../../apis/ChatPage/typings";
 import { TabEnum, UserTypeEnum } from "../../../apis/enums";
-import {
-  getChatInfoMockData,
-  getChatListMockData,
-  getUserInfoMockData,
-  postQueryMessageMockData,
-} from "./mockdata";
 import DefaultUserAvatar from "../../../assets/user-avatar-default.png";
 
 interface ChatPageState {
@@ -33,7 +27,9 @@ interface ChatPageState {
   setMessages: (messages: ChatMessageModel[]) => void;
   appendMessage: (message: ChatMessageModel) => void;
   replaceLastMessage: (message: ChatMessageModel) => void;
-  postQueryMessage: (userMessage: string) => Promise<string>;
+  postQueryMessage: (
+    userMessage: ChatMessageModel
+  ) => Promise<ChatMessageModel>;
 
   getChatList: () => Promise<ChatListModel[]>;
   getChatInfo: (chatId: string) => Promise<ChatInfoModel>;
@@ -47,6 +43,7 @@ const initialStates = {
   messages: [],
   chatList: [],
   currentChatInfo: {
+    userId: "",
     chatId: "",
     chatName: "",
     messages: [],
@@ -54,6 +51,7 @@ const initialStates = {
   isLoading: false,
   currentTab: TabEnum.Chat,
   userInfo: {
+    id: "",
     username: "",
     email: "",
     avatar: DefaultUserAvatar,
@@ -74,18 +72,11 @@ export const useChatPageStore = create<ChatPageState>((set, get) => ({
       messages[messages.length - 1] = message;
       return { messages };
     }),
-  postQueryMessage: async (userMessage: string) => {
+  postQueryMessage: async (userMessage: ChatMessageModel) => {
     try {
       // Append the user message to the messages
       set((state) => ({
-        messages: [
-          ...state.messages,
-          {
-            messageId: Date.now().toString(),
-            userType: UserTypeEnum.User,
-            message: userMessage,
-          },
-        ],
+        messages: [...state.messages, userMessage],
       }));
 
       const chatId = get().currentChatInfo.chatId;
@@ -101,21 +92,18 @@ export const useChatPageStore = create<ChatPageState>((set, get) => ({
 
       // Append the AI response to the messages
       set((state) => ({
-        messages: [
-          ...state.messages,
-          {
-            messageId: Date.now().toString(),
-            userType: UserTypeEnum.AI,
-            message: responseMessage,
-          },
-        ],
+        messages: [...state.messages, responseMessage],
       }));
 
       return responseMessage;
     } catch (error) {
       handleError(error);
       set({ isLoading: false });
-      return "";
+      return {
+        messageId: "",
+        userType: UserTypeEnum.User,
+        message: "",
+      };
     }
   },
   getChatList: async () => {
@@ -147,6 +135,7 @@ export const useChatPageStore = create<ChatPageState>((set, get) => ({
       handleError(error);
       set({ isLoading: false });
       return {
+        userId: "",
         chatId: "",
         chatName: "",
         messages: [],
@@ -165,6 +154,7 @@ export const useChatPageStore = create<ChatPageState>((set, get) => ({
     } catch (error) {
       handleError(error);
       return {
+        id: "",
         username: "",
         email: "",
         avatar: DefaultUserAvatar,
