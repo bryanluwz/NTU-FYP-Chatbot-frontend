@@ -6,5 +6,5 @@ export const getChatInfoUrl = (chatId: string) =>
   `${baseUrl}/api/chat?chatId=${chatId}`;
 export const getUserInfoUrl = `${baseUrl}/api/user/info`;
 
-export const getAvailableChatsUrl = `/api/chat/available`;
+export const getAvailableChatsUrl = `${baseUrl}/api/dashboard/available`;
 export const postChatUrl = `/api/chat/`; // Same for create, update and delete

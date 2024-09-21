@@ -17,8 +17,7 @@ export const useDashboardStore = create<DashboardState>((set) => ({
   ...initialStates,
   getAvailableChats: async () => {
     try {
-      // const response = checkStatus(await getAvailableChatsApi());
-      const response = checkStatus(getAvailableChatsMockData);
+      const response = checkStatus(await getAvailableChatsApi());
       set({ availableChats: response.data.availableChats });
       return response.data.availableChats;
     } catch (error) {
