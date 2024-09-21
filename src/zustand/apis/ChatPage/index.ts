@@ -1,6 +1,7 @@
 import { create } from "zustand";
 import { checkStatus, handleError } from "../../../apis/utils";
 import {
+  getChatInfoApi,
   getChatListApi,
   getUserInfoApi,
   postQueryMessageApi,
@@ -59,7 +60,7 @@ const initialStates = {
   },
 };
 
-export const useChatPageStore = create<ChatPageState>((set) => ({
+export const useChatPageStore = create<ChatPageState>((set, get) => ({
   ...initialStates,
   setMessages: (messages: ChatMessageModel[]) => {
     set({ messages });
@@ -87,14 +88,16 @@ export const useChatPageStore = create<ChatPageState>((set) => ({
         ],
       }));
 
+      const chatId = get().currentChatInfo.chatId;
+
       // Receive the AI response, should update the database with the user message and ai response
-      // const response = checkStatus(await postQueryMessageApi({ userMessage }));
+      const response = checkStatus(
+        await postQueryMessageApi({ chatId, message: userMessage })
+      );
 
-      const response = checkStatus(await postQueryMessageMockData());
+      console.log(response);
+
       const { message: responseMessage } = response.data;
-
-      // Simulate a delay using a Promise
-      await new Promise((resolve) => setTimeout(resolve, 1000));
 
       // Append the AI response to the messages
       set((state) => ({
@@ -134,9 +137,7 @@ export const useChatPageStore = create<ChatPageState>((set) => ({
     try {
       set({ isLoading: true });
 
-      // const response = checkStatus(await getChatInfoApi(chatId));
-      const response = checkStatus(await getChatInfoMockData(chatId));
-      await new Promise((resolve) => setTimeout(resolve, 1000));
+      const response = checkStatus(await getChatInfoApi({ chatId }));
 
       set({ currentChatInfo: response.data.chatInfo });
       set({ isLoading: false });

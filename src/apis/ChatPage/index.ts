@@ -1,4 +1,5 @@
 import {
+  GetChatInfoResponseModel,
   GetChatListResponseModel,
   GetUserInfoResponseModel,
   PostQueryMessageResponseModel,
@@ -8,17 +9,19 @@ import {
   getChatInfoUrl,
   getChatListUrl,
   getUserInfoUrl,
-  queryChatMessageUrl,
+  postQueryChatMessageUrl,
 } from "../urls";
 
 export const postQueryMessageApi = async (data: any) => {
-  return (await fetch(queryChatMessageUrl, {
-    method: HTTPMethod.POST,
-    headers: {
-      "Content-Type": "application/json",
-    },
-    body: JSON.stringify(data),
-  })) as unknown as PostQueryMessageResponseModel;
+  return (
+    await fetch(postQueryChatMessageUrl, {
+      method: HTTPMethod.POST,
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(data),
+    })
+  ).json() as unknown as PostQueryMessageResponseModel;
 };
 
 export const getChatListApi = async () => {
@@ -29,10 +32,12 @@ export const getChatListApi = async () => {
   ).json() as unknown as GetChatListResponseModel;
 };
 
-export const getChatInfoApi = async (chatId: string) => {
-  return (await fetch(getChatInfoUrl(chatId), {
-    method: HTTPMethod.GET,
-  })) as unknown as GetChatListResponseModel;
+export const getChatInfoApi = async (body: { chatId: string }) => {
+  return (
+    await fetch(getChatInfoUrl(body.chatId), {
+      method: HTTPMethod.GET,
+    })
+  ).json() as unknown as GetChatInfoResponseModel;
 };
 
 export const getUserInfoApi = async () => {

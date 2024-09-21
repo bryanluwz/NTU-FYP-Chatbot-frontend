@@ -51,7 +51,10 @@ export const ChatArea: React.FC<ChatAreaProps> = ({
     setIsAIResponding(true);
 
     postQueryMessage(userMessage)
-      .then(() => {
+      .then((msg) => {
+        if (msg === "") {
+          throw new Error("No response from AI :/ Are they sleeping?");
+        }
         setIsAIResponding(false);
       })
       .catch(() => {

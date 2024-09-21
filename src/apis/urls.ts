@@ -1,9 +1,9 @@
 const baseUrl = `http://localhost:3000`;
 
-export const queryChatMessageUrl = `/api/chat/message`;
+export const postQueryChatMessageUrl = `${baseUrl}/api/chat`;
 export const getChatListUrl = `${baseUrl}/api/chat/list`;
-export const getChatInfoUrl = (chatId: string) => `/api/chat/${chatId}`;
-export const updateChatMessageUrl = `/api/chat/message`;
+export const getChatInfoUrl = (chatId: string) =>
+  `${baseUrl}/api/chat?chatId=${chatId}`;
 export const getUserInfoUrl = `${baseUrl}/api/user/info`;
 
 export const getAvailableChatsUrl = `/api/chat/available`;
