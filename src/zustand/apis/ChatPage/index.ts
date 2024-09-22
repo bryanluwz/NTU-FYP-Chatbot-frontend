@@ -1,15 +1,19 @@
 import { create } from "zustand";
 import { checkStatus, handleError } from "../../../apis/utils";
 import {
+  createChatApi,
+  deleteChatApi,
   getChatInfoApi,
   getChatListApi,
   getUserInfoApi,
   postQueryMessageApi,
+  updateChatApi,
 } from "../../../apis/ChatPage";
 import {
   ChatInfoModel,
   ChatListModel,
   ChatMessageModel,
+  MinimumChatInfoModel,
   UserInfoModel,
 } from "../../../apis/ChatPage/typings";
 import { TabEnum, UserTypeEnum } from "../../../apis/enums";
@@ -33,6 +37,14 @@ interface ChatPageState {
 
   getChatList: () => Promise<ChatListModel[]>;
   getChatInfo: (chatId: string) => Promise<ChatInfoModel>;
+  deleteChat: (chatId: string) => Promise<void>;
+  createChat: (
+    userId: string,
+    personaId: string
+  ) => Promise<MinimumChatInfoModel>;
+  updateChat: (
+    updateModel: MinimumChatInfoModel
+  ) => Promise<MinimumChatInfoModel>;
 
   setCurrentTab: (tab: TabEnum) => void;
 
@@ -47,6 +59,8 @@ const initialStates = {
     chatId: "",
     chatName: "",
     messages: [],
+    createdAt: 0,
+    updatedAt: 0,
   },
   isLoading: false,
   currentTab: TabEnum.Chat,
@@ -139,7 +153,60 @@ export const useChatPageStore = create<ChatPageState>((set, get) => ({
         chatId: "",
         chatName: "",
         messages: [],
+        createdAt: 0,
+        updatedAt: 0,
       };
+    }
+  },
+  createChat: async (userId: string, personaId: string) => {
+    try {
+      set({ isLoading: true });
+
+      const response = checkStatus(await createChatApi({ userId, personaId }));
+
+      set({ isLoading: false });
+
+      return response.data.chatInfo;
+    } catch (error) {
+      handleError(error);
+      set({ isLoading: false });
+      return {
+        chatId: "",
+        chatName: "",
+      };
+    }
+  },
+  updateChat: async (udpateModel: MinimumChatInfoModel) => {
+    try {
+      set({ isLoading: true });
+
+      const response = checkStatus(
+        await updateChatApi({ updatedChatModel: udpateModel })
+      );
+
+      set({ isLoading: false });
+
+      return response.data.chatInfo;
+    } catch (error) {
+      handleError(error);
+      set({ isLoading: false });
+      return {
+        chatId: "",
+        chatName: "",
+      };
+    }
+  },
+  deleteChat: async (chatId: string) => {
+    try {
+      set({ isLoading: true });
+
+      checkStatus(await deleteChatApi({ chatId }));
+
+      set({ isLoading: false });
+    } catch (error) {
+      handleError(error);
+      set({ isLoading: false });
+      return;
     }
   },
   setCurrentTab: (currentTab: TabEnum) => {

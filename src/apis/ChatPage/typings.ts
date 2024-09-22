@@ -1,4 +1,3 @@
-import { ReactElement } from "react";
 import { UserTypeEnum } from "../enums";
 import { HTTPStatusBody } from "../typings";
 
@@ -12,16 +11,19 @@ export interface ChatMessageModel {
 export interface ChatListModel {
   chatId: string;
   chatName: string;
-  updatedAt: string; // in timestamp
+  updatedAt: number; // in timestamp
 }
 
-export interface ChatInfoModel {
-  userId: string;
+export interface MinimumChatInfoModel {
   chatId: string;
-  chatName: string;
+  chatName?: string;
+}
+
+export interface ChatInfoModel extends MinimumChatInfoModel {
+  userId: string;
   messages: ChatMessageModel[];
-  createdAt: string; // in timestamp
-  updatedAt: string;
+  createdAt: number; // in timestamp
+  updatedAt: number;
 }
 
 export interface UserInfoModel {
@@ -43,6 +45,13 @@ export interface GetChatListResponseModel {
   status: HTTPStatusBody;
   data: {
     chatList: ChatListModel[];
+  };
+}
+
+export interface GetMinimumChatInfoResponseModel {
+  status: HTTPStatusBody;
+  data: {
+    chatInfo: MinimumChatInfoModel;
   };
 }
 

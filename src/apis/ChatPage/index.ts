@@ -2,10 +2,12 @@ import {
   ChatInfoModel,
   GetChatInfoResponseModel,
   GetChatListResponseModel,
+  GetMinimumChatInfoResponseModel,
   GetUserInfoResponseModel,
+  MinimumChatInfoModel,
   PostQueryMessageResponseModel,
 } from "./typings";
-import { HTTPMethod } from "../typings";
+import { HTTPMethod, HTTPStatusBody } from "../typings";
 import {
   getChatListUrl,
   getUserInfoUrl,
@@ -33,20 +35,27 @@ export const getChatListApi = async () => {
   ).json() as unknown as GetChatListResponseModel;
 };
 
-export const createChatApi = async (body: { chatId: string }) => {
+export const createChatApi = async (body: {
+  userId: string;
+  personaId: string;
+}) => {
   return (
     await fetch(updateChatMessageUrl, {
       method: HTTPMethod.POST,
       headers: {
         "Content-Type": "application/json",
       },
-      body: JSON.stringify({ action: "create", chatId: body.chatId }),
+      body: JSON.stringify({
+        action: "create",
+        personaId: body.personaId,
+        userId: body.userId,
+      }),
     })
-  ).json() as unknown as GetChatInfoResponseModel;
+  ).json() as unknown as GetMinimumChatInfoResponseModel;
 };
 
 export const updateChatApi = async (body: {
-  updatedChatModel: ChatInfoModel;
+  updatedChatModel: MinimumChatInfoModel;
 }) => {
   return (
     await fetch(updateChatMessageUrl, {
@@ -56,7 +65,7 @@ export const updateChatApi = async (body: {
       },
       body: JSON.stringify({ action: "update", update: body.updatedChatModel }),
     })
-  ).json() as unknown as GetChatInfoResponseModel;
+  ).json() as unknown as GetMinimumChatInfoResponseModel;
 };
 
 export const deleteChatApi = async (body: { chatId: string }) => {
@@ -68,7 +77,7 @@ export const deleteChatApi = async (body: { chatId: string }) => {
       },
       body: JSON.stringify({ action: "delete", chatId: body.chatId }),
     })
-  ).json() as unknown as GetChatInfoResponseModel;
+  ).json() as unknown as { status: HTTPStatusBody; data: {} };
 };
 
 export const getChatInfoApi = async (body: { chatId: string }) => {

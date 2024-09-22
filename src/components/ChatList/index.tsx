@@ -14,12 +14,14 @@ interface ChatListProps {
   chatList: ChatListModel[];
   selectedChatId: string;
   setSelectedChatId: (chatId: string) => void;
+  deleteChat: (chatId: string) => void;
 }
 
 export const ChatList: React.FC<ChatListProps> = ({
   chatList = [],
   selectedChatId,
   setSelectedChatId,
+  deleteChat,
 }) => {
   const { currentTab, setCurrentTab } = useChatPageStore();
 
@@ -37,7 +39,11 @@ export const ChatList: React.FC<ChatListProps> = ({
   return (
     <List className={styles.chatListContainer}>
       {chatList
-        .sort((a, b) => (a.updatedAt > b.updatedAt ? -1 : 1))
+        .sort((a, b) => {
+          if (a.updatedAt > b.updatedAt) return -1;
+          if (a.updatedAt < b.updatedAt) return 1;
+          return 0;
+        })
         .map((chatListItem) => {
           return (
             <ListItem key={chatListItem.chatId}>
@@ -45,7 +51,7 @@ export const ChatList: React.FC<ChatListProps> = ({
                 id={chatListItem.chatId}
                 title={chatListItem.chatName}
                 onDelete={() => {
-                  console.log("[?] Delete chat", chatListItem.chatName);
+                  deleteChat(chatListItem.chatId);
                 }}
                 isActive={selectedChatId === chatListItem.chatId}
                 setActiveChat={handleSelectActiveChat}
