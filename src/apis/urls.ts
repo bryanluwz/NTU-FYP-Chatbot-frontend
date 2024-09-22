@@ -1,4 +1,4 @@
-const baseUrl = `http://localhost:3000`;
+const baseUrl = `http://10.226.235.142:3000`; // local machine ip address
 
 export const postQueryChatMessageUrl = `${baseUrl}/api/chat/message`;
 export const getChatListUrl = `${baseUrl}/api/chat/list`;
