@@ -1,5 +1,6 @@
 /* theme.css */
 @import url("https://fonts.googleapis.com/css2?family=Open+Sans:ital,wght@0,300..800;1,300..800&display=swap");
+@import url("https://fonts.googleapis.com/css2?family=Source+Code+Pro:ital,wght@0,200..900;1,200..900&display=swap");
 
 body {
   margin: 0;
@@ -15,7 +16,7 @@ body {
   --secondary-selection-color: #d6d9e3;
 
   /* Font */
-  --font-family: "Open Sans", "Roboto", sans-serif;
+  --font-family: "Source Code Pro", "Open Sans", "Roboto", sans-serif;
   --font-size: 0.5rem;
 
   /* Defaults */

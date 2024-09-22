@@ -1,12 +1,11 @@
 import { create } from "zustand";
 import { checkStatus, handleError } from "../../../apis/utils";
-import { getAvailableChatsMockData } from "./mockdata";
-import { AvailableChatModel } from "../../../apis/Dashboard/typings";
+import { PersonaModel } from "../../../apis/Dashboard/typings";
 import { getAvailableChatsApi } from "../../../apis/Dashboard";
 
 interface DashboardState {
-  availableChats: AvailableChatModel[];
-  getAvailableChats: () => Promise<AvailableChatModel[]>;
+  availableChats: PersonaModel[];
+  getAvailableChats: () => Promise<PersonaModel[]>;
 }
 
 const initialStates = {
@@ -18,8 +17,8 @@ export const useDashboardStore = create<DashboardState>((set) => ({
   getAvailableChats: async () => {
     try {
       const response = checkStatus(await getAvailableChatsApi());
-      set({ availableChats: response.data.availableChats });
-      return response.data.availableChats;
+      set({ availableChats: response.data.personas });
+      return response.data.personas;
     } catch (error) {
       handleError(error);
       return [];

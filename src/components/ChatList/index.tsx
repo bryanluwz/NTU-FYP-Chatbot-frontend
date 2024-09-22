@@ -36,21 +36,23 @@ export const ChatList: React.FC<ChatListProps> = ({
 
   return (
     <List className={styles.chatListContainer}>
-      {chatList.map((chatListItem) => {
-        return (
-          <ListItem key={chatListItem.chatId}>
-            <ChatListItem
-              id={chatListItem.chatId}
-              title={chatListItem.chatName}
-              onDelete={() => {
-                console.log("[?] Delete chat", chatListItem.chatName);
-              }}
-              isActive={selectedChatId === chatListItem.chatId}
-              setActiveChat={handleSelectActiveChat}
-            />
-          </ListItem>
-        );
-      })}
+      {chatList
+        .sort((a, b) => (a.updatedAt > b.updatedAt ? -1 : 1))
+        .map((chatListItem) => {
+          return (
+            <ListItem key={chatListItem.chatId}>
+              <ChatListItem
+                id={chatListItem.chatId}
+                title={chatListItem.chatName}
+                onDelete={() => {
+                  console.log("[?] Delete chat", chatListItem.chatName);
+                }}
+                isActive={selectedChatId === chatListItem.chatId}
+                setActiveChat={handleSelectActiveChat}
+              />
+            </ListItem>
+          );
+        })}
     </List>
   );
 };

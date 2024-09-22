@@ -12,6 +12,7 @@ export interface ChatMessageModel {
 export interface ChatListModel {
   chatId: string;
   chatName: string;
+  updatedAt: string; // in timestamp
 }
 
 export interface ChatInfoModel {
@@ -19,6 +20,8 @@ export interface ChatInfoModel {
   chatId: string;
   chatName: string;
   messages: ChatMessageModel[];
+  createdAt: string; // in timestamp
+  updatedAt: string;
 }
 
 export interface UserInfoModel {

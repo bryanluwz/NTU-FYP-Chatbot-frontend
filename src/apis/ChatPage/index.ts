@@ -1,4 +1,5 @@
 import {
+  ChatInfoModel,
   GetChatInfoResponseModel,
   GetChatListResponseModel,
   GetUserInfoResponseModel,
@@ -6,10 +7,10 @@ import {
 } from "./typings";
 import { HTTPMethod } from "../typings";
 import {
-  getChatInfoUrl,
   getChatListUrl,
   getUserInfoUrl,
   postQueryChatMessageUrl,
+  updateChatMessageUrl,
 } from "../urls";
 
 export const postQueryMessageApi = async (data: any) => {
@@ -32,10 +33,52 @@ export const getChatListApi = async () => {
   ).json() as unknown as GetChatListResponseModel;
 };
 
+export const createChatApi = async (body: { chatId: string }) => {
+  return (
+    await fetch(updateChatMessageUrl, {
+      method: HTTPMethod.POST,
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ action: "create", chatId: body.chatId }),
+    })
+  ).json() as unknown as GetChatInfoResponseModel;
+};
+
+export const updateChatApi = async (body: {
+  updatedChatModel: ChatInfoModel;
+}) => {
+  return (
+    await fetch(updateChatMessageUrl, {
+      method: HTTPMethod.POST,
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ action: "update", update: body.updatedChatModel }),
+    })
+  ).json() as unknown as GetChatInfoResponseModel;
+};
+
+export const deleteChatApi = async (body: { chatId: string }) => {
+  return (
+    await fetch(updateChatMessageUrl, {
+      method: HTTPMethod.POST,
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ action: "delete", chatId: body.chatId }),
+    })
+  ).json() as unknown as GetChatInfoResponseModel;
+};
+
 export const getChatInfoApi = async (body: { chatId: string }) => {
   return (
-    await fetch(getChatInfoUrl(body.chatId), {
-      method: HTTPMethod.GET,
+    await fetch(updateChatMessageUrl, {
+      method: HTTPMethod.POST,
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ action: "get", chatId: body.chatId }),
     })
   ).json() as unknown as GetChatInfoResponseModel;
 };

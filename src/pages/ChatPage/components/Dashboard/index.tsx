@@ -47,10 +47,10 @@ export const Dashboard: React.FC = () => {
     setSearchValue(event.target.value);
     const filteredChats = availableChats.filter(
       (chat) =>
-        chat.chatName
+        chat.personaName
           .toLowerCase()
           .includes(event.target.value.toLowerCase()) ||
-        chat.chatDescription
+        chat.personaDescription
           .toLowerCase()
           .includes(event.target.value.toLowerCase())
     );
@@ -94,18 +94,18 @@ export const Dashboard: React.FC = () => {
             .map((chat) => (
               <ListItem
                 className={styles.availableChatsListItem}
-                key={chat.chatId}
+                key={chat.personaId}
                 onClick={() => {
-                  selectAvailableChat(chat.chatId);
+                  selectAvailableChat(chat.personaId);
                 }}
               >
                 <ListItemAvatar>
-                  <Avatar src={chat.chatAvatar ?? DefaultChatAvatar} />
+                  <Avatar src={chat.personaAvatar ?? DefaultChatAvatar} />
                 </ListItemAvatar>
                 <ListItemText>
-                  <Typography variant="body2">{chat.chatName}</Typography>
+                  <Typography variant="body2">{chat.personaName}</Typography>
                   <Typography variant="subtitle1">
-                    {chat.chatDescription}
+                    {chat.personaDescription}
                   </Typography>
                   <Typography variant="caption">
                     Last Updated:{" "}
