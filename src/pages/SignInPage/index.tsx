@@ -14,6 +14,9 @@ import {
   Typography,
 } from "@mui/material";
 import { ForgotPassword } from "./ForgotPassword";
+import { useAuthStore } from "../../zustand/apis/Auth";
+import { UserInfoModel } from "../../apis/ChatPage/typings";
+import { AuthContext } from "../../context/AuthContext";
 
 // Huge thanks to https://github.com/mui/material-ui/blob/v6.1.1/docs/data/material/getting-started/templates/sign-in/SignIn.tsx
 export const SignInPage: React.FC = () => {
@@ -25,6 +28,11 @@ export const SignInPage: React.FC = () => {
 
   const [open, setOpen] = React.useState(false);
 
+  const [isSignUp, setIsSignUp] = React.useState(false);
+
+  const { login, register } = useAuthStore();
+  const { login: authLoginHandler } = React.useContext(AuthContext);
+
   const handleClickOpen = () => {
     setOpen(true);
   };
@@ -35,11 +43,6 @@ export const SignInPage: React.FC = () => {
 
   const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
-    const data = new FormData(event.currentTarget);
-    console.log({
-      email: data.get("email"),
-      password: data.get("password"),
-    });
   };
 
   const validateInputs = () => {
@@ -69,6 +72,20 @@ export const SignInPage: React.FC = () => {
     return isValid;
   };
 
+  // Login and register in the same function, funnt innit?
+  const handleLogin = async () => {
+    const email = document.getElementById("email") as HTMLInputElement;
+    const password = document.getElementById("password") as HTMLInputElement;
+
+    if (validateInputs()) {
+      if (isSignUp) {
+        await register(email.value, password.value, authLoginHandler);
+      } else if (!isSignUp) {
+        await login(email.value, password.value, authLoginHandler);
+      }
+    }
+  };
+
   return (
     <Stack direction="column" justifyContent="space-between">
       {/* <ColorModeSelect sx={{ position: "fixed", top: "1rem", right: "1rem" }} /> */}
@@ -79,7 +96,7 @@ export const SignInPage: React.FC = () => {
           variant="h4"
           sx={{ width: "100%", fontSize: "clamp(2rem, 10vw, 2.15rem)" }}
         >
-          Sign in
+          Sign {isSignUp ? "Up" : "In"}
         </Typography>
         <Box
           component="form"
@@ -137,28 +154,28 @@ export const SignInPage: React.FC = () => {
               color={passwordError ? "error" : "primary"}
             />
           </FormControl>
-          <FormControlLabel
+          {/* <FormControlLabel
             control={<Checkbox value="remember" color="primary" />}
             label="Remember me"
-          />
+          /> */}
           <ForgotPassword open={open} handleClose={handleClose} />
           <Button
             type="submit"
             fullWidth
             variant="contained"
-            onClick={validateInputs}
+            onClick={handleLogin}
           >
-            Sign in
+            Sign {isSignUp ? "Up" : "In"}
           </Button>
           <Typography sx={{ textAlign: "center" }}>
             Don&apos;t have an account?{" "}
             <span>
               <Link
-                href="/material-ui/getting-started/templates/sign-in/"
+                onClick={() => setIsSignUp(!isSignUp)}
                 variant="body2"
                 sx={{ alignSelf: "center" }}
               >
-                Sign up
+                Sign {isSignUp ? "In" : "Up"}
               </Link>
             </span>
           </Typography>

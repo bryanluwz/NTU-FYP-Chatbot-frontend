@@ -16,7 +16,7 @@ import {
   MinimumChatInfoModel,
   UserInfoModel,
 } from "../../../apis/ChatPage/typings";
-import { TabEnum, ChatUserTypeEnum } from "../../../apis/enums";
+import { TabEnum, ChatUserTypeEnum, UserRoleEnum } from "../../../apis/enums";
 import DefaultUserAvatar from "../../../assets/user-avatar-default.png";
 
 interface ChatPageState {
@@ -69,6 +69,7 @@ const initialStates = {
     username: "",
     email: "",
     avatar: DefaultUserAvatar,
+    role: UserRoleEnum.User,
   },
 };
 
@@ -225,6 +226,7 @@ export const useChatPageStore = create<ChatPageState>((set, get) => ({
         username: "",
         email: "",
         avatar: DefaultUserAvatar,
+        role: UserRoleEnum.User,
       };
     }
   },

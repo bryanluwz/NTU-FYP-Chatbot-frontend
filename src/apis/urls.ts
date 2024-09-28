@@ -8,3 +8,8 @@ export const getUserInfoUrl = `${baseUrl}/api/user/info`;
 
 export const getAvailableChatsUrl = `${baseUrl}/api/dashboard/available`;
 export const postChatUrl = `/api/chat/`; // Same for create, update and delete
+
+// Auth
+export const loginUrl = `${baseUrl}/api/auth/login`;
+export const registerUrl = `${baseUrl}/api/auth/register`;
+export const authUserUrl = `${baseUrl}/api/auth/user`;
