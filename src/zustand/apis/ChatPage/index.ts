@@ -16,7 +16,7 @@ import {
   MinimumChatInfoModel,
   UserInfoModel,
 } from "../../../apis/ChatPage/typings";
-import { TabEnum, UserTypeEnum } from "../../../apis/enums";
+import { TabEnum, ChatUserTypeEnum } from "../../../apis/enums";
 import DefaultUserAvatar from "../../../assets/user-avatar-default.png";
 
 interface ChatPageState {
@@ -115,7 +115,7 @@ export const useChatPageStore = create<ChatPageState>((set, get) => ({
       set({ isLoading: false });
       return {
         messageId: "",
-        userType: UserTypeEnum.User,
+        userType: ChatUserTypeEnum.User,
         message: "",
       };
     }

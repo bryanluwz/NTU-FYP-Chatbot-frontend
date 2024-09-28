@@ -1,10 +1,10 @@
-import { UserTypeEnum } from "../enums";
+import { ChatUserTypeEnum, UserRoleEnum } from "../enums";
 import { HTTPStatusBody } from "../typings";
 
 // Models
 export interface ChatMessageModel {
   messageId: string;
-  userType: UserTypeEnum;
+  userType: ChatUserTypeEnum;
   message: string;
 }
 
@@ -31,6 +31,12 @@ export interface UserInfoModel {
   username: string;
   email: string;
   avatar: string;
+  role: UserRoleEnum;
+}
+
+export interface LoginRequestModel {
+  email: string;
+  password: string; // hashed
 }
 
 // Return types
