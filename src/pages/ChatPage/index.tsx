@@ -8,6 +8,8 @@ import { Dashboard } from "./components/Dashboard";
 import { TabEnum } from "../../apis/enums";
 
 import * as styles from "./style.scss";
+import { AdminDashboard } from "./components/AdminDashboard";
+import { ChatInfoModel } from "../../apis/ChatPage/typings";
 
 export const ChatPage: React.FC = () => {
   const {
@@ -23,11 +25,13 @@ export const ChatPage: React.FC = () => {
     getUserInfo,
     createChat,
     deleteChat,
+    setCurrentTab,
   } = useChatPageStore();
 
   const [selectedChatId, setSelectedChatId] = React.useState("");
-  const [selectedChatInfo, setSelectedChatInfo] =
-    React.useState(currentChatInfo);
+  const [selectedChatInfo, setSelectedChatInfo] = React.useState<
+    ChatInfoModel | undefined
+  >(currentChatInfo);
 
   // To handle chat loading
   // 0. Initial load
@@ -38,12 +42,15 @@ export const ChatPage: React.FC = () => {
   // 1. Load chat list
   React.useEffect(() => {
     getChatList();
-  }, []);
+  }, [userInfo]);
 
   // 2. Update selected chat list id when chat list is loaded
   React.useEffect(() => {
     if (chatList.length > 0) {
       setSelectedChatId(chatList[0].chatId);
+    } else {
+      setSelectedChatId("");
+      setCurrentTab(TabEnum.Dashboard);
     }
   }, [chatList]);
 
@@ -55,6 +62,8 @@ export const ChatPage: React.FC = () => {
       currentChatInfo.chatId !== selectedChatId
     ) {
       getChatInfo(selectedChatId);
+    } else {
+      setSelectedChatInfo(undefined);
     }
   }, [selectedChatId]);
 
@@ -67,6 +76,8 @@ export const ChatPage: React.FC = () => {
   React.useEffect(() => {
     if (selectedChatInfo?.messages) {
       setMessages(selectedChatInfo.messages);
+    } else {
+      setMessages([]);
     }
   }, [selectedChatInfo]);
 
@@ -77,6 +88,8 @@ export const ChatPage: React.FC = () => {
         return <ChatArea isLoading={isLoading} messages={messages} />;
       case TabEnum.Dashboard:
         return <Dashboard setSelectedChatId={setSelectedChatId} />;
+      case TabEnum.Admin:
+        return <AdminDashboard />;
       default:
         return <></>;
     }

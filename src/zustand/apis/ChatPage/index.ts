@@ -49,6 +49,7 @@ interface ChatPageState {
   setCurrentTab: (tab: TabEnum) => void;
 
   getUserInfo: () => Promise<UserInfoModel>;
+  clearUserInfo: () => void;
 }
 
 const initialStates = {
@@ -229,5 +230,8 @@ export const useChatPageStore = create<ChatPageState>((set, get) => ({
         role: UserRoleEnum.User,
       };
     }
+  },
+  clearUserInfo: () => {
+    set({ userInfo: initialStates.userInfo });
   },
 }));

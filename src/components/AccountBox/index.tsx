@@ -40,6 +40,15 @@ export const AccountBox: React.FC<AccountBoxProps> = ({
 
   const { logout } = React.useContext(AuthContext);
 
+  const { userInfo } = useChatPageStore();
+  const [userRole, setUserRole] = React.useState<string>("");
+
+  React.useEffect(() => {
+    if (userInfo) {
+      setUserRole(userInfo.role);
+    }
+  }, [userInfo]);
+
   const handleAvatarClick = (event: React.MouseEvent<HTMLElement>) => {
     setAnchorEl(event.currentTarget);
     if (event.currentTarget === null) {
@@ -80,6 +89,21 @@ export const AccountBox: React.FC<AccountBoxProps> = ({
             </ListItemIcon>
             <ListItemText>Dashboard</ListItemText>
           </MenuItem>
+          {userRole === "admin" && (
+            <MenuItem
+              onClick={() => {
+                if (currentTab !== TabEnum.Admin) {
+                  setCurrentTab(TabEnum.Admin);
+                  setIsMenuOpen(false);
+                }
+              }}
+            >
+              <ListItemIcon>
+                <DashboardIcon />
+              </ListItemIcon>
+              <ListItemText>Admin Dashboard</ListItemText>
+            </MenuItem>
+          )}
           <MenuItem onClick={handleSettingsOpen}>
             <ListItemIcon>
               <SettingsIcon />

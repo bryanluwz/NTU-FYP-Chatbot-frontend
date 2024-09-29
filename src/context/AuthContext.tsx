@@ -1,6 +1,8 @@
 import React, { ReactNode } from "react";
 import { UserInfoModel } from "../apis/ChatPage/typings";
 import { authUserApi, loginApi } from "../apis/Auth";
+import { useChatPageStore } from "../zustand/apis/ChatPage";
+import { useDashboardStore } from "../zustand/apis/Dashboard";
 
 // Define types for the authentication state and context
 interface AuthState {
@@ -38,6 +40,9 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     loading: true,
   });
 
+  const { clearUserInfo } = useChatPageStore();
+  const { clearUserList } = useDashboardStore();
+
   React.useEffect(() => {
     const loadUser = async () => {
       if (auth.token) {
@@ -68,6 +73,8 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
 
   const logout = () => {
     localStorage.removeItem("token");
+    clearUserInfo();
+    clearUserList();
     setAuth({ token: null, user: null, loading: false });
   };
 

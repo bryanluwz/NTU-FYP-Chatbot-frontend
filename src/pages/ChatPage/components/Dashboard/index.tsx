@@ -18,7 +18,7 @@ import DefaultChatAvatar from "../../../../assets/ai-avatar-default.png";
 import * as styles from "./style.scss";
 import { NewGPTModal } from "../NewGPTModal";
 import { useChatPageStore } from "../../../../zustand/apis/ChatPage";
-import { TabEnum } from "../../../../apis/enums";
+import { TabEnum, UserRoleEnum } from "../../../../apis/enums";
 
 interface DashboardProps {
   setSelectedChatId: (chatId: string) => void;
@@ -29,6 +29,7 @@ export const Dashboard: React.FC<DashboardProps> = ({ setSelectedChatId }) => {
   const { availableChats, getAvailableChats } = useDashboardStore();
   const { userInfo, setCurrentTab, currentTab, createChat, getChatList } =
     useChatPageStore();
+  const [userRole, setUserRole] = React.useState<string>("");
 
   const [searchValue, setSearchValue] = React.useState("");
   const [filteredChats, setFilteredChats] = React.useState(availableChats);
@@ -44,6 +45,12 @@ export const Dashboard: React.FC<DashboardProps> = ({ setSelectedChatId }) => {
       setFilteredChats(availableChats);
     }
   }, [availableChats]);
+
+  React.useEffect(() => {
+    if (userInfo) {
+      setUserRole(userInfo.role);
+    }
+  }, [userInfo]);
 
   const selectAvailableChat = async (personaId: string) => {
     const userId = userInfo.id;
@@ -93,6 +100,7 @@ export const Dashboard: React.FC<DashboardProps> = ({ setSelectedChatId }) => {
 
   return (
     <div className={styles.dashboardContainer}>
+      {/* Available Chats */}
       <div className={styles.dashboardCardContainer}>
         <Typography variant="h5">Available Chats</Typography>
         <Typography variant="body1">Search by courses!</Typography>
@@ -146,17 +154,21 @@ export const Dashboard: React.FC<DashboardProps> = ({ setSelectedChatId }) => {
           </Button>
         </div>
       </div>
-      <div className={styles.dashboardCardContainer}>
-        <Typography variant="h5">Create your own GPT!</Typography>
-        <div className={cx(styles.buttonContainer, styles.left)}>
-          <Button onClick={handleNewGPTClick}>New GPT</Button>
+      {/* Create a new GPT (only for admin / educator) */}
+      {(userRole === UserRoleEnum.Admin ||
+        userRole === UserRoleEnum.Educator) && (
+        <div className={styles.dashboardCardContainer}>
+          <Typography variant="h5">Create your own GPT!</Typography>
+          <div className={cx(styles.buttonContainer, styles.left)}>
+            <Button onClick={handleNewGPTClick}>New GPT</Button>
+          </div>
+          {isNewGPTModalOpen && (
+            <Modal open={isNewGPTModalOpen} onClose={handleNewGPTClose}>
+              <NewGPTModal />
+            </Modal>
+          )}
         </div>
-        {isNewGPTModalOpen && (
-          <Modal open={isNewGPTModalOpen} onClose={handleNewGPTClose}>
-            <NewGPTModal />
-          </Modal>
-        )}
-      </div>
+      )}
     </div>
   );
 };

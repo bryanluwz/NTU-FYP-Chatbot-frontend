@@ -1,3 +1,4 @@
+import { UserInfoModel } from "../ChatPage/typings";
 import { HTTPStatusBody } from "../typings";
 
 export interface PersonaModel {
@@ -13,5 +14,12 @@ export interface GetPersonaResponseModel {
   status: HTTPStatusBody;
   data: {
     personas: PersonaModel[];
+  };
+}
+
+export interface GetUserListResponseModel {
+  status: HTTPStatusBody;
+  data: {
+    users: UserInfoModel[];
   };
 }

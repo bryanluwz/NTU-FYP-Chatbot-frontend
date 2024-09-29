@@ -13,4 +13,5 @@ export enum UserRoleEnum {
 export enum TabEnum {
   Chat = "chat",
   Dashboard = "dashboard",
+  Admin = "admin",
 }
