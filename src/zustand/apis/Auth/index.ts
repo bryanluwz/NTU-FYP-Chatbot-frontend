@@ -8,12 +8,13 @@ interface AuthState {
     email: string,
     password: string,
     callback: (token: string, user: UserInfoModel) => void
-  ) => Promise<void>;
+  ) => Promise<boolean>;
   register: (
+    username: string,
     email: string,
     password: string,
     callback: (token: string, user: UserInfoModel) => void
-  ) => Promise<void>;
+  ) => Promise<boolean>;
 }
 
 const initialStates = {};
@@ -25,21 +26,28 @@ export const useAuthStore = create<AuthState>((set) => ({
       const response = checkStatus(await loginApi({ email, password }));
       const { token, user } = response.data;
       callback(token, user);
-      return;
+      return true;
     } catch (error) {
       handleError(error);
-      return;
+      return false;
     }
   },
-  register: async (email: string, password: string, callback) => {
+  register: async (
+    username: string,
+    email: string,
+    password: string,
+    callback
+  ) => {
     try {
-      const response = checkStatus(await registerUserApi({ email, password }));
+      const response = checkStatus(
+        await registerUserApi({ username, email, password })
+      );
       const { token, user } = response.data;
       callback(token, user);
-      return;
+      return true;
     } catch (error) {
       handleError(error);
-      return;
+      return false;
     }
   },
 }));

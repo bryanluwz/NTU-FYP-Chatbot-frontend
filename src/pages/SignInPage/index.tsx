@@ -2,7 +2,6 @@ import React from "react";
 import {
   Box,
   Button,
-  Card,
   Checkbox,
   Divider,
   FormControl,
@@ -10,18 +9,63 @@ import {
   FormLabel,
   Link,
   Stack,
+  styled,
   TextField,
   Typography,
 } from "@mui/material";
+
+import MuiCard from "@mui/material/Card";
+
 import { ForgotPassword } from "./ForgotPassword";
 import { useAuthStore } from "../../zustand/apis/Auth";
-import { UserInfoModel } from "../../apis/ChatPage/typings";
 import { AuthContext } from "../../context/AuthContext";
 
 // Huge thanks to https://github.com/mui/material-ui/blob/v6.1.1/docs/data/material/getting-started/templates/sign-in/SignIn.tsx
+const Card = styled(MuiCard)(({ theme }) => ({
+  display: "flex",
+  flexDirection: "column",
+  alignSelf: "center",
+  width: "100%",
+  padding: theme.spacing(4),
+  gap: theme.spacing(2),
+  margin: "auto",
+  [theme.breakpoints.up("sm")]: {
+    maxWidth: "450px",
+  },
+  boxShadow:
+    "hsla(220, 30%, 5%, 0.05) 0px 5px 15px 0px, hsla(220, 25%, 10%, 0.05) 0px 15px 35px -5px",
+  ...theme.applyStyles("dark", {
+    boxShadow:
+      "hsla(220, 30%, 5%, 0.5) 0px 5px 15px 0px, hsla(220, 25%, 10%, 0.08) 0px 15px 35px -5px",
+  }),
+}));
+
+const SignInContainer = styled(Stack)(({ theme }) => ({
+  padding: 20,
+  marginTop: "10vh",
+  width: "100%",
+  "&::before": {
+    content: '""',
+    display: "block",
+    position: "absolute",
+    zIndex: -1,
+    inset: 0,
+    backgroundImage:
+      "radial-gradient(ellipse at 50% 50%, hsl(210, 100%, 97%), hsl(0, 0%, 100%))",
+    backgroundRepeat: "no-repeat",
+    ...theme.applyStyles("dark", {
+      backgroundImage:
+        "radial-gradient(at 50% 50%, hsla(210, 100%, 16%, 0.5), hsl(220, 30%, 5%))",
+    }),
+  },
+}));
+
 export const SignInPage: React.FC = () => {
   const [emailError, setEmailError] = React.useState(false);
   const [emailErrorMessage, setEmailErrorMessage] = React.useState("");
+
+  const [usernameError, setUsernameError] = React.useState(false);
+  const [usernameErrorMessage, setUsernameErrorMessage] = React.useState("");
 
   const [passwordError, setPasswordError] = React.useState(false);
   const [passwordErrorMessage, setPasswordErrorMessage] = React.useState("");
@@ -33,16 +77,20 @@ export const SignInPage: React.FC = () => {
   const { login, register } = useAuthStore();
   const { login: authLoginHandler } = React.useContext(AuthContext);
 
-  const handleClickOpen = () => {
-    setOpen(true);
+  const handleForgotPasswordOpen = (event: React.MouseEvent) => {
+    event.preventDefault();
+    if (event.target === document.activeElement) {
+      setOpen(true);
+    }
   };
 
-  const handleClose = () => {
+  const handleForgotPasswordClose = () => {
     setOpen(false);
   };
 
   const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
+    handleLogin();
   };
 
   const validateInputs = () => {
@@ -58,6 +106,19 @@ export const SignInPage: React.FC = () => {
     } else {
       setEmailError(false);
       setEmailErrorMessage("");
+    }
+
+    if (isSignUp) {
+      const username = document.getElementById("username") as HTMLInputElement;
+
+      if (!username.value) {
+        setUsernameError(true);
+        setUsernameErrorMessage("Please enter a username.");
+        isValid = false;
+      } else {
+        setUsernameError(false);
+        setUsernameErrorMessage("");
+      }
     }
 
     if (!password.value || password.value.length < 6) {
@@ -76,19 +137,35 @@ export const SignInPage: React.FC = () => {
   const handleLogin = async () => {
     const email = document.getElementById("email") as HTMLInputElement;
     const password = document.getElementById("password") as HTMLInputElement;
+    let loginError = false;
 
     if (validateInputs()) {
       if (isSignUp) {
-        await register(email.value, password.value, authLoginHandler);
+        const username = document.getElementById(
+          "username"
+        ) as HTMLInputElement;
+        loginError = await register(
+          username.value,
+          email.value,
+          password.value,
+          authLoginHandler
+        );
       } else if (!isSignUp) {
-        await login(email.value, password.value, authLoginHandler);
+        loginError = await login(email.value, password.value, authLoginHandler);
+      }
+
+      if (!loginError) {
+        setEmailError(false);
+        setEmailErrorMessage("");
+
+        setPasswordError(true);
+        setPasswordErrorMessage("Incorrect email or password.");
       }
     }
   };
 
   return (
-    <Stack direction="column" justifyContent="space-between">
-      {/* <ColorModeSelect sx={{ position: "fixed", top: "1rem", right: "1rem" }} /> */}
+    <SignInContainer direction="column" justifyContent="space-between">
       <Card variant="outlined">
         {/* <SitemarkIcon /> */}
         <Typography
@@ -109,6 +186,31 @@ export const SignInPage: React.FC = () => {
             gap: 2,
           }}
         >
+          {isSignUp && (
+            <FormControl>
+              <FormLabel htmlFor="username">Username</FormLabel>
+              <TextField
+                error={usernameError}
+                helperText={usernameErrorMessage}
+                id="username"
+                type="username"
+                name="username"
+                placeholder="username"
+                autoComplete="username"
+                autoFocus
+                required
+                fullWidth
+                variant="outlined"
+                color={usernameError ? "error" : "primary"}
+                sx={{ ariaLabel: "username" }}
+                onKeyDown={(e) => {
+                  if (e.key === "Enter") {
+                    document.getElementById("email")?.focus();
+                  }
+                }}
+              />
+            </FormControl>
+          )}
           <FormControl>
             <FormLabel htmlFor="email">Email</FormLabel>
             <TextField
@@ -125,6 +227,12 @@ export const SignInPage: React.FC = () => {
               variant="outlined"
               color={emailError ? "error" : "primary"}
               sx={{ ariaLabel: "email" }}
+              onKeyDown={(e) => {
+                if (e.key === "Enter") {
+                  e.preventDefault();
+                  document.getElementById("password")?.focus();
+                }
+              }}
             />
           </FormControl>
           <FormControl>
@@ -132,7 +240,7 @@ export const SignInPage: React.FC = () => {
               <FormLabel htmlFor="password">Password</FormLabel>
               <Link
                 component="button"
-                onClick={handleClickOpen}
+                onClick={handleForgotPasswordOpen}
                 variant="body2"
                 sx={{ alignSelf: "baseline" }}
               >
@@ -152,18 +260,19 @@ export const SignInPage: React.FC = () => {
               fullWidth
               variant="outlined"
               color={passwordError ? "error" : "primary"}
+              onKeyDown={(e) => {
+                if (e.key === "Enter") {
+                  handleLogin();
+                }
+              }}
             />
           </FormControl>
-          {/* <FormControlLabel
-            control={<Checkbox value="remember" color="primary" />}
-            label="Remember me"
-          /> */}
-          <ForgotPassword open={open} handleClose={handleClose} />
+          <ForgotPassword open={open} handleClose={handleForgotPasswordClose} />
           <Button
+            id="submit-button"
             type="submit"
             fullWidth
             variant="contained"
-            onClick={handleLogin}
           >
             Sign {isSignUp ? "Up" : "In"}
           </Button>
@@ -181,6 +290,6 @@ export const SignInPage: React.FC = () => {
           </Typography>
         </Box>
       </Card>
-    </Stack>
+    </SignInContainer>
   );
 };

@@ -37,7 +37,7 @@ export const ForgotPassword: React.FC<ForgotPasswordProps> = ({
           display: "flex",
           flexDirection: "column",
           gap: 2,
-          width: "100%",
+          width: "90%",
         }}
       >
         <DialogContentText>
@@ -50,7 +50,6 @@ export const ForgotPassword: React.FC<ForgotPasswordProps> = ({
           margin="dense"
           id="email"
           name="email"
-          label="Email address"
           placeholder="Email address"
           type="email"
           fullWidth
