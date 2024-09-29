@@ -12,7 +12,9 @@ import {
   TableBody,
   TableCell,
   TableContainer,
+  TableFooter,
   TableHead,
+  TablePagination,
   TableRow,
   Typography,
 } from "@mui/material";
@@ -183,6 +185,25 @@ export const AdminDashboard: React.FC = () => {
     );
   }, [filteredData, searchTerm]);
 
+  // Handle Pagination
+  const [page, setPage] = React.useState(0);
+  const [rowsPerPage, setRowsPerPage] = React.useState(10);
+
+  const handleChangePage = (event: unknown, newPage: number) => {
+    setPage(newPage);
+  };
+
+  const handleChangeRowsPerPage = (
+    event: React.ChangeEvent<HTMLInputElement>
+  ) => {
+    setRowsPerPage(parseInt(event.target.value, 10));
+    setPage(0);
+  };
+
+  React.useEffect(() => {
+    setPage(0);
+  }, [searchedData, rowsPerPage, searchTerm, roleFilter, sortConfig]);
+
   return (
     <div className={dashboardStyles.dashboardContainer}>
       <div className={dashboardStyles.dashboardCardContainer}>
@@ -277,60 +298,93 @@ export const AdminDashboard: React.FC = () => {
               </TableRow>
             </TableHead>
             <TableBody>
-              {searchedData.map((user) => (
-                <TableRow key={user.id}>
-                  <TableCell>
-                    <Chip
-                      avatar={
-                        <Avatar src={user.avatar}>
-                          {user.username.charAt(0)}
-                        </Avatar>
-                      }
-                      label={
-                        <Typography variant="body1">{user.username}</Typography>
-                      }
-                    />
-                  </TableCell>
-                  <TableCell>
-                    <Typography variant="body1">{user.email}</Typography>
-                  </TableCell>
-                  <TableCell>
-                    <Chip
-                      clickable
-                      label={
-                        user.role.charAt(0).toLocaleUpperCase() +
-                        user.role.slice(1)
-                      }
-                      color={
-                        user.role === UserRoleEnum.Admin ? "info" : "default"
-                      }
-                      variant={
-                        user.role === UserRoleEnum.User ? "outlined" : "filled"
-                      }
-                    />
-                  </TableCell>
-                  <TableCell>
-                    <Stack direction="row" spacing={1}>
+              {searchedData
+                .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
+                .map((user) => (
+                  <TableRow key={user.id}>
+                    <TableCell>
+                      <Chip
+                        avatar={
+                          <Avatar src={user.avatar}>
+                            {user.username.charAt(0)}
+                          </Avatar>
+                        }
+                        label={
+                          <Typography variant="body1">
+                            {user.username}
+                          </Typography>
+                        }
+                      />
+                    </TableCell>
+                    <TableCell>
+                      <Typography variant="body1">{user.email}</Typography>
+                    </TableCell>
+                    <TableCell>
                       <Chip
                         clickable
-                        label="Edit"
-                        color="warning"
-                        deleteIcon={<EditIcon />}
-                        onDelete={() => handleEditOpen(user.id)}
+                        label={
+                          user.role.charAt(0).toLocaleUpperCase() +
+                          user.role.slice(1)
+                        }
+                        color={
+                          user.role === UserRoleEnum.Admin ? "info" : "default"
+                        }
+                        variant={
+                          user.role === UserRoleEnum.User
+                            ? "outlined"
+                            : "filled"
+                        }
                       />
-                      <Chip
-                        clickable
-                        variant="filled"
-                        color="error"
-                        label="Delete"
-                        onDelete={() => handleDeleteOpen(user.id)}
-                        deleteIcon={<DeleteIcon />}
-                      />
-                    </Stack>
-                  </TableCell>
-                </TableRow>
-              ))}
+                    </TableCell>
+                    <TableCell>
+                      <Stack direction="row" spacing={1}>
+                        <Chip
+                          clickable
+                          label="Edit"
+                          color="warning"
+                          deleteIcon={<EditIcon />}
+                          onDelete={() => handleEditOpen(user.id)}
+                        />
+                        <Chip
+                          clickable
+                          variant="filled"
+                          color="error"
+                          label="Delete"
+                          onDelete={() => handleDeleteOpen(user.id)}
+                          deleteIcon={<DeleteIcon />}
+                        />
+                      </Stack>
+                    </TableCell>
+                  </TableRow>
+                ))}
             </TableBody>
+            <TableFooter>
+              <TableRow>
+                <TablePagination
+                  rowsPerPageOptions={[
+                    10,
+                    25,
+                    50,
+                    100,
+                    { label: "All", value: -1 },
+                  ]}
+                  colSpan={10}
+                  count={searchedData.length}
+                  rowsPerPage={rowsPerPage}
+                  page={page}
+                  slotProps={{
+                    select: {
+                      inputProps: {
+                        "aria-label": "rows per page",
+                      },
+                      native: true,
+                    },
+                  }}
+                  onPageChange={handleChangePage}
+                  onRowsPerPageChange={handleChangeRowsPerPage}
+                />
+              </TableRow>
+            </TableFooter>
           </Table>
         </TableContainer>
       </div>
