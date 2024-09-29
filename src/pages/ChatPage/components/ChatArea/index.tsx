@@ -15,7 +15,7 @@ import AttachFileIcon from "@mui/icons-material/AttachFile";
 
 import { useChatPageStore } from "../../../../zustand/apis/ChatPage";
 import { ChatMessageModel } from "../../../../apis/ChatPage/typings";
-import { UserTypeEnum } from "../../../../apis/enums";
+import { ChatUserTypeEnum } from "../../../../apis/enums";
 
 import * as styles from "./style.scss";
 
@@ -50,8 +50,18 @@ export const ChatArea: React.FC<ChatAreaProps> = ({
     setIsAITyping(true);
     setIsAIResponding(true);
 
-    postQueryMessage(userMessage)
-      .then(() => {
+    const userMessageModel: ChatMessageModel = {
+      messageId: Date.now().toString(),
+      userType: ChatUserTypeEnum.User,
+      message: userMessage,
+    };
+
+    postQueryMessage(userMessageModel)
+      .then((responseMessage) => {
+        const msg = responseMessage.message.trim();
+        if (msg === "") {
+          throw new Error("No response from AI :/ Are they sleeping?");
+        }
         setIsAIResponding(false);
       })
       .catch(() => {
@@ -87,13 +97,13 @@ export const ChatArea: React.FC<ChatAreaProps> = ({
               typingAnimation={
                 isAITyping &&
                 index === messages.length - 1 &&
-                message.userType === UserTypeEnum.AI
+                message.userType === ChatUserTypeEnum.AI
               }
               onTypingAnimationEnd={onReplyEnd}
               isToolboxVisibleOnHover={!isAIResponding}
               isToolboxVisible={
                 index === messages.length - 1 &&
-                message.userType !== UserTypeEnum.User
+                message.userType !== ChatUserTypeEnum.User
               }
             />
           );
@@ -151,7 +161,7 @@ export const ChatArea: React.FC<ChatAreaProps> = ({
             {chatMessageBoxes}
             {isAIResponding && (
               <ChatMessageBox
-                userType={UserTypeEnum.AI}
+                userType={ChatUserTypeEnum.AI}
                 message=""
                 typingIndicatorAnimation={isAIResponding}
               />

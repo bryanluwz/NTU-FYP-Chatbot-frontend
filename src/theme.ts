@@ -15,7 +15,7 @@ const themeOptions: ThemeOptions = {
     },
   },
   typography: {
-    fontFamily: `"Open Sans", "Roboto", sans-serif`,
+    fontFamily: `"Inter", "Open Sans", "Roboto", sans-serif`,
     h6: {
       fontSize: "1.4rem",
       fontWeight: 500,

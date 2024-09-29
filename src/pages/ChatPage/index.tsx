@@ -16,10 +16,13 @@ export const ChatPage: React.FC = () => {
     currentChatInfo,
     isLoading,
     currentTab,
+    userInfo,
     setMessages,
     getChatList,
     getChatInfo,
     getUserInfo,
+    createChat,
+    deleteChat,
   } = useChatPageStore();
 
   const [selectedChatId, setSelectedChatId] = React.useState("");
@@ -73,7 +76,7 @@ export const ChatPage: React.FC = () => {
       case TabEnum.Chat:
         return <ChatArea isLoading={isLoading} messages={messages} />;
       case TabEnum.Dashboard:
-        return <Dashboard />;
+        return <Dashboard setSelectedChatId={setSelectedChatId} />;
       default:
         return <></>;
     }

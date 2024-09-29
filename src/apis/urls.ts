@@ -1,10 +1,15 @@
-const baseUrl = `http://localhost:3000`;
+const baseUrl = `http://10.226.235.142:3000`; // local machine ip address
 
-export const queryChatMessageUrl = `/api/chat/message`;
+export const postQueryChatMessageUrl = `${baseUrl}/api/chat/message`;
 export const getChatListUrl = `${baseUrl}/api/chat/list`;
-export const getChatInfoUrl = (chatId: string) => `/api/chat/${chatId}`;
-export const updateChatMessageUrl = `/api/chat/message`;
+export const updateChatMessageUrl = `${baseUrl}/api/chat`;
+
 export const getUserInfoUrl = `${baseUrl}/api/user/info`;
 
-export const getAvailableChatsUrl = `/api/chat/available`;
+export const getAvailableChatsUrl = `${baseUrl}/api/dashboard/available`;
 export const postChatUrl = `/api/chat/`; // Same for create, update and delete
+
+// Auth
+export const loginUrl = `${baseUrl}/api/auth/login`;
+export const registerUrl = `${baseUrl}/api/auth/register`;
+export const authUserUrl = `${baseUrl}/api/auth/user`;

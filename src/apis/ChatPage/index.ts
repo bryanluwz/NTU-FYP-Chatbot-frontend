@@ -1,43 +1,101 @@
 import {
+  ChatInfoModel,
+  GetChatInfoResponseModel,
   GetChatListResponseModel,
+  GetMinimumChatInfoResponseModel,
   GetUserInfoResponseModel,
+  MinimumChatInfoModel,
   PostQueryMessageResponseModel,
 } from "./typings";
-import { HTTPMethod } from "../typings";
+import { HTTPMethod, HTTPStatusBody } from "../typings";
 import {
-  getChatInfoUrl,
   getChatListUrl,
   getUserInfoUrl,
-  queryChatMessageUrl,
+  postQueryChatMessageUrl,
+  updateChatMessageUrl,
 } from "../urls";
+import { fetchWithAuth } from "../utils";
 
 export const postQueryMessageApi = async (data: any) => {
-  return (await fetch(queryChatMessageUrl, {
-    method: HTTPMethod.POST,
-    headers: {
-      "Content-Type": "application/json",
-    },
-    body: JSON.stringify(data),
-  })) as unknown as PostQueryMessageResponseModel;
+  return (
+    await fetchWithAuth(postQueryChatMessageUrl, {
+      method: HTTPMethod.POST,
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(data),
+    })
+  ).json() as unknown as PostQueryMessageResponseModel;
 };
 
 export const getChatListApi = async () => {
   return (
-    await fetch(getChatListUrl, {
+    await fetchWithAuth(getChatListUrl, {
       method: HTTPMethod.GET,
     })
   ).json() as unknown as GetChatListResponseModel;
 };
 
-export const getChatInfoApi = async (chatId: string) => {
-  return (await fetch(getChatInfoUrl(chatId), {
-    method: HTTPMethod.GET,
-  })) as unknown as GetChatListResponseModel;
+export const createChatApi = async (body: {
+  userId: string;
+  personaId: string;
+}) => {
+  return (
+    await fetchWithAuth(updateChatMessageUrl, {
+      method: HTTPMethod.POST,
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        action: "create",
+        personaId: body.personaId,
+        userId: body.userId,
+      }),
+    })
+  ).json() as unknown as GetMinimumChatInfoResponseModel;
+};
+
+export const updateChatApi = async (body: {
+  updatedChatModel: MinimumChatInfoModel;
+}) => {
+  return (
+    await fetchWithAuth(updateChatMessageUrl, {
+      method: HTTPMethod.POST,
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ action: "update", update: body.updatedChatModel }),
+    })
+  ).json() as unknown as GetMinimumChatInfoResponseModel;
+};
+
+export const deleteChatApi = async (body: { chatId: string }) => {
+  return (
+    await fetchWithAuth(updateChatMessageUrl, {
+      method: HTTPMethod.POST,
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ action: "delete", chatId: body.chatId }),
+    })
+  ).json() as unknown as { status: HTTPStatusBody; data: {} };
+};
+
+export const getChatInfoApi = async (body: { chatId: string }) => {
+  return (
+    await fetchWithAuth(updateChatMessageUrl, {
+      method: HTTPMethod.POST,
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ action: "get", chatId: body.chatId }),
+    })
+  ).json() as unknown as GetChatInfoResponseModel;
 };
 
 export const getUserInfoApi = async () => {
   return (
-    await fetch(getUserInfoUrl, {
+    await fetchWithAuth(getUserInfoUrl, {
       method: HTTPMethod.GET,
     })
   ).json() as unknown as GetUserInfoResponseModel;

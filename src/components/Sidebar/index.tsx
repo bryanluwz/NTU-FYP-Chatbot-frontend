@@ -10,6 +10,7 @@ import { useChatPageStore } from "../../zustand/apis/ChatPage";
 import AddIcon from "@mui/icons-material/Add";
 
 import * as styles from "./style.scss";
+import { TabEnum } from "../../apis/enums";
 
 interface SidebarProps {
   chatList: ChatListModel[];
@@ -22,7 +23,19 @@ export const Sidebar: React.FC<SidebarProps> = ({
   selectedChatId,
   setSelectedChatId,
 }) => {
-  const { userInfo } = useChatPageStore();
+  const { userInfo, currentTab, setCurrentTab, deleteChat, getChatList } =
+    useChatPageStore();
+
+  const handleNewChat = () => {
+    if (currentTab !== TabEnum.Dashboard) {
+      setCurrentTab(TabEnum.Dashboard);
+    }
+  };
+
+  const handleDeleteChat = async (chatId: string) => {
+    await deleteChat(chatId);
+    await getChatList();
+  };
 
   return (
     <div className={styles.sidebarContainer}>
@@ -31,8 +44,9 @@ export const Sidebar: React.FC<SidebarProps> = ({
         chatList={chatList}
         selectedChatId={selectedChatId}
         setSelectedChatId={setSelectedChatId}
+        deleteChat={handleDeleteChat}
       />
-      <Button onClick={() => {}}>
+      <Button onClick={handleNewChat}>
         <ListItemText>New Chat</ListItemText>
         <ListItemIcon>
           <AddIcon />

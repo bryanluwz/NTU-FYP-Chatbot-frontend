@@ -17,10 +17,19 @@ import {
 import DefaultChatAvatar from "../../../../assets/ai-avatar-default.png";
 import * as styles from "./style.scss";
 import { NewGPTModal } from "../NewGPTModal";
+import { useChatPageStore } from "../../../../zustand/apis/ChatPage";
+import { TabEnum } from "../../../../apis/enums";
 
-export const Dashboard: React.FC = () => {
+interface DashboardProps {
+  setSelectedChatId: (chatId: string) => void;
+}
+
+export const Dashboard: React.FC<DashboardProps> = ({ setSelectedChatId }) => {
   // For available chats
   const { availableChats, getAvailableChats } = useDashboardStore();
+  const { userInfo, setCurrentTab, currentTab, createChat, getChatList } =
+    useChatPageStore();
+
   const [searchValue, setSearchValue] = React.useState("");
   const [filteredChats, setFilteredChats] = React.useState(availableChats);
 
@@ -36,8 +45,14 @@ export const Dashboard: React.FC = () => {
     }
   }, [availableChats]);
 
-  const selectAvailableChat = (chatId: string) => {
-    console.log(chatId);
+  const selectAvailableChat = async (personaId: string) => {
+    const userId = userInfo.id;
+    const response = await createChat(userId, personaId);
+    if (currentTab === TabEnum.Dashboard) {
+      setCurrentTab(TabEnum.Chat);
+    }
+    await getChatList();
+    setSelectedChatId(response.chatId);
   };
 
   const handleAvailableChatSearch = (
@@ -47,10 +62,10 @@ export const Dashboard: React.FC = () => {
     setSearchValue(event.target.value);
     const filteredChats = availableChats.filter(
       (chat) =>
-        chat.chatName
+        chat.personaName
           .toLowerCase()
           .includes(event.target.value.toLowerCase()) ||
-        chat.chatDescription
+        chat.personaDescription
           .toLowerCase()
           .includes(event.target.value.toLowerCase())
     );
@@ -94,18 +109,18 @@ export const Dashboard: React.FC = () => {
             .map((chat) => (
               <ListItem
                 className={styles.availableChatsListItem}
-                key={chat.chatId}
+                key={chat.personaId}
                 onClick={() => {
-                  selectAvailableChat(chat.chatId);
+                  selectAvailableChat(chat.personaId);
                 }}
               >
                 <ListItemAvatar>
-                  <Avatar src={chat.chatAvatar ?? DefaultChatAvatar} />
+                  <Avatar src={chat.personaAvatar ?? DefaultChatAvatar} />
                 </ListItemAvatar>
                 <ListItemText>
-                  <Typography variant="body2">{chat.chatName}</Typography>
+                  <Typography variant="body2">{chat.personaName}</Typography>
                   <Typography variant="subtitle1">
-                    {chat.chatDescription}
+                    {chat.personaDescription}
                   </Typography>
                   <Typography variant="caption">
                     Last Updated:{" "}

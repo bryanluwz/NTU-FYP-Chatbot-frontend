@@ -11,6 +11,7 @@
     "@testing-library/react": "^13.4.0",
     "@testing-library/user-event": "^13.5.0",
     "axios": "^1.4.0",
+    "bcryptjs": "^2.4.3",
     "file-loader": "^6.2.0",
     "postcss-import": "^16.1.0",
     "postcss-loader": "^8.1.1",
@@ -60,6 +61,7 @@
     "@babel/preset-env": "^7.24.7",
     "@babel/preset-react": "^7.24.7",
     "@babel/preset-typescript": "^7.24.7",
+    "@types/bcryptjs": "^2.4.6",
     "@types/node-sass": "^4.11.7",
     "@types/react": "^18.3.3",
     "@types/react-dom": "^18.3.0",
@@ -77,5 +79,8 @@
     "webpack": "^5.92.1",
     "webpack-cli": "^5.1.4",
     "webpack-dev-server": "^5.0.4"
+  },
+  "browser": {
+    "crypto": false
   }
 }

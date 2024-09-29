@@ -1,7 +1,7 @@
 import React from "react";
 import cx from "classnames";
 
-import { UserTypeEnum } from "../../../../apis/enums";
+import { ChatUserTypeEnum } from "../../../../apis/enums";
 import { Avatar, ButtonGroup, IconButton, Typography } from "@mui/material";
 import { ContentCopy, ContentPaste, VolumeUp } from "@mui/icons-material";
 
@@ -12,7 +12,7 @@ import * as styles from "./style.scss";
 import { useChatPageStore } from "../../../../zustand/apis/ChatPage";
 
 interface ChatMessageBoxProps {
-  userType: UserTypeEnum;
+  userType: ChatUserTypeEnum;
   message: string;
 
   typingIndicatorAnimation?: boolean; // Show the bot is responding in progress
@@ -92,26 +92,26 @@ export const ChatMessageBox: React.FC<ChatMessageBoxProps> = ({
   return (
     <div
       className={cx(styles.messageBoxContainer, {
-        [styles.user]: userType === UserTypeEnum.User,
-        [styles.nonUser]: userType !== UserTypeEnum.User,
+        [styles.user]: userType === ChatUserTypeEnum.User,
+        [styles.nonUser]: userType !== ChatUserTypeEnum.User,
       })}
     >
       <Avatar
         src={
-          userType === UserTypeEnum.User
+          userType === ChatUserTypeEnum.User
             ? userInfo.avatar ?? DefaultUserAvatar
             : DefaultAIAvatar
         }
       >
-        {userType === UserTypeEnum.User ? "U" : "A"}
+        {userType === ChatUserTypeEnum.User ? "U" : "A"}
       </Avatar>
       <div
         className={cx(styles.messageBox, {
-          [styles.user]: userType === UserTypeEnum.User,
+          [styles.user]: userType === ChatUserTypeEnum.User,
           [styles.nonUser]:
-            userType !== UserTypeEnum.User && !typingIndicatorAnimation,
+            userType !== ChatUserTypeEnum.User && !typingIndicatorAnimation,
           [styles.nonColor]:
-            userType !== UserTypeEnum.User && typingIndicatorAnimation,
+            userType !== ChatUserTypeEnum.User && typingIndicatorAnimation,
         })}
         onMouseOver={handleMouseEnter}
         onMouseLeave={handleMouseLeave}
@@ -127,8 +127,8 @@ export const ChatMessageBox: React.FC<ChatMessageBoxProps> = ({
         {(isMenuVisible || isToolboxVisible) && (
           <div
             className={cx(styles.actionMenu, {
-              [styles.left]: userType !== UserTypeEnum.User,
-              [styles.right]: userType === UserTypeEnum.User,
+              [styles.left]: userType !== ChatUserTypeEnum.User,
+              [styles.right]: userType === ChatUserTypeEnum.User,
             })}
             onMouseOver={handleMouseEnter}
             onMouseLeave={handleMouseLeave}

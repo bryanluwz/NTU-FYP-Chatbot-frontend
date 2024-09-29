@@ -20,6 +20,7 @@ import { TabEnum } from "../../apis/enums";
 import DefaultAvatar from "../../assets/user-avatar-default.png";
 import * as styles from "./style.scss";
 import { Settings } from "../Settings";
+import { AuthContext } from "../../context/AuthContext";
 
 interface AccountBoxProps {
   username?: string;
@@ -36,6 +37,8 @@ export const AccountBox: React.FC<AccountBoxProps> = ({
   const { currentTab, setCurrentTab } = useChatPageStore();
 
   const [isSettingsOpen, setIsSettingsOpen] = React.useState(false);
+
+  const { logout } = React.useContext(AuthContext);
 
   const handleAvatarClick = (event: React.MouseEvent<HTMLElement>) => {
     setAnchorEl(event.currentTarget);
@@ -89,7 +92,7 @@ export const AccountBox: React.FC<AccountBoxProps> = ({
             </ListItemIcon>
             <ListItemText>Delete All Chats</ListItemText>
           </MenuItem>
-          <MenuItem>
+          <MenuItem onClick={logout}>
             <ListItemIcon>
               <LogoutIcon />
             </ListItemIcon>
