@@ -41,6 +41,9 @@ export const ChatPage: React.FC = () => {
 
   // 1. Load chat list
   React.useEffect(() => {
+    if (userInfo.role === "admin") {
+      setCurrentTab(TabEnum.Admin);
+    }
     getChatList();
   }, [userInfo]);
 
@@ -50,20 +53,16 @@ export const ChatPage: React.FC = () => {
       setSelectedChatId(chatList[0].chatId);
     } else {
       setSelectedChatId("");
-      setCurrentTab(TabEnum.Dashboard);
     }
   }, [chatList]);
 
   // 3. Load chat info when selected chat id is updated
   React.useEffect(() => {
-    if (
-      selectedChatId &&
-      selectedChatId !== "" &&
-      currentChatInfo.chatId !== selectedChatId
-    ) {
+    if (selectedChatId && selectedChatId !== "") {
       getChatInfo(selectedChatId);
     } else {
       setSelectedChatInfo(undefined);
+      setCurrentTab(TabEnum.Dashboard);
     }
   }, [selectedChatId]);
 
@@ -89,9 +88,11 @@ export const ChatPage: React.FC = () => {
       case TabEnum.Dashboard:
         return <Dashboard setSelectedChatId={setSelectedChatId} />;
       case TabEnum.Admin:
-        return <AdminDashboard />;
+        if (userInfo.role === "admin") {
+          return <AdminDashboard />;
+        }
       default:
-        return <></>;
+        return <Dashboard setSelectedChatId={setSelectedChatId} />;
     }
   }, [currentTab, isLoading, messages]);
 

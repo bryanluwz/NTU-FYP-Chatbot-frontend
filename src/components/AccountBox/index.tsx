@@ -127,7 +127,7 @@ export const AccountBox: React.FC<AccountBoxProps> = ({
         <div className={styles.avatarContainer} onClick={handleAvatarClick}>
           <Avatar src={userAvatar} />
         </div>
-        <Typography variant="h6">Hi, {username}!</Typography>
+        <Typography variant="h5">Hi, {username}!</Typography>
       </div>
 
       {isSettingsOpen && (
