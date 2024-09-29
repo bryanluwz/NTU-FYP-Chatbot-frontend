@@ -1,6 +1,7 @@
 import {
   Avatar,
   Chip,
+  SelectChangeEvent,
   Stack,
   Table,
   TableBody,
@@ -18,6 +19,17 @@ import { UserRoleEnum } from "../../../../apis/enums";
 import { useDashboardStore } from "../../../../zustand/apis/Dashboard";
 import EditIcon from "@mui/icons-material/Edit";
 import DeleteIcon from "@mui/icons-material/Delete";
+import {
+  InputAdornment,
+  TextField,
+  MenuItem,
+  Select,
+  IconButton,
+} from "@mui/material";
+import { ArrowDownward, ArrowUpward, Search } from "@mui/icons-material";
+import ArrowDropDownIcon from "@mui/icons-material/ArrowDropDown";
+import ArrowDropUpIcon from "@mui/icons-material/ArrowDropUp";
+import SortIcon from "@mui/icons-material/Sort";
 
 export const AdminDashboard: React.FC = () => {
   const [data, setData] = React.useState<UserInfoModel[]>([]);
@@ -57,51 +69,193 @@ export const AdminDashboard: React.FC = () => {
     console.log("Update user role with id: ", id, " to ", role);
   };
 
+  // Sorting, filtering and searching
+  const [sortConfig, setSortConfig] = React.useState<{
+    key: string;
+    direction: "asc" | "desc" | null;
+  }>({
+    key: "",
+    direction: null,
+  });
+  const [roleFilter, setRoleFilter] = React.useState<UserRoleEnum | "all">(
+    "all"
+  );
+  const [searchTerm, setSearchTerm] = React.useState("");
+
+  // Sort by username and email
   const sortData = (data: UserInfoModel[]) => {
-    // Sort by role, UserRoleEnum.Admin, UserRoleEnum.Educator, UserRoleEnum.User
-    // Then sort by username, email, etc.
-    // Return the sorted data
-    const sortedData = data.sort((a, b) => {
-      const roleOrder = {
-        [UserRoleEnum.Admin]: 0,
-        [UserRoleEnum.Educator]: 1,
-        [UserRoleEnum.User]: 2,
-      };
-      return (
-        roleOrder[a.role] - roleOrder[b.role] ||
-        a.username.localeCompare(b.username)
-      );
+    // Default sorting by role and username if no sorting is applied
+    if (!sortConfig.direction && !searchTerm && roleFilter === "all") {
+      return data.sort((a, b) => {
+        const roleOrder = {
+          [UserRoleEnum.Admin]: 0,
+          [UserRoleEnum.Educator]: 1,
+          [UserRoleEnum.User]: 2,
+        };
+
+        // Sort by role first, then by username alphabetically
+        return (
+          roleOrder[a.role] - roleOrder[b.role] ||
+          a.username.localeCompare(b.username)
+        );
+      });
+    }
+
+    // If sorting is applied, proceed with the custom sorting logic
+    if (sortConfig.direction === null) {
+      return data;
+    }
+
+    const sortedData = [...data].sort((a, b) => {
+      const aValue = a[sortConfig.key as keyof UserInfoModel];
+      const bValue = b[sortConfig.key as keyof UserInfoModel];
+
+      if (aValue < bValue) {
+        return sortConfig.direction === "asc" ? -1 : 1;
+      }
+      if (aValue > bValue) {
+        return sortConfig.direction === "asc" ? 1 : -1;
+      }
+      return 0;
     });
+
     return sortedData;
   };
 
-  const sortedData = React.useMemo(() => sortData(data), [data]);
+  const handleSort = (key: string) => {
+    let direction: "asc" | "desc" | null = "asc";
+    if (sortConfig.key === key && sortConfig.direction === "asc") {
+      direction = "desc";
+    } else if (sortConfig.key === key && sortConfig.direction === "desc") {
+      direction = null;
+    }
+    setSortConfig({ key, direction });
+  };
+
+  const sortedData = React.useMemo(() => sortData(data), [data, sortConfig]);
+
+  // Filter by role
+
+  const filteredData = React.useMemo(() => {
+    if (roleFilter === "all") return sortedData;
+    return sortedData.filter((user) => user.role === roleFilter);
+  }, [sortedData, roleFilter]);
+
+  const handleRoleFilter = (event: SelectChangeEvent<UserRoleEnum | "all">) => {
+    setRoleFilter(event.target.value as UserRoleEnum | "all");
+  };
+
+  // Search by username and email
+
+  const handleSearchChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    setSearchTerm(event.target.value);
+  };
+
+  const searchedData = React.useMemo(() => {
+    if (!searchTerm) return filteredData;
+    return filteredData.filter(
+      (user) =>
+        user.username.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        user.email.toLowerCase().includes(searchTerm.toLowerCase())
+    );
+  }, [filteredData, searchTerm]);
 
   return (
     <div className={dashboardStyles.dashboardContainer}>
       <div className={dashboardStyles.dashboardCardContainer}>
         <Typography variant="h5">Admin Dashboard</Typography>
+        {/* Role Filter */}
+        <Select value={roleFilter} onChange={handleRoleFilter}>
+          <MenuItem value="all">All Roles</MenuItem>
+          <MenuItem value={UserRoleEnum.Admin}>Admin</MenuItem>
+          <MenuItem value={UserRoleEnum.Educator}>Educator</MenuItem>
+          <MenuItem value={UserRoleEnum.User}>User</MenuItem>
+        </Select>
+
+        {/* Search Field */}
+        <TextField
+          label="Search"
+          variant="outlined"
+          size="small"
+          value={searchTerm}
+          onChange={handleSearchChange}
+          slotProps={{
+            input: {
+              startAdornment: (
+                <InputAdornment position="start">
+                  <Search />
+                </InputAdornment>
+              ),
+            },
+          }}
+        />
+
         <TableContainer>
           <Table>
             {/* Headers */}
             <TableHead>
               <TableRow>
-                <TableCell>
-                  <Typography variant="h6">Username</Typography>
+                <TableCell style={{ width: "30%" }}>
+                  <Stack
+                    direction="row"
+                    alignItems="center"
+                    justifyContent="space-between"
+                    style={{ cursor: "pointer" }}
+                    onClick={() => handleSort("username")}
+                  >
+                    <Typography variant="h6">Username</Typography>
+                    {sortConfig.key === "username" ? (
+                      sortConfig.direction === "asc" ? (
+                        <ArrowDropUpIcon />
+                      ) : sortConfig.direction === "desc" ? (
+                        <ArrowDropDownIcon />
+                      ) : (
+                        <SortIcon />
+                      )
+                    ) : (
+                      <SortIcon />
+                    )}
+                  </Stack>
                 </TableCell>
-                <TableCell>
-                  <Typography variant="h6">Email</Typography>
+                <TableCell style={{ width: "30%" }}>
+                  <Stack
+                    direction="row"
+                    alignItems="center"
+                    justifyContent="space-between"
+                    style={{ cursor: "pointer" }}
+                    onClick={() => handleSort("email")}
+                  >
+                    <Typography variant="h6">Email</Typography>
+                    {sortConfig.key === "email" ? (
+                      sortConfig.direction === "asc" ? (
+                        <ArrowDropUpIcon />
+                      ) : sortConfig.direction === "desc" ? (
+                        <ArrowDropDownIcon />
+                      ) : (
+                        <SortIcon />
+                      )
+                    ) : (
+                      <SortIcon />
+                    )}
+                  </Stack>
                 </TableCell>
-                <TableCell>
-                  <Typography variant="h6">Role</Typography>
+                <TableCell style={{ width: "20%" }}>
+                  <Stack
+                    direction="row"
+                    alignItems="center"
+                    justifyContent="space-between"
+                    style={{ cursor: "pointer" }}
+                  >
+                    <Typography variant="h6">Role</Typography>
+                  </Stack>
                 </TableCell>
-                <TableCell>
+                <TableCell style={{ width: "20%" }}>
                   <Typography variant="h6">Action</Typography>
                 </TableCell>
               </TableRow>
             </TableHead>
             <TableBody>
-              {sortedData.map((user) => (
+              {searchedData.map((user) => (
                 <TableRow key={user.id}>
                   <TableCell>
                     <Chip
@@ -140,16 +294,14 @@ export const AdminDashboard: React.FC = () => {
                         label="Edit"
                         color="warning"
                         deleteIcon={<EditIcon />}
-                        // onClick={handleEditOpen} // why is this not a proper prop
-                        onDelete={handleEditOpen}
+                        onDelete={() => handleEditOpen(user.id)}
                       />
                       <Chip
                         clickable
                         variant="filled"
                         color="error"
                         label="Delete"
-                        // onClick={handleDeleteOpen}
-                        onDelete={handleDeleteOpen}
+                        onDelete={() => handleDeleteOpen(user.id)}
                         deleteIcon={<DeleteIcon />}
                       />
                     </Stack>
