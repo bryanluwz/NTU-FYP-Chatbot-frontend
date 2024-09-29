@@ -1,6 +1,11 @@
 import {
   Avatar,
   Chip,
+  List,
+  ListItem,
+  ListItemIcon,
+  ListItemText,
+  Popover,
   SelectChangeEvent,
   Stack,
   Table,
@@ -26,10 +31,12 @@ import {
   Select,
   IconButton,
 } from "@mui/material";
-import { ArrowDownward, ArrowUpward, Search } from "@mui/icons-material";
+import { Search } from "@mui/icons-material";
 import ArrowDropDownIcon from "@mui/icons-material/ArrowDropDown";
 import ArrowDropUpIcon from "@mui/icons-material/ArrowDropUp";
 import SortIcon from "@mui/icons-material/Sort";
+import FilterAltIcon from "@mui/icons-material/FilterAlt";
+import CheckIcon from "@mui/icons-material/Check";
 
 export const AdminDashboard: React.FC = () => {
   const [data, setData] = React.useState<UserInfoModel[]>([]);
@@ -81,6 +88,24 @@ export const AdminDashboard: React.FC = () => {
     "all"
   );
   const [searchTerm, setSearchTerm] = React.useState("");
+
+  const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
+  const [currentSearchField, setCurrentSearchField] =
+    React.useState<string>("");
+
+  const handlePopoverOpen = (
+    event: React.MouseEvent<HTMLButtonElement, MouseEvent>,
+    field: string
+  ) => {
+    setAnchorEl(event.currentTarget as unknown as HTMLElement);
+    setCurrentSearchField(field); // Set whether it is username, email, or role
+  };
+
+  const handlePopoverClose = () => {
+    setAnchorEl(null);
+  };
+
+  const open = Boolean(anchorEl);
 
   // Sort by username and email
   const sortData = (data: UserInfoModel[]) => {
@@ -135,7 +160,6 @@ export const AdminDashboard: React.FC = () => {
   const sortedData = React.useMemo(() => sortData(data), [data, sortConfig]);
 
   // Filter by role
-
   const filteredData = React.useMemo(() => {
     if (roleFilter === "all") return sortedData;
     return sortedData.filter((user) => user.role === roleFilter);
@@ -146,7 +170,6 @@ export const AdminDashboard: React.FC = () => {
   };
 
   // Search by username and email
-
   const handleSearchChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setSearchTerm(event.target.value);
   };
@@ -164,31 +187,6 @@ export const AdminDashboard: React.FC = () => {
     <div className={dashboardStyles.dashboardContainer}>
       <div className={dashboardStyles.dashboardCardContainer}>
         <Typography variant="h5">Admin Dashboard</Typography>
-        {/* Role Filter */}
-        <Select value={roleFilter} onChange={handleRoleFilter}>
-          <MenuItem value="all">All Roles</MenuItem>
-          <MenuItem value={UserRoleEnum.Admin}>Admin</MenuItem>
-          <MenuItem value={UserRoleEnum.Educator}>Educator</MenuItem>
-          <MenuItem value={UserRoleEnum.User}>User</MenuItem>
-        </Select>
-
-        {/* Search Field */}
-        <TextField
-          label="Search"
-          variant="outlined"
-          size="small"
-          value={searchTerm}
-          onChange={handleSearchChange}
-          slotProps={{
-            input: {
-              startAdornment: (
-                <InputAdornment position="start">
-                  <Search />
-                </InputAdornment>
-              ),
-            },
-          }}
-        />
 
         <TableContainer>
           <Table>
@@ -201,20 +199,31 @@ export const AdminDashboard: React.FC = () => {
                     alignItems="center"
                     justifyContent="space-between"
                     style={{ cursor: "pointer" }}
-                    onClick={() => handleSort("username")}
                   >
                     <Typography variant="h6">Username</Typography>
-                    {sortConfig.key === "username" ? (
-                      sortConfig.direction === "asc" ? (
-                        <ArrowDropUpIcon />
-                      ) : sortConfig.direction === "desc" ? (
-                        <ArrowDropDownIcon />
-                      ) : (
-                        <SortIcon />
-                      )
-                    ) : (
-                      <SortIcon />
-                    )}
+                    <Stack direction="row" alignItems="center">
+                      <IconButton onClick={() => handleSort("username")}>
+                        {sortConfig.key === "username" ? (
+                          sortConfig.direction === "asc" ? (
+                            <ArrowDropUpIcon />
+                          ) : sortConfig.direction === "desc" ? (
+                            <ArrowDropDownIcon />
+                          ) : (
+                            <SortIcon />
+                          )
+                        ) : (
+                          <SortIcon />
+                        )}
+                      </IconButton>
+
+                      <IconButton
+                        onClick={(event) =>
+                          handlePopoverOpen(event, "username")
+                        }
+                      >
+                        <Search />
+                      </IconButton>
+                    </Stack>
                   </Stack>
                 </TableCell>
                 <TableCell style={{ width: "30%" }}>
@@ -223,20 +232,28 @@ export const AdminDashboard: React.FC = () => {
                     alignItems="center"
                     justifyContent="space-between"
                     style={{ cursor: "pointer" }}
-                    onClick={() => handleSort("email")}
                   >
                     <Typography variant="h6">Email</Typography>
-                    {sortConfig.key === "email" ? (
-                      sortConfig.direction === "asc" ? (
-                        <ArrowDropUpIcon />
-                      ) : sortConfig.direction === "desc" ? (
-                        <ArrowDropDownIcon />
-                      ) : (
-                        <SortIcon />
-                      )
-                    ) : (
-                      <SortIcon />
-                    )}
+                    <Stack direction="row" alignItems="center">
+                      <IconButton onClick={() => handleSort("email")}>
+                        {sortConfig.key === "email" ? (
+                          sortConfig.direction === "asc" ? (
+                            <ArrowDropUpIcon />
+                          ) : sortConfig.direction === "desc" ? (
+                            <ArrowDropDownIcon />
+                          ) : (
+                            <SortIcon />
+                          )
+                        ) : (
+                          <SortIcon />
+                        )}
+                      </IconButton>
+                      <IconButton
+                        onClick={(event) => handlePopoverOpen(event, "email")}
+                      >
+                        <Search />
+                      </IconButton>
+                    </Stack>
                   </Stack>
                 </TableCell>
                 <TableCell style={{ width: "20%" }}>
@@ -247,6 +264,11 @@ export const AdminDashboard: React.FC = () => {
                     style={{ cursor: "pointer" }}
                   >
                     <Typography variant="h6">Role</Typography>
+                    <IconButton
+                      onClick={(event) => handlePopoverOpen(event, "role")}
+                    >
+                      <FilterAltIcon />
+                    </IconButton>
                   </Stack>
                 </TableCell>
                 <TableCell style={{ width: "20%" }}>
@@ -312,6 +334,96 @@ export const AdminDashboard: React.FC = () => {
           </Table>
         </TableContainer>
       </div>
+      {/* Popup */}
+      <Popover
+        open={open}
+        anchorEl={anchorEl}
+        onClose={handlePopoverClose}
+        anchorOrigin={{
+          vertical: "bottom",
+          horizontal: "center",
+        }}
+        transformOrigin={{
+          vertical: "top",
+          horizontal: "center",
+        }}
+      >
+        {currentSearchField === "username" && (
+          <TextField
+            variant="outlined"
+            size="small"
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
+            placeholder="Search Username"
+            slotProps={{
+              input: {
+                startAdornment: (
+                  <InputAdornment position="start">
+                    <Search />
+                  </InputAdornment>
+                ),
+              },
+            }}
+          />
+        )}
+
+        {currentSearchField === "email" && (
+          <TextField
+            variant="outlined"
+            size="small"
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
+            placeholder="Search Email"
+            slotProps={{
+              input: {
+                startAdornment: (
+                  <InputAdornment position="start">
+                    <Search />
+                  </InputAdornment>
+                ),
+              },
+            }}
+          />
+        )}
+
+        {currentSearchField === "role" && (
+          // <List>
+          <>
+            {[...Object.values(UserRoleEnum), "all"].map((role) => (
+              <MenuItem
+                key={role}
+                component="li"
+                onClick={() => {
+                  if (role === roleFilter) {
+                    setRoleFilter("all");
+                  } else {
+                    setRoleFilter(role as UserRoleEnum | "all");
+                  }
+                }}
+              >
+                <Stack
+                  width={"100%"}
+                  direction="row"
+                  alignItems="center"
+                  justifyContent="space-between"
+                >
+                  <ListItemText
+                    primary={role.charAt(0).toLocaleUpperCase() + role.slice(1)}
+                  />
+                  <ListItemIcon
+                    style={{
+                      visibility: roleFilter === role ? "visible" : "hidden",
+                    }}
+                  >
+                    <CheckIcon />
+                  </ListItemIcon>
+                </Stack>
+              </MenuItem>
+            ))}
+          </>
+          // </List>
+        )}
+      </Popover>
     </div>
   );
 };
