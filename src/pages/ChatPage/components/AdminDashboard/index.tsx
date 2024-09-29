@@ -39,10 +39,12 @@ import ArrowDropUpIcon from "@mui/icons-material/ArrowDropUp";
 import SortIcon from "@mui/icons-material/Sort";
 import FilterAltIcon from "@mui/icons-material/FilterAlt";
 import CheckIcon from "@mui/icons-material/Check";
+import { ConfirmModal } from "../../../../components/ConfirmModal";
+import { EditUserDialog } from "../EditUserDialog";
 
 export const AdminDashboard: React.FC = () => {
   const [data, setData] = React.useState<UserInfoModel[]>([]);
-  const { getUserList, userList } = useDashboardStore();
+  const { getUserList, userList, updateUser, deleteUser } = useDashboardStore();
 
   React.useEffect(() => {
     getUserList();
@@ -53,29 +55,56 @@ export const AdminDashboard: React.FC = () => {
   }, [userList]);
 
   // Handle Edit and Delete and Role update
+  const [isEditModalOpen, setIsEditModalOpen] = React.useState(false);
+  const [isDeleteModalOpen, setIsDeleteModalOpen] = React.useState(false);
+  const [deleteUserId, setDeleteUserId] = React.useState("");
+
+  const [isRolePopupOpen, setIsRolePopupOpen] = React.useState(false);
+  const [rolePopupUserId, setRolePopupUserId] = React.useState("");
+  const [rolePopupRole, setRolePopupRole] = React.useState<UserRoleEnum>(
+    UserRoleEnum.User
+  );
+  const [rolePopupAnchorEl, setRolePopupAnchorEl] =
+    React.useState<null | HTMLElement>(null);
+
+  const [isConfirmRoleModalOpen, setIsConfirmRoleModalOpen] =
+    React.useState(false);
+  const [isConfirmActionOpen, setIsConfirmActionOpen] = React.useState(false);
+
   // Open edit modal
-  const handleEditOpen = (id: string) => {
-    console.log("Edit user with id: ", id);
+  const handleEditOpen = () => {
+    setIsEditModalOpen(true);
   };
 
   // Close edit modal
   const handleEditClose = () => {
-    console.log("Edit modal closed");
+    setIsEditModalOpen(false);
   };
 
   // Delete user
-  const handleDeleteOpen = (id: string) => {
-    console.log("Delete user with id: ", id);
+  const handleDeleteOpen = (userId: string) => {
+    setDeleteUserId(userId);
+    setIsDeleteModalOpen(true);
   };
 
   // Close delete modal
   const handleDeleteClose = () => {
-    console.log("Delete modal closed");
+    setIsDeleteModalOpen(false);
   };
 
   // Update user role
-  const handleRoleUpdate = (id: string, role: UserRoleEnum) => {
-    console.log("Update user role with id: ", id, " to ", role);
+  const handleRoleOpen = (
+    event: React.MouseEvent<HTMLDivElement, MouseEvent>,
+    id: string
+  ) => {
+    setRolePopupAnchorEl(event.currentTarget as unknown as HTMLElement);
+    setRolePopupUserId(id);
+    setIsRolePopupOpen(true);
+  };
+
+  const handleRoleUpdate = (role: UserRoleEnum) => {
+    setRolePopupRole(role);
+    setIsConfirmRoleModalOpen(true);
   };
 
   // Sorting, filtering and searching
@@ -166,15 +195,6 @@ export const AdminDashboard: React.FC = () => {
     if (roleFilter === "all") return sortedData;
     return sortedData.filter((user) => user.role === roleFilter);
   }, [sortedData, roleFilter]);
-
-  const handleRoleFilter = (event: SelectChangeEvent<UserRoleEnum | "all">) => {
-    setRoleFilter(event.target.value as UserRoleEnum | "all");
-  };
-
-  // Search by username and email
-  const handleSearchChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    setSearchTerm(event.target.value);
-  };
 
   const searchedData = React.useMemo(() => {
     if (!searchTerm) return filteredData;
@@ -334,6 +354,9 @@ export const AdminDashboard: React.FC = () => {
                             ? "outlined"
                             : "filled"
                         }
+                        onClick={(event) => {
+                          handleRoleOpen(event, user.id);
+                        }}
                       />
                     </TableCell>
                     <TableCell>
@@ -343,14 +366,20 @@ export const AdminDashboard: React.FC = () => {
                           label="Edit"
                           color="warning"
                           deleteIcon={<EditIcon />}
-                          onDelete={() => handleEditOpen(user.id)}
+                          onClick={handleEditOpen}
+                          onDelete={handleEditOpen}
                         />
                         <Chip
                           clickable
                           variant="filled"
                           color="error"
                           label="Delete"
-                          onDelete={() => handleDeleteOpen(user.id)}
+                          onClick={() => {
+                            handleDeleteOpen(user.id);
+                          }}
+                          onDelete={() => {
+                            handleDeleteOpen(user.id);
+                          }}
                           deleteIcon={<DeleteIcon />}
                         />
                       </Stack>
@@ -441,7 +470,6 @@ export const AdminDashboard: React.FC = () => {
         )}
 
         {currentSearchField === "role" && (
-          // <List>
           <>
             {[...Object.values(UserRoleEnum), "all"].map((role) => (
               <MenuItem
@@ -475,9 +503,88 @@ export const AdminDashboard: React.FC = () => {
               </MenuItem>
             ))}
           </>
-          // </List>
         )}
       </Popover>
+      <Popover
+        open={isRolePopupOpen}
+        anchorEl={rolePopupAnchorEl}
+        onClose={() => {
+          setIsRolePopupOpen(false);
+        }}
+      >
+        <>
+          {[...Object.values(UserRoleEnum)].map((role) => (
+            <MenuItem
+              key={role}
+              component="li"
+              onClick={() => {
+                if (
+                  role ===
+                  data.find((user) => user.id === rolePopupUserId)?.role
+                ) {
+                  // Do nothing
+                } else {
+                  handleRoleUpdate(role);
+                }
+              }}
+            >
+              <Stack
+                width={"100%"}
+                direction="row"
+                alignItems="center"
+                justifyContent="space-between"
+              >
+                <ListItemText
+                  primary={role.charAt(0).toLocaleUpperCase() + role.slice(1)}
+                />
+                <ListItemIcon
+                  style={{
+                    visibility:
+                      data.find((user) => user.id === rolePopupUserId)?.role ===
+                      role
+                        ? "visible"
+                        : "hidden",
+                  }}
+                >
+                  <CheckIcon />
+                </ListItemIcon>
+              </Stack>
+            </MenuItem>
+          ))}
+        </>
+      </Popover>
+      {/* Modal aka Dialog */}
+      <ConfirmModal
+        isOpen={isDeleteModalOpen}
+        onCancel={handleDeleteClose}
+        onConfirm={() => {
+          const user = data.find((user) => user.id === deleteUserId);
+          // console.log(user, deleteUserId);
+          if (user) {
+            deleteUser(user);
+          }
+          setDeleteUserId("");
+          handleDeleteClose();
+        }}
+      />
+      <ConfirmModal
+        isOpen={isConfirmRoleModalOpen}
+        onCancel={() => {
+          setIsConfirmRoleModalOpen(false);
+        }}
+        onConfirm={() => {
+          setIsRolePopupOpen(false);
+          setRolePopupUserId("");
+          setRolePopupRole(UserRoleEnum.User);
+          setIsConfirmRoleModalOpen(false);
+          const user = data.find((user) => user.id === rolePopupUserId);
+          if (user) {
+            updateUser({ ...user, role: rolePopupRole });
+          }
+        }}
+      />
+
+      <EditUserDialog isOpen={isEditModalOpen} onClose={handleEditClose} />
     </div>
   );
 };

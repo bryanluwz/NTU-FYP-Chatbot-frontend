@@ -14,3 +14,8 @@ export const postChatUrl = `/api/chat/`; // Same for create, update and delete
 export const loginUrl = `${baseUrl}/api/auth/login`;
 export const registerUrl = `${baseUrl}/api/auth/register`;
 export const authUserUrl = `${baseUrl}/api/auth/user`;
+
+// User
+export const updateUserUrl = `${baseUrl}/api/user/update`;
+export const deleteUserUrl = `${baseUrl}/api/user/delete`;
+export const createUserUrl = `${baseUrl}/api/user/create`;

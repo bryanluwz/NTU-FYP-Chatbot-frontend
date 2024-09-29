@@ -1,7 +1,12 @@
 import { create } from "zustand";
 import { checkStatus, handleError } from "../../../apis/utils";
 import { PersonaModel } from "../../../apis/Dashboard/typings";
-import { getAvailableChatsApi, getUserListApi } from "../../../apis/Dashboard";
+import {
+  deleteUserApi,
+  getAvailableChatsApi,
+  getUserListApi,
+  updateUserApi,
+} from "../../../apis/Dashboard";
 import { UserInfoModel } from "../../../apis/ChatPage/typings";
 
 interface DashboardState {
@@ -10,6 +15,9 @@ interface DashboardState {
   clearUserList: () => void;
   getAvailableChats: () => Promise<PersonaModel[]>;
   getUserList: () => Promise<void>;
+
+  updateUser: (userInfo: UserInfoModel) => Promise<void>;
+  deleteUser: (userInfo: UserInfoModel) => Promise<void>;
 }
 
 const initialStates = {
@@ -42,4 +50,24 @@ export const useDashboardStore = create<DashboardState>((set, get) => ({
     }
   },
   clearUserList: () => set({ userList: [] }),
+  updateUser: async (userInfo: UserInfoModel) => {
+    try {
+      const response = checkStatus(await updateUserApi(userInfo));
+      get().getUserList();
+      return;
+    } catch (error) {
+      handleError(error);
+      return;
+    }
+  },
+  deleteUser: async (userInfo: UserInfoModel) => {
+    try {
+      const response = checkStatus(await deleteUserApi(userInfo));
+      get().getUserList();
+      return;
+    } catch (error) {
+      handleError(error);
+      return;
+    }
+  },
 }));

@@ -23,3 +23,13 @@ export interface GetUserListResponseModel {
     users: UserInfoModel[];
   };
 }
+
+export interface UpdateUserResponseModel {
+  status: HTTPStatusBody;
+  data: {};
+}
+
+export interface DeleteUserResponseModel {
+  status: HTTPStatusBody;
+  data: {};
+}
