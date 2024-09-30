@@ -16,7 +16,7 @@ import {
 
 import DefaultChatAvatar from "../../../../assets/ai-avatar-default.png";
 import * as styles from "./style.scss";
-import { NewGPTModal } from "../NewGPTModal";
+import { NewGPTModal } from "../NewGPTDialog";
 import { useChatPageStore } from "../../../../zustand/apis/ChatPage";
 import { TabEnum, UserRoleEnum } from "../../../../apis/enums";
 

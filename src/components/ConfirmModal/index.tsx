@@ -15,7 +15,7 @@ import {
 interface ConfirmModalProps {
   isOpen: boolean;
   icon?: ReactNode;
-  title?: string | ReactNode;
+  title?: ReactNode | ReactNode[];
   content?: string | ReactNode;
   onConfirm: () => void;
   onCancel: () => void;
@@ -39,7 +39,23 @@ export const ConfirmModal: React.FC<ConfirmModalProps> = ({
       <DialogTitle id="modal-modal-title">
         <Stack direction="row" spacing={2}>
           {icon && <Icon>{icon}</Icon>}
-          <Typography variant="h6">{title}</Typography>
+          {Array.isArray(title) ? (
+            <Stack direction="row" spacing={1} alignItems="center">
+              {title.map((t, i) => {
+                if (typeof t === "string") {
+                  return (
+                    <Typography key={i} variant="h6">
+                      {t}
+                    </Typography>
+                  );
+                } else {
+                  return t;
+                }
+              })}
+            </Stack>
+          ) : (
+            <Typography variant="h6">{title}</Typography>
+          )}
         </Stack>
       </DialogTitle>
       <DialogContent>

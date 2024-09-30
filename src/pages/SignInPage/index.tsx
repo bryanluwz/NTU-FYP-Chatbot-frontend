@@ -19,6 +19,7 @@ import MuiCard from "@mui/material/Card";
 import { ForgotPassword } from "./ForgotPassword";
 import { useAuthStore } from "../../zustand/apis/Auth";
 import { AuthContext } from "../../context/AuthContext";
+import { validateEmail, validatePassword } from "../../utils";
 
 // Huge thanks to https://github.com/mui/material-ui/blob/v6.1.1/docs/data/material/getting-started/templates/sign-in/SignIn.tsx
 const Card = styled(MuiCard)(({ theme }) => ({
@@ -99,7 +100,7 @@ export const SignInPage: React.FC = () => {
 
     let isValid = true;
 
-    if (!email.value || !/\S+@\S+\.\S+/.test(email.value)) {
+    if (!validateEmail(email.value)) {
       setEmailError(true);
       setEmailErrorMessage("Please enter a valid email address.");
       isValid = false;
@@ -121,7 +122,7 @@ export const SignInPage: React.FC = () => {
       }
     }
 
-    if (!password.value || password.value.length < 6) {
+    if (!validatePassword(password.value)) {
       setPasswordError(true);
       setPasswordErrorMessage("Password must be at least 6 characters long.");
       isValid = false;

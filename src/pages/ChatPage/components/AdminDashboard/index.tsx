@@ -1,12 +1,10 @@
+// Forgive me for this long ass file, I will not be refactoring it
+
 import {
-  Avatar,
   Chip,
-  List,
-  ListItem,
   ListItemIcon,
   ListItemText,
   Popover,
-  SelectChangeEvent,
   Stack,
   Table,
   TableBody,
@@ -42,6 +40,10 @@ import CheckIcon from "@mui/icons-material/Check";
 import { ConfirmModal } from "../../../../components/ConfirmModal";
 import { EditUserDialog } from "../EditUserDialog";
 
+import { capitalize } from "../../../../utils";
+import { RoleChip } from "../../../../components/RoleChip";
+import { UsernameChip } from "../../../../components/UsernameChip";
+
 export const AdminDashboard: React.FC = () => {
   const [data, setData] = React.useState<UserInfoModel[]>([]);
   const { getUserList, userList, updateUser, deleteUser } = useDashboardStore();
@@ -56,6 +58,8 @@ export const AdminDashboard: React.FC = () => {
 
   // Handle Edit and Delete and Role update
   const [isEditModalOpen, setIsEditModalOpen] = React.useState(false);
+  const [editUserId, setEditUserId] = React.useState("");
+
   const [isDeleteModalOpen, setIsDeleteModalOpen] = React.useState(false);
   const [deleteUserId, setDeleteUserId] = React.useState("");
 
@@ -69,16 +73,17 @@ export const AdminDashboard: React.FC = () => {
 
   const [isConfirmRoleModalOpen, setIsConfirmRoleModalOpen] =
     React.useState(false);
-  const [isConfirmActionOpen, setIsConfirmActionOpen] = React.useState(false);
 
   // Open edit modal
-  const handleEditOpen = () => {
+  const handleEditOpen = (userId: string) => {
     setIsEditModalOpen(true);
+    setEditUserId(userId);
   };
 
   // Close edit modal
   const handleEditClose = () => {
     setIsEditModalOpen(false);
+    setEditUserId("");
   };
 
   // Delete user
@@ -323,40 +328,16 @@ export const AdminDashboard: React.FC = () => {
                 .map((user) => (
                   <TableRow key={user.id}>
                     <TableCell>
-                      <Chip
-                        avatar={
-                          <Avatar src={user.avatar}>
-                            {user.username.charAt(0)}
-                          </Avatar>
-                        }
-                        label={
-                          <Typography variant="body1">
-                            {user.username}
-                          </Typography>
-                        }
-                      />
+                      <UsernameChip userInfo={user} />
                     </TableCell>
                     <TableCell>
-                      <Typography variant="body1">{user.email}</Typography>
+                      <Typography variant="subtitle1">{user.email}</Typography>
                     </TableCell>
                     <TableCell>
-                      <Chip
-                        clickable
-                        label={
-                          user.role.charAt(0).toLocaleUpperCase() +
-                          user.role.slice(1)
-                        }
-                        color={
-                          user.role === UserRoleEnum.Admin ? "info" : "default"
-                        }
-                        variant={
-                          user.role === UserRoleEnum.User
-                            ? "outlined"
-                            : "filled"
-                        }
-                        onClick={(event) => {
-                          handleRoleOpen(event, user.id);
-                        }}
+                      <RoleChip
+                        role={user.role}
+                        id={user.id}
+                        handleOpen={handleRoleOpen}
                       />
                     </TableCell>
                     <TableCell>
@@ -366,8 +347,8 @@ export const AdminDashboard: React.FC = () => {
                           label="Edit"
                           color="warning"
                           deleteIcon={<EditIcon />}
-                          onClick={handleEditOpen}
-                          onDelete={handleEditOpen}
+                          onClick={() => handleEditOpen(user.id)}
+                          onDelete={() => handleEditOpen(user.id)}
                         />
                         <Chip
                           clickable
@@ -489,9 +470,7 @@ export const AdminDashboard: React.FC = () => {
                   alignItems="center"
                   justifyContent="space-between"
                 >
-                  <ListItemText
-                    primary={role.charAt(0).toLocaleUpperCase() + role.slice(1)}
-                  />
+                  <ListItemText primary={capitalize(role)} />
                   <ListItemIcon
                     style={{
                       visibility: roleFilter === role ? "visible" : "hidden",
@@ -534,9 +513,7 @@ export const AdminDashboard: React.FC = () => {
                 alignItems="center"
                 justifyContent="space-between"
               >
-                <ListItemText
-                  primary={role.charAt(0).toLocaleUpperCase() + role.slice(1)}
-                />
+                <ListItemText primary={capitalize(role)} />
                 <ListItemIcon
                   style={{
                     visibility:
@@ -556,10 +533,16 @@ export const AdminDashboard: React.FC = () => {
       {/* Modal aka Dialog */}
       <ConfirmModal
         isOpen={isDeleteModalOpen}
+        title={[
+          "Delete",
+          <UsernameChip
+            userInfo={data.find((user) => user.id === deleteUserId)}
+          />,
+          "?",
+        ]}
         onCancel={handleDeleteClose}
         onConfirm={() => {
           const user = data.find((user) => user.id === deleteUserId);
-          // console.log(user, deleteUserId);
           if (user) {
             deleteUser(user);
           }
@@ -567,8 +550,18 @@ export const AdminDashboard: React.FC = () => {
           handleDeleteClose();
         }}
       />
+
       <ConfirmModal
         isOpen={isConfirmRoleModalOpen}
+        title={[
+          "Update",
+          <UsernameChip
+            userInfo={data.find((user) => user.id === rolePopupUserId)}
+          />,
+          "to",
+          <RoleChip role={rolePopupRole} />,
+          "?",
+        ]}
         onCancel={() => {
           setIsConfirmRoleModalOpen(false);
         }}
@@ -584,7 +577,16 @@ export const AdminDashboard: React.FC = () => {
         }}
       />
 
-      <EditUserDialog isOpen={isEditModalOpen} onClose={handleEditClose} />
+      <EditUserDialog
+        isOpen={isEditModalOpen}
+        onClose={handleEditClose}
+        userInfo={data.find((user) => user.id === editUserId)}
+        onSubmit={(userInfo) => {
+          updateUser(userInfo);
+          handleEditClose();
+        }}
+        editorRole={UserRoleEnum.Admin}
+      />
     </div>
   );
 };

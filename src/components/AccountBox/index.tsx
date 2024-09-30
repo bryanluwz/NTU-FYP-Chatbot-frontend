@@ -21,6 +21,7 @@ import DefaultAvatar from "../../assets/user-avatar-default.png";
 import * as styles from "./style.scss";
 import { Settings } from "../Settings";
 import { AuthContext } from "../../context/AuthContext";
+import { ConfirmModal } from "../ConfirmModal";
 
 interface AccountBoxProps {
   username?: string;
@@ -34,7 +35,8 @@ export const AccountBox: React.FC<AccountBoxProps> = ({
   const [isMenuOpen, setIsMenuOpen] = React.useState(false);
   const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
 
-  const { currentTab, setCurrentTab } = useChatPageStore();
+  const { currentTab, setCurrentTab, deleteChat, getChatList, chatList } =
+    useChatPageStore();
 
   const [isSettingsOpen, setIsSettingsOpen] = React.useState(false);
 
@@ -72,11 +74,35 @@ export const AccountBox: React.FC<AccountBoxProps> = ({
     setIsSettingsOpen(false);
   };
 
+  const [isDeleteAllChatsOpen, setIsDeleteAllChatsOpen] = React.useState(false);
+
+  const handleDeleteAllChatsOpen = () => {
+    if (chatList.length === 0) {
+      return;
+    }
+    setIsDeleteAllChatsOpen(true);
+  };
+
+  const handleDeleteAllChatsClose = () => {
+    setIsDeleteAllChatsOpen;
+  };
+
+  const handleDeleteAllChats = async () => {
+    chatList.forEach(async (chat) => {
+      await deleteChat(chat.chatId);
+    });
+    setIsDeleteAllChatsOpen(false);
+    handleClose();
+    await getChatList();
+    return true;
+  };
+
   return (
     <>
       <div className={styles.accountContainer}>
         <Menu open={isMenuOpen} onClose={handleClose} anchorEl={anchorEl}>
           <MenuItem
+            selected={currentTab === TabEnum.Dashboard}
             onClick={() => {
               if (currentTab !== TabEnum.Dashboard) {
                 setCurrentTab(TabEnum.Dashboard);
@@ -91,6 +117,7 @@ export const AccountBox: React.FC<AccountBoxProps> = ({
           </MenuItem>
           {userRole === "admin" && (
             <MenuItem
+              selected={currentTab === TabEnum.Admin}
               onClick={() => {
                 if (currentTab !== TabEnum.Admin) {
                   setCurrentTab(TabEnum.Admin);
@@ -110,7 +137,10 @@ export const AccountBox: React.FC<AccountBoxProps> = ({
             </ListItemIcon>
             <ListItemText>Settings</ListItemText>
           </MenuItem>
-          <MenuItem>
+          <MenuItem
+            onClick={handleDeleteAllChatsOpen}
+            disabled={chatList.length === 0}
+          >
             <ListItemIcon>
               <DeleteForeverIcon />
             </ListItemIcon>
@@ -135,6 +165,13 @@ export const AccountBox: React.FC<AccountBoxProps> = ({
           <Settings />
         </Modal>
       )}
+
+      <ConfirmModal
+        isOpen={isDeleteAllChatsOpen}
+        title="Delete All Chats?"
+        onConfirm={handleDeleteAllChats}
+        onCancel={handleDeleteAllChatsClose}
+      />
     </>
   );
 };
