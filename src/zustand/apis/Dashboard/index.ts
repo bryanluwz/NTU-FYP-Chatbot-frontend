@@ -5,9 +5,11 @@ import {
   deleteUserApi,
   getAvailableChatsApi,
   getUserListApi,
+  udpatePasswordApi,
   updateUserApi,
 } from "../../../apis/Dashboard";
 import { UserInfoModel } from "../../../apis/ChatPage/typings";
+import { useChatPageStore } from "../ChatPage";
 
 interface DashboardState {
   availableChats: PersonaModel[];
@@ -18,6 +20,7 @@ interface DashboardState {
 
   updateUser: (userInfo: UserInfoModel) => Promise<void>;
   deleteUser: (userInfo: UserInfoModel) => Promise<void>;
+  udpatePassword: (oldPassword: string, newPassword: string) => Promise<void>;
 }
 
 const initialStates = {
@@ -64,6 +67,17 @@ export const useDashboardStore = create<DashboardState>((set, get) => ({
     try {
       const response = checkStatus(await deleteUserApi(userInfo));
       get().getUserList();
+      return;
+    } catch (error) {
+      handleError(error);
+      return;
+    }
+  },
+  udpatePassword: async (oldPassword: string, newPassword: string) => {
+    try {
+      const response = checkStatus(
+        await udpatePasswordApi({ oldPassword, newPassword })
+      );
       return;
     } catch (error) {
       handleError(error);

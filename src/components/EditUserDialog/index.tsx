@@ -16,12 +16,12 @@ import {
   TextField,
   Typography,
 } from "@mui/material";
-import { UserInfoModel } from "../../../../apis/ChatPage/typings";
+import { UserInfoModel } from "../../apis/ChatPage/typings";
 
 import * as styles from "./style.scss";
-import { UserRoleEnum } from "../../../../apis/enums";
-import { UsernameChip } from "../../../../components/UsernameChip";
-import { validateUsername } from "../../../../utils";
+import { UserRoleEnum } from "../../apis/enums";
+import { UsernameChip } from "../UsernameChip";
+import { validateEmail, validateUsername } from "../../utils";
 
 interface EditUserDialogProps {
   title?: string;
@@ -52,11 +52,20 @@ export const EditUserDialog: React.FC<EditUserDialogProps> = ({
   const [fileInputRef, setFileInputRef] =
     React.useState<HTMLInputElement | null>(null);
 
+  const [newUsername, setNewUsername] = React.useState("");
   const [usernameError, setUsernameError] = React.useState(false);
   const [usernameErrorMessage, setUsernameErrorMessage] = React.useState("");
 
+  const [newEmail, setNewEmail] = React.useState("");
   const [emailError, setEmailError] = React.useState(false);
   const [emailErrorMessage, setEmailErrorMessage] = React.useState("");
+
+  React.useEffect(() => {
+    if (userInfo) {
+      setNewUsername(userInfo.username);
+      setNewEmail(userInfo.email);
+    }
+  }, [userInfo]);
 
   React.useEffect(() => {
     if (
@@ -70,15 +79,12 @@ export const EditUserDialog: React.FC<EditUserDialogProps> = ({
   }, [editorRole]);
 
   const validateChange = () => {
-    const username = (document.getElementById("username") as HTMLInputElement)
-      ?.value;
-    const email = (document.getElementById("email") as HTMLInputElement)?.value;
     const avatar = (document.getElementById("avatar") as HTMLInputElement)
       ?.value;
 
     if (
       inputFields.includes(InputFieldEnum.Username) &&
-      validateUsername(username)
+      !validateUsername(newUsername)
     ) {
       setUsernameError(true);
       setUsernameErrorMessage("Please enter a valid username.");
@@ -88,7 +94,10 @@ export const EditUserDialog: React.FC<EditUserDialogProps> = ({
       setUsernameErrorMessage("");
     }
 
-    if (inputFields.includes(InputFieldEnum.Email) && !email) {
+    if (
+      inputFields.includes(InputFieldEnum.Email) &&
+      !validateEmail(newEmail)
+    ) {
       setEmailError(true);
       setEmailErrorMessage("Please enter a valid email address.");
       return false;
@@ -97,23 +106,16 @@ export const EditUserDialog: React.FC<EditUserDialogProps> = ({
       setEmailErrorMessage("");
     }
 
-    if (inputFields.includes(InputFieldEnum.Avatar) && !avatar) {
-      return false;
-    }
-
     return true;
   };
 
   const checkIfChanged = () => {
-    const username = (document.getElementById("username") as HTMLInputElement)
-      ?.value;
-    const email = (document.getElementById("email") as HTMLInputElement)?.value;
     const avatar = newAvatarSrc;
 
     if (
       userInfo &&
-      username === userInfo.username &&
-      email === userInfo.email &&
+      newUsername === userInfo.username &&
+      newEmail === userInfo.email &&
       !avatar
     ) {
       return false;
@@ -234,6 +236,9 @@ export const EditUserDialog: React.FC<EditUserDialogProps> = ({
                       error={usernameError}
                       defaultValue={userInfo.username}
                       helperText={usernameErrorMessage}
+                      onChange={(e) => {
+                        setNewUsername(e.target.value);
+                      }}
                       onKeyDown={(e) => {
                         if (e.key === "Enter") {
                           document.getElementById("email")?.focus();
@@ -262,6 +267,9 @@ export const EditUserDialog: React.FC<EditUserDialogProps> = ({
                     defaultValue={userInfo.email}
                     error={emailError}
                     helperText={emailErrorMessage}
+                    onChange={(e) => {
+                      setNewEmail(e.target.value);
+                    }}
                     onKeyDown={(e) => {
                       if (e.key === "Enter") {
                         document.getElementById("role")?.focus();

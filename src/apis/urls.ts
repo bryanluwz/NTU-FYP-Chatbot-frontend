@@ -19,3 +19,4 @@ export const authUserUrl = `${baseUrl}/api/auth/user`;
 export const updateUserUrl = `${baseUrl}/api/user/update`;
 export const deleteUserUrl = `${baseUrl}/api/user/delete`;
 export const createUserUrl = `${baseUrl}/api/user/create`;
+export const updatePasswordUrl = `${baseUrl}/api/user/updatepw`;

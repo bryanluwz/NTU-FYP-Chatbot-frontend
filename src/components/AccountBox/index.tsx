@@ -12,16 +12,19 @@ import {
 import DashboardIcon from "@mui/icons-material/Dashboard";
 import SettingsIcon from "@mui/icons-material/Settings";
 import LogoutIcon from "@mui/icons-material/Logout";
+import LockIcon from "@mui/icons-material/Lock";
 import DeleteForeverIcon from "@mui/icons-material/DeleteForever";
 
 import { useChatPageStore } from "../../zustand/apis/ChatPage";
-import { TabEnum } from "../../apis/enums";
+import { TabEnum, UserRoleEnum } from "../../apis/enums";
 
 import DefaultAvatar from "../../assets/user-avatar-default.png";
 import * as styles from "./style.scss";
-import { Settings } from "../Settings";
 import { AuthContext } from "../../context/AuthContext";
 import { ConfirmModal } from "../ConfirmModal";
+import { EditUserDialog } from "../EditUserDialog";
+import { useDashboardStore } from "../../zustand/apis/Dashboard";
+import { UpdatePasswordDialog } from "../UpdatePasswordModal";
 
 interface AccountBoxProps {
   username?: string;
@@ -35,14 +38,23 @@ export const AccountBox: React.FC<AccountBoxProps> = ({
   const [isMenuOpen, setIsMenuOpen] = React.useState(false);
   const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
 
-  const { currentTab, setCurrentTab, deleteChat, getChatList, chatList } =
-    useChatPageStore();
+  const {
+    currentTab,
+    setCurrentTab,
+    deleteChat,
+    getChatList,
+    chatList,
+    getUserInfo,
+  } = useChatPageStore();
 
-  const [isSettingsOpen, setIsSettingsOpen] = React.useState(false);
+  const [isUpdateUserOpen, setIsUpdateUserOpen] = React.useState(false);
+  const [isUpdatePasswordOpen, setIsUpdatePasswordOpen] = React.useState(false);
 
   const { logout } = React.useContext(AuthContext);
 
   const { userInfo } = useChatPageStore();
+  const { updateUser, udpatePassword } = useDashboardStore();
+
   const [userRole, setUserRole] = React.useState<string>("");
 
   React.useEffect(() => {
@@ -51,6 +63,7 @@ export const AccountBox: React.FC<AccountBoxProps> = ({
     }
   }, [userInfo]);
 
+  // Menu
   const handleAvatarClick = (event: React.MouseEvent<HTMLElement>) => {
     setAnchorEl(event.currentTarget);
     if (event.currentTarget === null) {
@@ -65,15 +78,27 @@ export const AccountBox: React.FC<AccountBoxProps> = ({
     setIsMenuOpen(false);
   };
 
-  const handleSettingsOpen = () => {
+  // Update User
+  const handleUpdateUserOpen = () => {
     setIsMenuOpen(false);
-    setIsSettingsOpen(true);
+    setIsUpdateUserOpen(true);
   };
 
-  const handleSettingsClose = () => {
-    setIsSettingsOpen(false);
+  const handleUpdateUserClose = () => {
+    setIsUpdateUserOpen(false);
   };
 
+  // Update Password
+  const handleUpdatePasswordOpen = () => {
+    setIsMenuOpen(false);
+    setIsUpdatePasswordOpen(true);
+  };
+
+  const handleUpdatePasswordClose = () => {
+    setIsUpdatePasswordOpen(false);
+  };
+
+  // Delete Chat
   const [isDeleteAllChatsOpen, setIsDeleteAllChatsOpen] = React.useState(false);
 
   const handleDeleteAllChatsOpen = () => {
@@ -131,12 +156,21 @@ export const AccountBox: React.FC<AccountBoxProps> = ({
               <ListItemText>Admin Dashboard</ListItemText>
             </MenuItem>
           )}
-          <MenuItem onClick={handleSettingsOpen}>
+
+          <MenuItem onClick={handleUpdateUserOpen}>
             <ListItemIcon>
               <SettingsIcon />
             </ListItemIcon>
-            <ListItemText>Settings</ListItemText>
+            <ListItemText>Update Profile</ListItemText>
           </MenuItem>
+
+          <MenuItem onClick={handleUpdatePasswordOpen}>
+            <ListItemIcon>
+              <LockIcon />
+            </ListItemIcon>
+            <ListItemText>Change Password</ListItemText>
+          </MenuItem>
+
           <MenuItem
             onClick={handleDeleteAllChatsOpen}
             disabled={chatList.length === 0}
@@ -159,13 +193,27 @@ export const AccountBox: React.FC<AccountBoxProps> = ({
         </div>
         <Typography variant="h5">Hi, {username}!</Typography>
       </div>
-
-      {isSettingsOpen && (
-        <Modal open={isSettingsOpen} onClose={handleSettingsClose}>
-          <Settings />
-        </Modal>
-      )}
-
+      <EditUserDialog
+        userInfo={userInfo}
+        isOpen={isUpdateUserOpen}
+        onClose={handleUpdateUserClose}
+        editorRole={UserRoleEnum.User}
+        onSubmit={(userInfo) => {
+          updateUser(userInfo).then(() => {
+            getUserInfo();
+          });
+          handleUpdateUserClose();
+        }}
+      />
+      <UpdatePasswordDialog
+        userInfo={userInfo}
+        isOpen={isUpdatePasswordOpen}
+        onClose={handleUpdatePasswordClose}
+        onSubmit={(oldPassword, newPassword) => {
+          udpatePassword(oldPassword, newPassword);
+          handleUpdatePasswordClose();
+        }}
+      />
       <ConfirmModal
         isOpen={isDeleteAllChatsOpen}
         title="Delete All Chats?"

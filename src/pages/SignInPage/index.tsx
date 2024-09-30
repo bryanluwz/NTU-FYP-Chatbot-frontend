@@ -7,12 +7,15 @@ import {
   FormControl,
   FormControlLabel,
   FormLabel,
+  Icon,
+  InputAdornment,
   Link,
   Stack,
   styled,
   TextField,
   Typography,
 } from "@mui/material";
+import { Visibility, VisibilityOff } from "@mui/icons-material";
 
 import MuiCard from "@mui/material/Card";
 
@@ -77,6 +80,8 @@ export const SignInPage: React.FC = () => {
 
   const { login, register } = useAuthStore();
   const { login: authLoginHandler } = React.useContext(AuthContext);
+
+  const [showPassword, setShowPassword] = React.useState(false);
 
   const handleForgotPasswordOpen = (event: React.MouseEvent) => {
     event.preventDefault();
@@ -253,7 +258,7 @@ export const SignInPage: React.FC = () => {
               helperText={passwordErrorMessage}
               name="password"
               placeholder="••••••"
-              type="password"
+              type={showPassword ? "text" : "password"}
               id="password"
               autoComplete="current-password"
               autoFocus
@@ -265,6 +270,20 @@ export const SignInPage: React.FC = () => {
                 if (e.key === "Enter") {
                   handleLogin();
                 }
+              }}
+              slotProps={{
+                input: {
+                  endAdornment: (
+                    <InputAdornment
+                      position="end"
+                      onClick={() => setShowPassword(!showPassword)}
+                    >
+                      <Icon>
+                        {showPassword ? <Visibility /> : <VisibilityOff />}
+                      </Icon>
+                    </InputAdornment>
+                  ),
+                },
               }}
             />
           </FormControl>

@@ -4,6 +4,7 @@ import {
   deleteUserUrl,
   getAvailableChatsUrl,
   getUserListUrl,
+  updatePasswordUrl,
   updateUserUrl,
 } from "../urls";
 import { fetchWithAuth } from "../utils";
@@ -50,6 +51,21 @@ export const deleteUserApi = async (userInfo: UserInfoModel) => {
         "Content-Type": "application/json",
       },
       body: JSON.stringify({ userInfo: userInfo }),
+    })
+  ).json() as unknown as UpdateUserResponseModel;
+};
+
+export const udpatePasswordApi = async (body: {
+  oldPassword: string;
+  newPassword: string;
+}) => {
+  return (
+    await fetchWithAuth(updatePasswordUrl, {
+      method: HTTPMethod.POST,
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(body),
     })
   ).json() as unknown as UpdateUserResponseModel;
 };

@@ -38,7 +38,7 @@ import SortIcon from "@mui/icons-material/Sort";
 import FilterAltIcon from "@mui/icons-material/FilterAlt";
 import CheckIcon from "@mui/icons-material/Check";
 import { ConfirmModal } from "../../../../components/ConfirmModal";
-import { EditUserDialog } from "../EditUserDialog";
+import { EditUserDialog } from "../../../../components/EditUserDialog";
 
 import { capitalize } from "../../../../utils";
 import { RoleChip } from "../../../../components/RoleChip";
