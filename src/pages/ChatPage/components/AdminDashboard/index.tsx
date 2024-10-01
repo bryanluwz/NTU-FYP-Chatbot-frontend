@@ -43,9 +43,11 @@ import { EditUserDialog } from "../../../../components/EditUserDialog";
 import { capitalize } from "../../../../utils";
 import { RoleChip } from "../../../../components/RoleChip";
 import { UsernameChip } from "../../../../components/UsernameChip";
+import { useChatPageStore } from "../../../../zustand/apis/ChatPage";
 
 export const AdminDashboard: React.FC = () => {
   const [data, setData] = React.useState<UserInfoModel[]>([]);
+  const { userInfo } = useChatPageStore();
   const { getUserList, userList, updateUser, deleteUser } = useDashboardStore();
 
   React.useEffect(() => {
@@ -170,6 +172,8 @@ export const AdminDashboard: React.FC = () => {
     const sortedData = [...data].sort((a, b) => {
       const aValue = a[sortConfig.key as keyof UserInfoModel];
       const bValue = b[sortConfig.key as keyof UserInfoModel];
+
+      if (!aValue || !bValue) return 0;
 
       if (aValue < bValue) {
         return sortConfig.direction === "asc" ? -1 : 1;
@@ -342,27 +346,31 @@ export const AdminDashboard: React.FC = () => {
                     </TableCell>
                     <TableCell>
                       <Stack direction="row" spacing={1}>
-                        <Chip
-                          clickable
-                          label="Edit"
-                          color="warning"
-                          deleteIcon={<EditIcon />}
-                          onClick={() => handleEditOpen(user.id)}
-                          onDelete={() => handleEditOpen(user.id)}
-                        />
-                        <Chip
-                          clickable
-                          variant="filled"
-                          color="error"
-                          label="Delete"
-                          onClick={() => {
-                            handleDeleteOpen(user.id);
-                          }}
-                          onDelete={() => {
-                            handleDeleteOpen(user.id);
-                          }}
-                          deleteIcon={<DeleteIcon />}
-                        />
+                        {user.id !== userInfo.id && (
+                          <>
+                            <Chip
+                              clickable
+                              label="Edit"
+                              color="warning"
+                              deleteIcon={<EditIcon />}
+                              onClick={() => handleEditOpen(user.id)}
+                              onDelete={() => handleEditOpen(user.id)}
+                            />
+                            <Chip
+                              clickable
+                              variant="filled"
+                              color="error"
+                              label="Delete"
+                              onClick={() => {
+                                handleDeleteOpen(user.id);
+                              }}
+                              onDelete={() => {
+                                handleDeleteOpen(user.id);
+                              }}
+                              deleteIcon={<DeleteIcon />}
+                            />
+                          </>
+                        )}
                       </Stack>
                     </TableCell>
                   </TableRow>
@@ -572,7 +580,7 @@ export const AdminDashboard: React.FC = () => {
           setIsConfirmRoleModalOpen(false);
           const user = data.find((user) => user.id === rolePopupUserId);
           if (user) {
-            updateUser({ ...user, role: rolePopupRole });
+            updateUser({ ...user, role: rolePopupRole, avatar: undefined });
           }
         }}
       />
@@ -582,7 +590,7 @@ export const AdminDashboard: React.FC = () => {
         onClose={handleEditClose}
         userInfo={data.find((user) => user.id === editUserId)}
         onSubmit={(userInfo) => {
-          updateUser(userInfo);
+          updateUser({ ...userInfo });
           handleEditClose();
         }}
         editorRole={UserRoleEnum.Admin}
