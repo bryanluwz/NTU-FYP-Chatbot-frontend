@@ -100,7 +100,9 @@ export const ChatMessageBox: React.FC<ChatMessageBoxProps> = ({
           userType === ChatUserTypeEnum.User ? userInfo.avatar : DefaultAIAvatar
         }
       >
-        {userType === ChatUserTypeEnum.User ? userInfo.username : ":/"}
+        {userType === ChatUserTypeEnum.User
+          ? userInfo.username.charAt(0)
+          : ":/"}
       </Avatar>
       <div
         className={cx(styles.messageBox, {
