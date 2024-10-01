@@ -60,6 +60,7 @@ export const ChatPage: React.FC = () => {
   React.useEffect(() => {
     if (selectedChatId && selectedChatId !== "") {
       getChatInfo(selectedChatId);
+      setCurrentTab(TabEnum.Chat);
     } else {
       setSelectedChatInfo(undefined);
       setCurrentTab(TabEnum.Dashboard);

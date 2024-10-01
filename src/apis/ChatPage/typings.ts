@@ -30,7 +30,7 @@ export interface UserInfoModel {
   id: string;
   username: string;
   email: string;
-  avatar: string;
+  avatar?: string;
   role: UserRoleEnum;
 }
 

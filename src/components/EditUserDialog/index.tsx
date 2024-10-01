@@ -135,7 +135,7 @@ export const EditUserDialog: React.FC<EditUserDialogProps> = ({
         ...userInfo,
         username: username || userInfo.username,
         email: email || userInfo.email,
-        avatar: newAvatarSrc || userInfo.avatar,
+        avatar: newAvatarSrc || undefined,
       };
 
       setNewAvatarSrc(null);
