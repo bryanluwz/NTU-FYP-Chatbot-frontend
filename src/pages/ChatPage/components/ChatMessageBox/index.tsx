@@ -5,7 +5,6 @@ import { ChatUserTypeEnum } from "../../../../apis/enums";
 import { Avatar, ButtonGroup, IconButton, Typography } from "@mui/material";
 import { ContentCopy, ContentPaste, VolumeUp } from "@mui/icons-material";
 
-import DefaultUserAvatar from "../../../../assets/user-avatar-default.png";
 import DefaultAIAvatar from "../../../../assets/ai-avatar-default.png";
 
 import * as styles from "./style.scss";
@@ -98,12 +97,10 @@ export const ChatMessageBox: React.FC<ChatMessageBoxProps> = ({
     >
       <Avatar
         src={
-          userType === ChatUserTypeEnum.User
-            ? userInfo.avatar ?? DefaultUserAvatar
-            : DefaultAIAvatar
+          userType === ChatUserTypeEnum.User ? userInfo.avatar : DefaultAIAvatar
         }
       >
-        {userType === ChatUserTypeEnum.User ? "U" : "A"}
+        {userType === ChatUserTypeEnum.User ? userInfo.username : ":/"}
       </Avatar>
       <div
         className={cx(styles.messageBox, {

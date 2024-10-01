@@ -1,3 +1,4 @@
+import { user } from "../../pages/ChatPage/components/ChatMessageBox/style.scss";
 import { UserInfoModel } from "../ChatPage/typings";
 import { HTTPMethod } from "../typings";
 import {
@@ -32,13 +33,23 @@ export const getUserListApi = async () => {
 };
 
 export const updateUserApi = async (userInfo: UserInfoModel) => {
+  const formData = new FormData();
+
+  formData.append(
+    "userInfo",
+    JSON.stringify({ ...userInfo, avatar: undefined })
+  );
+
+  // Append the avatar as a file blob (if one is provded)
+  if (userInfo.avatar !== undefined) {
+    const blob = await (await fetch(userInfo.avatar)).blob(); // Convert base64 to Blob
+    formData.append("avatar", blob, `${userInfo.username}_avatar.png`); // You can change the filename if needed
+  }
+
   return (
     await fetchWithAuth(updateUserUrl, {
       method: HTTPMethod.POST,
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({ userInfo: userInfo }),
+      body: formData,
     })
   ).json() as unknown as UpdateUserResponseModel;
 };

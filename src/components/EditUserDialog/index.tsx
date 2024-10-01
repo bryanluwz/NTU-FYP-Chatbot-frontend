@@ -7,18 +7,15 @@ import {
   Dialog,
   DialogActions,
   DialogContent,
-  DialogContentText,
   DialogTitle,
   FormControl,
   FormLabel,
-  Icon,
   Stack,
   TextField,
   Typography,
 } from "@mui/material";
 import { UserInfoModel } from "../../apis/ChatPage/typings";
 
-import * as styles from "./style.scss";
 import { UserRoleEnum } from "../../apis/enums";
 import { UsernameChip } from "../UsernameChip";
 import { validateEmail, validateUsername } from "../../utils";
@@ -133,15 +130,15 @@ export const EditUserDialog: React.FC<EditUserDialogProps> = ({
         ?.value;
       const email = (document.getElementById("email") as HTMLInputElement)
         ?.value;
-      const avatar = (document.getElementById("avatar") as HTMLInputElement)
-        ?.value;
 
       const updatedUserInfo: UserInfoModel = {
         ...userInfo,
         username: username || userInfo.username,
         email: email || userInfo.email,
-        avatar: avatar || userInfo.avatar,
+        avatar: newAvatarSrc || userInfo.avatar,
       };
+
+      setNewAvatarSrc(null);
 
       onSubmitProp(updatedUserInfo);
     }

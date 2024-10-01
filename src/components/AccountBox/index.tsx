@@ -18,7 +18,6 @@ import DeleteForeverIcon from "@mui/icons-material/DeleteForever";
 import { useChatPageStore } from "../../zustand/apis/ChatPage";
 import { TabEnum, UserRoleEnum } from "../../apis/enums";
 
-import DefaultAvatar from "../../assets/user-avatar-default.png";
 import * as styles from "./style.scss";
 import { AuthContext } from "../../context/AuthContext";
 import { ConfirmModal } from "../ConfirmModal";
@@ -33,7 +32,7 @@ interface AccountBoxProps {
 
 export const AccountBox: React.FC<AccountBoxProps> = ({
   username = "Lyon the Lion",
-  userAvatar = DefaultAvatar,
+  userAvatar,
 }) => {
   const [isMenuOpen, setIsMenuOpen] = React.useState(false);
   const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
@@ -189,7 +188,7 @@ export const AccountBox: React.FC<AccountBoxProps> = ({
         </Menu>
 
         <div className={styles.avatarContainer} onClick={handleAvatarClick}>
-          <Avatar src={userAvatar} />
+          <Avatar src={userAvatar}>{username.charAt(0)}</Avatar>
         </div>
         <Typography variant="h5">Hi, {username}!</Typography>
       </div>
