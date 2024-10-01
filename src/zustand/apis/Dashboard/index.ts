@@ -5,7 +5,7 @@ import {
   deleteUserApi,
   getAvailableChatsApi,
   getUserListApi,
-  udpatePasswordApi,
+  updatePasswordApi,
   updateUserApi,
 } from "../../../apis/Dashboard";
 import { UserInfoModel } from "../../../apis/ChatPage/typings";
@@ -20,7 +20,10 @@ interface DashboardState {
 
   updateUser: (userInfo: UserInfoModel) => Promise<void>;
   deleteUser: (userInfo: UserInfoModel) => Promise<void>;
-  udpatePassword: (oldPassword: string, newPassword: string) => Promise<void>;
+  updatePassword: (
+    oldPassword: string,
+    newPassword: string
+  ) => Promise<boolean>;
 }
 
 const initialStates = {
@@ -73,15 +76,15 @@ export const useDashboardStore = create<DashboardState>((set, get) => ({
       return;
     }
   },
-  udpatePassword: async (oldPassword: string, newPassword: string) => {
+  updatePassword: async (oldPassword: string, newPassword: string) => {
     try {
       const response = checkStatus(
-        await udpatePasswordApi({ oldPassword, newPassword })
+        await updatePasswordApi({ oldPassword, newPassword })
       );
-      return;
+      return true;
     } catch (error) {
       handleError(error);
-      return;
+      return false;
     }
   },
 }));

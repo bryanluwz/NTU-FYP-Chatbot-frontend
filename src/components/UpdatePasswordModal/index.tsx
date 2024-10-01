@@ -163,7 +163,7 @@ export const UpdatePasswordDialog: React.FC<UpdatePasswordDialogProps> = ({
                   />
                 </FormControl>
                 <FormControl>
-                  <FormLabel htmlFor="password">Old Password</FormLabel>
+                  <FormLabel htmlFor="password">New Password</FormLabel>
                   <TextField
                     id="new-password"
                     type={showNewPassword ? "text" : "password"}

@@ -52,7 +52,7 @@ export const AccountBox: React.FC<AccountBoxProps> = ({
   const { logout } = React.useContext(AuthContext);
 
   const { userInfo } = useChatPageStore();
-  const { updateUser, udpatePassword } = useDashboardStore();
+  const { updateUser, updatePassword } = useDashboardStore();
 
   const [userRole, setUserRole] = React.useState<string>("");
 
@@ -208,9 +208,13 @@ export const AccountBox: React.FC<AccountBoxProps> = ({
         userInfo={userInfo}
         isOpen={isUpdatePasswordOpen}
         onClose={handleUpdatePasswordClose}
-        onSubmit={(oldPassword, newPassword) => {
-          udpatePassword(oldPassword, newPassword);
-          handleUpdatePasswordClose();
+        onSubmit={async (oldPassword, newPassword) => {
+          const success = await updatePassword(oldPassword, newPassword);
+          if (success) {
+            handleUpdatePasswordClose();
+          } else {
+            alert("Failed to update password! Old password might be invalid.");
+          }
         }}
       />
       <ConfirmModal

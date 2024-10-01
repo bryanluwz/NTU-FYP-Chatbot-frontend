@@ -66,7 +66,7 @@ export const deleteUserApi = async (userInfo: UserInfoModel) => {
   ).json() as unknown as UpdateUserResponseModel;
 };
 
-export const udpatePasswordApi = async (body: {
+export const updatePasswordApi = async (body: {
   oldPassword: string;
   newPassword: string;
 }) => {
