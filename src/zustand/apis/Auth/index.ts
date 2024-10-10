@@ -5,7 +5,7 @@ import { UserInfoModel } from "../../../apis/ChatPage/typings";
 
 interface AuthState {
   login: (
-    email: string,
+    email: string, // can also be username
     password: string,
     callback: (token: string, user: UserInfoModel) => void
   ) => Promise<boolean>;

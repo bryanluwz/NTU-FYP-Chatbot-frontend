@@ -2,10 +2,7 @@ import React from "react";
 import {
   Box,
   Button,
-  Checkbox,
-  Divider,
   FormControl,
-  FormControlLabel,
   FormLabel,
   Icon,
   InputAdornment,
@@ -105,7 +102,8 @@ export const SignInPage: React.FC = () => {
 
     let isValid = true;
 
-    if (!validateEmail(email.value)) {
+    // Only validate email if it's a sign up page
+    if (!validateEmail(email.value) && isSignUp) {
       setEmailError(true);
       setEmailErrorMessage("Please enter a valid email address.");
       isValid = false;
@@ -218,7 +216,9 @@ export const SignInPage: React.FC = () => {
             </FormControl>
           )}
           <FormControl>
-            <FormLabel htmlFor="email">Email</FormLabel>
+            <FormLabel htmlFor="email">
+              {isSignUp ? "Email" : "Email or Username"}
+            </FormLabel>
             <TextField
               error={emailError}
               helperText={emailErrorMessage}
