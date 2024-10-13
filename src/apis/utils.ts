@@ -1,6 +1,4 @@
 import { HTTPStatusBody } from "./typings";
-import React from "react";
-import { AuthContext } from "../context/AuthContext";
 
 export const checkStatus = <T>(
   response: T & { status?: HTTPStatusBody; statusText?: string }
