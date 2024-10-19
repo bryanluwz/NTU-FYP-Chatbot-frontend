@@ -34,7 +34,7 @@ export const updatePersonaApi = async (personaInfo: PersonaModel) => {
   const formData = new FormData();
 
   formData.append(
-    "userInfo",
+    "personaInfo",
     JSON.stringify({
       ...personaInfo,
       avatar: undefined,
@@ -45,14 +45,18 @@ export const updatePersonaApi = async (personaInfo: PersonaModel) => {
   // Append the avatar as a file blob (if one is provded)
   if (personaInfo.personaAvatar !== undefined) {
     const blob = await (await fetch(personaInfo.personaAvatar)).blob(); // Convert base64 to Blob
-    formData.append("avatar", blob, `${personaInfo.personaName}_avatar.png`); // You can change the filename if needed
+    formData.append(
+      "personaAvatar",
+      blob,
+      `${personaInfo.personaName}_avatar.png`
+    ); // You can change the filename if needed
   }
 
   // Similarly, append the document as a file blob (if one is provided)
   if (personaInfo.documentSrc !== undefined) {
     const blob = await (await fetch(personaInfo.documentSrc)).blob(); // Convert base64 to Blob
     formData.append(
-      "document",
+      "documentSrc",
       blob,
       `${personaInfo.personaName}_document.zip`
     ); // You can change the filename if needed
