@@ -1,7 +1,7 @@
 import React from "react";
 import cx from "classnames";
 
-import { Typography } from "@mui/material";
+import { ListItemIcon, Typography } from "@mui/material";
 import DeleteIcon from "@mui/icons-material/Delete";
 
 import * as styles from "../style.scss";
@@ -43,10 +43,12 @@ export const ChatListItem: React.FC<ChatListItemProps> = ({
       onMouseDown={handleMouseDown}
     >
       <Typography variant="body1">{title}</Typography>
-      <DeleteIcon
-        onClick={onDelete}
-        style={{ visibility: isHovered || isActive ? "visible" : "hidden" }}
-      />
+      <ListItemIcon>
+        <DeleteIcon
+          onClick={onDelete}
+          style={{ visibility: isHovered || isActive ? "visible" : "hidden" }}
+        />
+      </ListItemIcon>
     </div>
   );
 };

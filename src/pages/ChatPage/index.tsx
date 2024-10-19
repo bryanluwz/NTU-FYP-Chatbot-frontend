@@ -42,13 +42,6 @@ export const ChatPage: React.FC = () => {
 
   // 1. Load chat list
   React.useEffect(() => {
-    if (userInfo.role === UserRoleEnum.Admin) {
-      setCurrentTab(TabEnum.Admin);
-    } else if (userInfo.role === UserRoleEnum.Educator) {
-      setCurrentTab(TabEnum.Persona);
-    } else {
-      setCurrentTab(TabEnum.Chat);
-    }
     getChatList();
   }, [userInfo]);
 
@@ -65,13 +58,7 @@ export const ChatPage: React.FC = () => {
   React.useEffect(() => {
     if (selectedChatId && selectedChatId !== "") {
       getChatInfo(selectedChatId);
-      if (userInfo.role === UserRoleEnum.Admin) {
-        setCurrentTab(TabEnum.Admin);
-      } else if (userInfo.role === UserRoleEnum.Educator) {
-        setCurrentTab(TabEnum.Persona);
-      } else {
-        setCurrentTab(TabEnum.Chat);
-      }
+      setCurrentTab(TabEnum.Chat);
     } else {
       setSelectedChatInfo(undefined);
       setCurrentTab(TabEnum.Dashboard);
