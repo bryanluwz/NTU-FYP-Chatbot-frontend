@@ -5,11 +5,12 @@ import { Sidebar } from "../../components/Sidebar";
 
 import { useChatPageStore } from "../../zustand/apis/ChatPage";
 import { Dashboard } from "./components/Dashboard";
-import { TabEnum } from "../../apis/enums";
+import { TabEnum, UserRoleEnum } from "../../apis/enums";
 
 import * as styles from "./style.scss";
 import { AdminDashboard } from "./components/AdminDashboard";
 import { ChatInfoModel } from "../../apis/ChatPage/typings";
+import { PersonaDashboard } from "./components/PersonaDashboard";
 
 export const ChatPage: React.FC = () => {
   const {
@@ -41,8 +42,12 @@ export const ChatPage: React.FC = () => {
 
   // 1. Load chat list
   React.useEffect(() => {
-    if (userInfo.role === "admin") {
+    if (userInfo.role === UserRoleEnum.Admin) {
       setCurrentTab(TabEnum.Admin);
+    } else if (userInfo.role === UserRoleEnum.Educator) {
+      setCurrentTab(TabEnum.Persona);
+    } else {
+      setCurrentTab(TabEnum.Chat);
     }
     getChatList();
   }, [userInfo]);
@@ -60,7 +65,11 @@ export const ChatPage: React.FC = () => {
   React.useEffect(() => {
     if (selectedChatId && selectedChatId !== "") {
       getChatInfo(selectedChatId);
-      if (userInfo.role !== "admin") {
+      if (userInfo.role === UserRoleEnum.Admin) {
+        setCurrentTab(TabEnum.Admin);
+      } else if (userInfo.role === UserRoleEnum.Educator) {
+        setCurrentTab(TabEnum.Persona);
+      } else {
         setCurrentTab(TabEnum.Chat);
       }
     } else {
@@ -91,8 +100,15 @@ export const ChatPage: React.FC = () => {
       case TabEnum.Dashboard:
         return <Dashboard setSelectedChatId={setSelectedChatId} />;
       case TabEnum.Admin:
-        if (userInfo.role === "admin") {
+        if (userInfo.role === UserRoleEnum.Admin) {
           return <AdminDashboard />;
+        }
+      case TabEnum.Persona:
+        if (
+          userInfo.role === UserRoleEnum.Admin ||
+          userInfo.role === UserRoleEnum.Educator
+        ) {
+          return <PersonaDashboard />;
         }
       default:
         return <Dashboard setSelectedChatId={setSelectedChatId} />;

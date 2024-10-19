@@ -1,7 +1,5 @@
 import React from "react";
 import cx from "classnames";
-
-import { useDashboardStore } from "../../../../zustand/apis/Dashboard";
 import {
   Avatar,
   Button,
@@ -9,16 +7,15 @@ import {
   ListItem,
   ListItemAvatar,
   ListItemText,
-  Modal,
   TextField,
   Typography,
 } from "@mui/material";
 
 import DefaultChatAvatar from "../../../../assets/ai-avatar-default.png";
 import * as styles from "./style.scss";
-import { NewGPTModal } from "../NewGPTDialog";
 import { useChatPageStore } from "../../../../zustand/apis/ChatPage";
 import { TabEnum, UserRoleEnum } from "../../../../apis/enums";
+import { usePersonaStore } from "../../../../zustand/apis/Persona";
 
 interface DashboardProps {
   setSelectedChatId: (chatId: string) => void;
@@ -26,25 +23,25 @@ interface DashboardProps {
 
 export const Dashboard: React.FC<DashboardProps> = ({ setSelectedChatId }) => {
   // For available chats
-  const { availableChats, getAvailableChats } = useDashboardStore();
+  const { personaList, getPersonaList } = usePersonaStore();
   const { userInfo, setCurrentTab, currentTab, createChat, getChatList } =
     useChatPageStore();
   const [userRole, setUserRole] = React.useState<string>("");
 
   const [searchValue, setSearchValue] = React.useState("");
-  const [filteredChats, setFilteredChats] = React.useState(availableChats);
+  const [filteredChats, setFilteredChats] = React.useState(personaList);
 
   const [visibleChatsCount, setVisibleChatsCount] = React.useState(5);
 
   React.useEffect(() => {
-    getAvailableChats();
+    getPersonaList();
   }, []);
 
   React.useEffect(() => {
-    if (filteredChats !== availableChats && availableChats.length > 0) {
-      setFilteredChats(availableChats);
+    if (filteredChats !== personaList && personaList.length > 0) {
+      setFilteredChats(personaList);
     }
-  }, [availableChats]);
+  }, [personaList]);
 
   React.useEffect(() => {
     if (userInfo) {
@@ -67,7 +64,7 @@ export const Dashboard: React.FC<DashboardProps> = ({ setSelectedChatId }) => {
   ) => {
     resetVisibleChats();
     setSearchValue(event.target.value);
-    const filteredChats = availableChats.filter(
+    const filteredChats = personaList.filter(
       (chat) =>
         chat.personaName
           .toLowerCase()
@@ -154,21 +151,6 @@ export const Dashboard: React.FC<DashboardProps> = ({ setSelectedChatId }) => {
           </Button>
         </div>
       </div>
-      {/* Create a new GPT (only for admin / educator) */}
-      {(userRole === UserRoleEnum.Admin ||
-        userRole === UserRoleEnum.Educator) && (
-        <div className={styles.dashboardCardContainer}>
-          <Typography variant="h5">Create your own GPT!</Typography>
-          <div className={cx(styles.buttonContainer, styles.left)}>
-            <Button onClick={handleNewGPTClick}>New GPT</Button>
-          </div>
-          {isNewGPTModalOpen && (
-            <Modal open={isNewGPTModalOpen} onClose={handleNewGPTClose}>
-              <NewGPTModal />
-            </Modal>
-          )}
-        </div>
-      )}
     </div>
   );
 };

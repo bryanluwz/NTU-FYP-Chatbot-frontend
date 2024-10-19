@@ -1,28 +1,13 @@
-import { user } from "../../pages/ChatPage/components/ChatMessageBox/style.scss";
 import { UserInfoModel } from "../ChatPage/typings";
 import { HTTPMethod } from "../typings";
 import {
   deleteUserUrl,
-  getAvailableChatsUrl,
   getUserListUrl,
   updatePasswordUrl,
   updateUserUrl,
 } from "../urls";
 import { fetchWithAuth } from "../utils";
-import {
-  GetPersonaResponseModel,
-  GetUserListResponseModel,
-  UpdateUserResponseModel,
-} from "./typings";
-
-export const getAvailableChatsApi = async () => {
-  // In the future it is best to be able to specify how many chats to get
-  return (
-    await fetchWithAuth(getAvailableChatsUrl, {
-      method: HTTPMethod.GET,
-    })
-  ).json() as unknown as GetPersonaResponseModel;
-};
+import { GetUserListResponseModel, UpdateUserResponseModel } from "./typings";
 
 export const getUserListApi = async () => {
   return (

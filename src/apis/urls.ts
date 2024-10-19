@@ -1,4 +1,4 @@
-const baseUrl = "";
+const baseUrl = "http://localhost:3000"; // for dev use "http://localhost:3000" or whatever the port is, for prod use ""
 
 export const postQueryChatMessageUrl = `${baseUrl}/api/chat/message`;
 export const getChatListUrl = `${baseUrl}/api/chat/list`;
@@ -6,7 +6,6 @@ export const updateChatMessageUrl = `${baseUrl}/api/chat`;
 
 export const getUserInfoUrl = `${baseUrl}/api/user/info`;
 
-export const getAvailableChatsUrl = `${baseUrl}/api/dashboard/available`;
 export const getUserListUrl = `${baseUrl}/api/dashboard/admin/users`;
 export const postChatUrl = `/api/chat/`; // Same for create, update and delete
 
@@ -20,3 +19,9 @@ export const updateUserUrl = `${baseUrl}/api/user/update`;
 export const deleteUserUrl = `${baseUrl}/api/user/delete`;
 export const createUserUrl = `${baseUrl}/api/user/create`;
 export const updatePasswordUrl = `${baseUrl}/api/user/updatepw`;
+
+// Personas
+export const getPersonasUrl = `${baseUrl}/api/persona/available`;
+export const updatePersonaUrl = `${baseUrl}/api/persona/update`;
+export const createPersonaUrl = `${baseUrl}/api/persona/create`;
+export const deletePersonaUrl = `${baseUrl}/api/persona/delete`;

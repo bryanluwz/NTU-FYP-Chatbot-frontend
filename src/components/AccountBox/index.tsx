@@ -139,7 +139,7 @@ export const AccountBox: React.FC<AccountBoxProps> = ({
             </ListItemIcon>
             <ListItemText>Dashboard</ListItemText>
           </MenuItem>
-          {userRole === "admin" && (
+          {userRole === UserRoleEnum.Admin && (
             <MenuItem
               selected={currentTab === TabEnum.Admin}
               onClick={() => {
@@ -153,6 +153,24 @@ export const AccountBox: React.FC<AccountBoxProps> = ({
                 <DashboardIcon />
               </ListItemIcon>
               <ListItemText>Admin Dashboard</ListItemText>
+            </MenuItem>
+          )}
+
+          {(userRole === UserRoleEnum.Admin ||
+            userRole === UserRoleEnum.Educator) && (
+            <MenuItem
+              selected={currentTab === TabEnum.Persona}
+              onClick={() => {
+                if (currentTab !== TabEnum.Persona) {
+                  setCurrentTab(TabEnum.Persona);
+                  setIsMenuOpen(false);
+                }
+              }}
+            >
+              <ListItemIcon>
+                <DashboardIcon />
+              </ListItemIcon>
+              <ListItemText>Persona Dashboard</ListItemText>
             </MenuItem>
           )}
 

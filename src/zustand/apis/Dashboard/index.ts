@@ -1,21 +1,19 @@
 import { create } from "zustand";
 import { checkStatus, handleError } from "../../../apis/utils";
-import { PersonaModel } from "../../../apis/Dashboard/typings";
 import {
   deleteUserApi,
-  getAvailableChatsApi,
   getUserListApi,
   updatePasswordApi,
   updateUserApi,
 } from "../../../apis/Dashboard";
 import { UserInfoModel } from "../../../apis/ChatPage/typings";
 import { useChatPageStore } from "../ChatPage";
+import { PersonaModel } from "../../../apis/Persona/typings";
+import { getAvailablePersonasApi } from "../../../apis/Persona";
 
 interface DashboardState {
-  availableChats: PersonaModel[];
   userList: UserInfoModel[];
   clearUserList: () => void;
-  getAvailableChats: () => Promise<PersonaModel[]>;
   getUserList: () => Promise<void>;
 
   updateUser: (userInfo: UserInfoModel) => Promise<void>;
@@ -27,22 +25,11 @@ interface DashboardState {
 }
 
 const initialStates = {
-  availableChats: [],
   userList: [],
 };
 
 export const useDashboardStore = create<DashboardState>((set, get) => ({
   ...initialStates,
-  getAvailableChats: async () => {
-    try {
-      const response = checkStatus(await getAvailableChatsApi());
-      set({ availableChats: response.data.personas });
-      return response.data.personas;
-    } catch (error) {
-      handleError(error);
-      return [];
-    }
-  },
   getUserList: async () => {
     try {
       const response = checkStatus(await getUserListApi());
