@@ -4,21 +4,25 @@ import {
   createPersonaApi,
   deletePersonaApi,
   getAvailablePersonasApi,
+  getPersonaAvatarApi,
   postAvailablePersonasApi,
   updatePersonaApi,
 } from "../../../apis/Persona";
 import { PersonaModel } from "../../../apis/Persona/typings";
 
 interface PersonaState {
+  currentPersona: PersonaModel | null;
   personaList: PersonaModel[];
   getPersonaList: () => Promise<void>; // if admin, return all, if educator, return only educator, if user, return none
   postPersonaList: () => Promise<void>;
   createPersona: (personaInfo: PersonaModel) => Promise<void>;
   updatePersona: (personaInfo: PersonaModel) => Promise<void>;
   deletePersona: (personaId: string) => Promise<void>;
+  getPersona: (chatId: string) => Promise<void>;
 }
 
 const initialStates = {
+  currentPersona: null,
   personaList: [],
 };
 
@@ -70,6 +74,17 @@ export const usePersonaStore = create<PersonaState>((set, get) => ({
     try {
       const response = checkStatus(await deletePersonaApi(personaId));
       get().postPersonaList();
+      return;
+    } catch (error) {
+      handleError(error);
+      return;
+    }
+  },
+  getPersona: async (chatId: string) => {
+    try {
+      const response = checkStatus(await getPersonaAvatarApi(chatId));
+      const persona = response.data.personas[0];
+      set({ currentPersona: persona });
       return;
     } catch (error) {
       handleError(error);

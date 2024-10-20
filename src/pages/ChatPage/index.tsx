@@ -11,6 +11,7 @@ import * as styles from "./style.scss";
 import { AdminDashboard } from "./components/AdminDashboard";
 import { ChatInfoModel } from "../../apis/ChatPage/typings";
 import { PersonaDashboard } from "./components/PersonaDashboard";
+import { usePersonaStore } from "../../zustand/apis/Persona";
 
 export const ChatPage: React.FC = () => {
   const {
@@ -28,6 +29,8 @@ export const ChatPage: React.FC = () => {
     deleteChat,
     setCurrentTab,
   } = useChatPageStore();
+
+  const { getPersona } = usePersonaStore();
 
   const [selectedChatId, setSelectedChatId] = React.useState("");
   const [selectedChatInfo, setSelectedChatInfo] = React.useState<
@@ -72,6 +75,8 @@ export const ChatPage: React.FC = () => {
 
   // 5. Update messages when selected chat info is updated
   React.useEffect(() => {
+    if (selectedChatInfo?.chatId) getPersona(selectedChatInfo?.chatId);
+
     if (selectedChatInfo?.messages) {
       setMessages(selectedChatInfo.messages);
     } else {

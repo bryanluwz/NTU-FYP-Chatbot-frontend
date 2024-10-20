@@ -9,6 +9,7 @@ import DefaultAIAvatar from "../../../../assets/ai-avatar-default.png";
 
 import * as styles from "./style.scss";
 import { useChatPageStore } from "../../../../zustand/apis/ChatPage";
+import { usePersonaStore } from "../../../../zustand/apis/Persona";
 
 interface ChatMessageBoxProps {
   userType: ChatUserTypeEnum;
@@ -36,6 +37,7 @@ export const ChatMessageBox: React.FC<ChatMessageBoxProps> = ({
   const [hoverDebounceId, setHoverDebounceId] =
     React.useState<NodeJS.Timeout>();
   const { userInfo } = useChatPageStore();
+  const { currentPersona } = usePersonaStore();
 
   React.useEffect(() => {
     if (typingAnimation) {
@@ -88,6 +90,13 @@ export const ChatMessageBox: React.FC<ChatMessageBoxProps> = ({
     setHoverDebounceId(id);
   };
 
+  const personaAvatar = React.useMemo(() => {
+    if (currentPersona) {
+      return currentPersona.personaAvatar;
+    }
+    return undefined;
+  }, [currentPersona]);
+
   return (
     <div
       className={cx(styles.messageBoxContainer, {
@@ -97,7 +106,11 @@ export const ChatMessageBox: React.FC<ChatMessageBoxProps> = ({
     >
       <Avatar
         src={
-          userType === ChatUserTypeEnum.User ? userInfo.avatar : DefaultAIAvatar
+          userType === ChatUserTypeEnum.User
+            ? userInfo.avatar
+            : personaAvatar
+            ? personaAvatar
+            : DefaultAIAvatar
         }
       >
         {userType === ChatUserTypeEnum.User

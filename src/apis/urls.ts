@@ -25,3 +25,5 @@ export const getPersonasUrl = `${baseUrl}/api/persona/available`;
 export const updatePersonaUrl = `${baseUrl}/api/persona/update`;
 export const createPersonaUrl = `${baseUrl}/api/persona/create`;
 export const deletePersonaUrl = `${baseUrl}/api/persona/delete`;
+export const getPersonaUrl = (chatId: string) =>
+  `${baseUrl}/api/persona/${chatId}`;

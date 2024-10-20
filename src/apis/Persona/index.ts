@@ -3,6 +3,7 @@ import {
   createPersonaUrl,
   deletePersonaUrl,
   getPersonasUrl,
+  getPersonaUrl,
   updatePersonaUrl,
 } from "../urls";
 import { fetchWithAuth } from "../utils";
@@ -90,6 +91,15 @@ export const createPersonaApi = async (personaInfo: PersonaModel) => {
         "Content-Type": "application/json",
       },
       body: JSON.stringify(personaInfo),
+    })
+  ).json() as unknown as GetPersonaResponseModel;
+};
+
+// From chat id
+export const getPersonaAvatarApi = async (chatId: string) => {
+  return (
+    await fetchWithAuth(getPersonaUrl(chatId), {
+      method: HTTPMethod.GET,
     })
   ).json() as unknown as GetPersonaResponseModel;
 };
