@@ -5,6 +5,7 @@ import { ChatUserTypeEnum } from "../../../../apis/enums";
 import { Avatar, ButtonGroup, IconButton, Typography } from "@mui/material";
 import { ContentCopy, ContentPaste, VolumeUp } from "@mui/icons-material";
 
+import { MuiMarkdown, getOverrides } from "mui-markdown";
 import DefaultAIAvatar from "../../../../assets/ai-avatar-default.png";
 
 import * as styles from "./style.scss";
@@ -128,14 +129,20 @@ export const ChatMessageBox: React.FC<ChatMessageBoxProps> = ({
         onMouseOver={handleMouseEnter}
         onMouseLeave={handleMouseLeave}
       >
-        <Typography
-          variant="body1"
-          className={cx({
-            [styles.typingIndicator]: typingIndicatorAnimation,
-          })}
-        >
-          {displayedText}
-        </Typography>
+        {typingIndicatorAnimation ? (
+          <Typography
+            variant="body1"
+            className={cx({
+              [styles.typingIndicator]: typingIndicatorAnimation,
+            })}
+          >
+            {displayedText}
+          </Typography>
+        ) : (
+          <MuiMarkdown overrides={{ ...getOverrides() }}>
+            {displayedText}
+          </MuiMarkdown>
+        )}
         {(isMenuVisible || isToolboxVisible) && (
           <div
             className={cx(styles.actionMenu, {
