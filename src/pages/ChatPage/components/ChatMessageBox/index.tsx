@@ -2,15 +2,21 @@ import React from "react";
 import cx from "classnames";
 
 import { ChatUserTypeEnum } from "../../../../apis/enums";
-import { Avatar, ButtonGroup, IconButton, Typography } from "@mui/material";
-import { ContentCopy, ContentPaste, VolumeUp } from "@mui/icons-material";
+import {
+  Avatar,
+  ButtonGroup,
+  IconButton,
+  Typography,
+  Tooltip,
+} from "@mui/material";
+import { ContentCopy, VolumeUp } from "@mui/icons-material";
 
-import { MuiMarkdown, getOverrides } from "mui-markdown";
 import DefaultAIAvatar from "../../../../assets/ai-avatar-default.png";
 
 import * as styles from "./style.scss";
 import { useChatPageStore } from "../../../../zustand/apis/ChatPage";
 import { usePersonaStore } from "../../../../zustand/apis/Persona";
+import { MarkdownRenderer } from "../../../../components/MarkdownRenderer";
 
 interface ChatMessageBoxProps {
   userType: ChatUserTypeEnum;
@@ -39,6 +45,24 @@ export const ChatMessageBox: React.FC<ChatMessageBoxProps> = ({
     React.useState<NodeJS.Timeout>();
   const { userInfo } = useChatPageStore();
   const { currentPersona } = usePersonaStore();
+
+  // Handle copy
+  const [isCopied, setIsCopied] = React.useState(false);
+
+  const handleCopy = () => {
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+      navigator.clipboard.writeText(message);
+    } else {
+      console.error(
+        "Clipboard API not supported or running in insecure context."
+      );
+    }
+
+    setIsCopied(true);
+    setTimeout(() => {
+      setIsCopied(false);
+    }, 1000);
+  };
 
   React.useEffect(() => {
     if (typingAnimation) {
@@ -139,9 +163,7 @@ export const ChatMessageBox: React.FC<ChatMessageBoxProps> = ({
             {displayedText}
           </Typography>
         ) : (
-          <MuiMarkdown overrides={{ ...getOverrides() }}>
-            {displayedText}
-          </MuiMarkdown>
+          <MarkdownRenderer text={displayedText} />
         )}
         {(isMenuVisible || isToolboxVisible) && (
           <div
@@ -153,14 +175,21 @@ export const ChatMessageBox: React.FC<ChatMessageBoxProps> = ({
             onMouseLeave={handleMouseLeave}
           >
             <ButtonGroup variant="outlined">
-              <IconButton onClick={() => console.log("Copy")}>
-                <ContentCopy />
+              <IconButton onClick={handleCopy}>
+                <Tooltip title={isCopied ? "Copied" : "Copy"}>
+                  <ContentCopy />
+                </Tooltip>
               </IconButton>
-              <IconButton onClick={() => console.log("Paste")}>
-                <ContentPaste />
-              </IconButton>
-              <IconButton onClick={() => console.log("Speak")}>
-                <VolumeUp />
+              <IconButton
+                onClick={() =>
+                  console.log(
+                    "Unfornunately, the developer does not have enough budget"
+                  )
+                }
+              >
+                <Tooltip title={"Not available in your region"}>
+                  <VolumeUp />
+                </Tooltip>
               </IconButton>
             </ButtonGroup>
           </div>

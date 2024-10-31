@@ -10,7 +10,7 @@ body {
   --root-font-size: 16px;
 
   /* Colors */
-  --primary-backround-color: #dbdeea;
+  --primary-background-color: #dbdeea;
   --secondary-background-color: #f0f0f0;
   --primary-selection-color: #f0f0f0;
   --secondary-selection-color: #d6d9e3;
@@ -32,12 +32,12 @@ body {
 }
 
 ::-webkit-scrollbar-thumb {
-  background: var(--primary-backround-color);
+  background: var(--primary-background-color);
 }
 
 /* Customise selection */
 
 ::selection {
-  background: var(--primary-backround-color);
+  background: var(--primary-background-color);
   color: var(--secondary-background-color);
 }

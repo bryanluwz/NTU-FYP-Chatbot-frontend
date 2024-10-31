@@ -33,11 +33,11 @@
     }
 
     &.non-user {
-      background-color: lightgrey;
+      background-color: var(--secondary-background-color);
     }
 
     &.user {
-      background-color: var(--primary-backround-color);
+      background-color: var(--primary-background-color);
     }
   }
 
