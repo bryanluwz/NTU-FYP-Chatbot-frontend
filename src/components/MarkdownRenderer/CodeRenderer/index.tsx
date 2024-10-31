@@ -21,6 +21,8 @@ export const CodeRenderer: React.FC<CodeRendererProps> = ({ children }) => {
   const [codeLanguage, setCodeLanguage] = React.useState("");
   const [text, setText] = React.useState("");
 
+  const [isCopied, setIsCopied] = React.useState(false);
+
   React.useEffect(() => {
     if (children) {
       setChildrenString(children.props);
@@ -40,6 +42,10 @@ export const CodeRenderer: React.FC<CodeRendererProps> = ({ children }) => {
   const handleCopy = () => {
     if (navigator.clipboard && navigator.clipboard.writeText) {
       navigator.clipboard.writeText(text);
+      setIsCopied(true);
+      setTimeout(() => {
+        setIsCopied(false);
+      }, 1000);
     } else {
       console.error(
         "Clipboard API not supported or running in insecure context."
@@ -49,21 +55,46 @@ export const CodeRenderer: React.FC<CodeRendererProps> = ({ children }) => {
 
   return (
     <Box>
-      <Stack direction={"column"}>
+      <Stack
+        direction={"column"}
+        sx={{
+          background: "var(--secondary-dark-background-color)",
+          borderRadius: "0.5rem",
+          margin: "0.5rem 0rem",
+        }}
+      >
         <Stack
           direction={"row"}
           alignItems={"center"}
           justifyContent={"space-between"}
+          sx={{
+            color: "white",
+            padding: "0rem 1rem",
+          }}
         >
-          {/* <Typography variant="body1">{codeLanguage}</Typography> */}
           <pre>{codeLanguage}</pre>
           <IconButton onClick={handleCopy}>
-            <Tooltip title={"Copy"}>
-              <ContentCopy />
+            <Tooltip title={isCopied ? "Copied!" : "Copy"}>
+              <ContentCopy sx={{ color: "white" }} />
             </Tooltip>
           </IconButton>
         </Stack>
-        <SyntaxHighlighter language={codeLanguage} style={dark}>
+        <SyntaxHighlighter
+          customStyle={{
+            background: "var(--primary-dark-background-color)",
+            boxShadow: "none",
+            border: "none",
+            textShadow: "none",
+            margin: 0,
+          }}
+          codeTagProps={{
+            style: {
+              textShadow: "none",
+            },
+          }}
+          language={codeLanguage}
+          style={dark}
+        >
           {text}
         </SyntaxHighlighter>
       </Stack>

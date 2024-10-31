@@ -122,6 +122,22 @@ export const ChatMessageBox: React.FC<ChatMessageBoxProps> = ({
     return undefined;
   }, [currentPersona]);
 
+  const messageText = React.useMemo(() => {
+    if (typingIndicatorAnimation || userType === ChatUserTypeEnum.User) {
+      return (
+        <Typography
+          variant="body1"
+          className={cx({
+            [styles.typingIndicator]: typingIndicatorAnimation,
+          })}
+        >
+          {displayedText}
+        </Typography>
+      );
+    }
+    return <MarkdownRenderer text={displayedText} />;
+  }, [displayedText, typingIndicatorAnimation, userType]);
+
   return (
     <div
       className={cx(styles.messageBoxContainer, {
@@ -153,18 +169,7 @@ export const ChatMessageBox: React.FC<ChatMessageBoxProps> = ({
         onMouseOver={handleMouseEnter}
         onMouseLeave={handleMouseLeave}
       >
-        {typingIndicatorAnimation ? (
-          <Typography
-            variant="body1"
-            className={cx({
-              [styles.typingIndicator]: typingIndicatorAnimation,
-            })}
-          >
-            {displayedText}
-          </Typography>
-        ) : (
-          <MarkdownRenderer text={displayedText} />
-        )}
+        {messageText}
         {(isMenuVisible || isToolboxVisible) && (
           <div
             className={cx(styles.actionMenu, {

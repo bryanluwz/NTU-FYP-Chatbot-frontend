@@ -11,9 +11,12 @@ body {
 
   /* Colors */
   --primary-background-color: #dbdeea;
-  --secondary-background-color: #f0f0f0;
+  --secondary-background-color: #d0d0d0;
   --primary-selection-color: #f0f0f0;
   --secondary-selection-color: #d6d9e3;
+
+  --primary-dark-background-color: #2f2f2f;
+  --secondary-dark-background-color: #3f3f3f;
 
   /* Font */
   --font-family: "Inter", "Open Sans", "Roboto", sans-serif;
