@@ -20,6 +20,7 @@ import { TabEnum, ChatUserTypeEnum, UserRoleEnum } from "../../../apis/enums";
 
 interface ChatPageState {
   messages: ChatMessageModel[];
+  isQuerying: boolean;
   chatList: ChatListModel[];
   currentChatInfo: ChatInfoModel;
   isLoading: boolean;
@@ -53,6 +54,7 @@ interface ChatPageState {
 
 const initialStates = {
   messages: [],
+  isQuerying: false,
   chatList: [],
   currentChatInfo: {
     userId: "",
@@ -92,28 +94,43 @@ export const useChatPageStore = create<ChatPageState>((set, get) => ({
       // Append the user message to the messages
       set((state) => ({
         messages: [...state.messages, userMessage],
+        isQuerying: true,
       }));
 
       const chatId = get().currentChatInfo.chatId;
 
       // Receive the AI response, should update the database with the user message and ai response
-      const response = checkStatus(
+      const responseGenerator = checkStatus(
         await postQueryMessageApi({ chatId, message: userMessage })
       );
 
-      console.log(response);
+      let finalMesssage = {} as unknown as ChatMessageModel;
 
-      const { message: responseMessage } = response.data;
+      for await (const response of responseGenerator) {
+        if (response.status.code !== 200) {
+          throw new Error(response.status.message);
+        }
+        // If response.data.messageId is empty, it is stream, else is full response
+        if (response.data.message.messageId !== "") {
+          finalMesssage = response.data.message;
+          set((state) => ({
+            messages: [...state.messages, response.data.message],
+            isQuerying: false,
+          }));
+        } else if (response.data.message.messageId === "") {
+          set((state) => ({
+            messages: [
+              ...state.messages.slice(0, state.messages.length - 1),
+              response.data.message,
+            ],
+          }));
+        }
+      }
 
-      // Append the AI response to the messages
-      set((state) => ({
-        messages: [...state.messages, responseMessage],
-      }));
-
-      return responseMessage;
+      return finalMesssage;
     } catch (error) {
       handleError(error);
-      set({ isLoading: false });
+      set({ isLoading: false, isQuerying: false });
       return {
         messageId: "",
         userType: ChatUserTypeEnum.User,

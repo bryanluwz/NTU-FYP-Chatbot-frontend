@@ -23,8 +23,6 @@ interface ChatMessageBoxProps {
   message: string;
 
   typingIndicatorAnimation?: boolean; // Show the bot is responding in progress
-  typingAnimation?: boolean; // Show the message is being typed out
-  onTypingAnimationEnd?: () => void;
 
   isToolboxVisible?: boolean;
   isToolboxVisibleOnHover?: boolean;
@@ -34,8 +32,6 @@ export const ChatMessageBox: React.FC<ChatMessageBoxProps> = ({
   userType,
   message,
   typingIndicatorAnimation = false,
-  typingAnimation = false,
-  onTypingAnimationEnd,
   isToolboxVisible,
   isToolboxVisibleOnHover = true,
 }) => {
@@ -48,6 +44,10 @@ export const ChatMessageBox: React.FC<ChatMessageBoxProps> = ({
 
   // Handle copy
   const [isCopied, setIsCopied] = React.useState(false);
+
+  React.useEffect(() => {
+    setDisplayedText(message);
+  }, [message]);
 
   const handleCopy = () => {
     if (navigator.clipboard && navigator.clipboard.writeText) {
@@ -63,27 +63,6 @@ export const ChatMessageBox: React.FC<ChatMessageBoxProps> = ({
       setIsCopied(false);
     }, 1000);
   };
-
-  React.useEffect(() => {
-    if (typingAnimation) {
-      let i = 0;
-
-      const maxInterval = Math.max(Math.ceil(message.length / 20), 1);
-
-      const interval = setInterval(() => {
-        i += maxInterval;
-        setDisplayedText(message.slice(0, i));
-        if (i >= message.length) {
-          clearInterval(interval);
-          if (onTypingAnimationEnd) {
-            onTypingAnimationEnd();
-          }
-        }
-      }, 50);
-    } else {
-      setDisplayedText(message);
-    }
-  }, [message, onTypingAnimationEnd, typingAnimation]);
 
   // Handle mouse enter or leave the chat message box or the toolbox
   const handleMouseEnter = () => {

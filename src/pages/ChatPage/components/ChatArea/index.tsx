@@ -20,13 +20,11 @@ import { ChatUserTypeEnum } from "../../../../apis/enums";
 import * as styles from "./style.scss";
 
 interface ChatAreaProps {
-  isLoading: boolean;
   loadingMessage?: string;
   messages: ChatMessageModel[];
 }
 
 export const ChatArea: React.FC<ChatAreaProps> = ({
-  isLoading,
   loadingMessage,
   messages,
 }) => {
@@ -36,14 +34,15 @@ export const ChatArea: React.FC<ChatAreaProps> = ({
     React.useState(false);
 
   const [inputValue, setInputValue] = React.useState("");
-  const { postQueryMessage } = useChatPageStore.getState();
+  const { postQueryMessage, isQuerying, isLoading } =
+    useChatPageStore.getState();
 
   const inputRef = React.useRef<HTMLInputElement>(null);
   const chatContainerRef = React.useRef<HTMLDivElement>(null);
   const chatContainerBottomRef = React.useRef<HTMLDivElement>(null);
 
   // Handle submit input
-  const handleInputSubmit = () => {
+  const handleInputSubmit = async () => {
     const userMessage = inputValue.trim();
 
     setInputValue("");
@@ -56,30 +55,23 @@ export const ChatArea: React.FC<ChatAreaProps> = ({
       message: userMessage,
     };
 
-    postQueryMessage(userMessageModel)
-      .then((responseMessage) => {
-        const msg = responseMessage.message.trim();
-        if (msg === "") {
-          throw new Error("No response from AI :/ Are they sleeping?");
-        }
-        setIsAIResponding(false);
-      })
-      .catch(() => {
-        setIsAITyping(false);
-        setIsAIResponding(false);
-      });
+    try {
+      await postQueryMessage(userMessageModel);
+    } catch (error) {
+      console.error(error);
+      setIsAITyping(false);
+      setIsAIResponding(false);
+    }
   };
 
-  // On reply end
-  const onReplyEnd = () => {
-    // Focus on the input
-    setIsAITyping(false);
+  React.useEffect(() => {
+    setIsAITyping(isQuerying);
     setTimeout(() => {
       if (inputRef.current) {
         inputRef.current.focus();
       }
-    }, 10); // Delay to prevent attempting to focus when disabled
-  };
+    }, 100);
+  }, [isQuerying]);
 
   // Only render the chat message box when the messages change
   const chatMessageBoxes = React.useMemo(() => {
@@ -94,12 +86,6 @@ export const ChatArea: React.FC<ChatAreaProps> = ({
               key={index}
               userType={message.userType}
               message={message.message}
-              typingAnimation={
-                isAITyping &&
-                index === messages.length - 1 &&
-                message.userType === ChatUserTypeEnum.AI
-              }
-              onTypingAnimationEnd={onReplyEnd}
               isToolboxVisibleOnHover={!isAIResponding}
               isToolboxVisible={
                 index === messages.length - 1 &&
@@ -110,7 +96,7 @@ export const ChatArea: React.FC<ChatAreaProps> = ({
         })}
       </>
     );
-  }, [isAIResponding, isAITyping, messages]);
+  }, [isAIResponding, messages]);
 
   // Scroll to bottom when messages change
   React.useEffect(() => {

@@ -18,15 +18,14 @@ export const ChatPage: React.FC = () => {
     messages,
     chatList,
     currentChatInfo,
-    isLoading,
     currentTab,
     userInfo,
     setMessages,
     getChatList,
     getChatInfo,
     getUserInfo,
-    createChat,
-    deleteChat,
+    // createChat,
+    // deleteChat,
     setCurrentTab,
   } = useChatPageStore();
 
@@ -41,12 +40,12 @@ export const ChatPage: React.FC = () => {
   // 0. Initial load
   React.useEffect(() => {
     getUserInfo();
-  }, []);
+  }, [getUserInfo]);
 
   // 1. Load chat list
   React.useEffect(() => {
     getChatList();
-  }, [userInfo]);
+  }, [getChatList, userInfo]);
 
   // 2. Update selected chat list id when chat list is loaded
   React.useEffect(() => {
@@ -66,7 +65,7 @@ export const ChatPage: React.FC = () => {
       setSelectedChatInfo(undefined);
       setCurrentTab(TabEnum.Dashboard);
     }
-  }, [selectedChatId]);
+  }, [getChatInfo, selectedChatId, setCurrentTab]);
 
   // 4. Update selected chat info when chat info is loaded
   React.useEffect(() => {
@@ -82,19 +81,20 @@ export const ChatPage: React.FC = () => {
     } else {
       setMessages([]);
     }
-  }, [selectedChatInfo]);
+  }, [getPersona, selectedChatInfo, setMessages]);
 
   // To handle switch between dashboard and chat area
   const tabContent = React.useMemo(() => {
     switch (currentTab) {
       case TabEnum.Chat:
-        return <ChatArea isLoading={isLoading} messages={messages} />;
+        return <ChatArea messages={messages} />;
       case TabEnum.Dashboard:
         return <Dashboard setSelectedChatId={setSelectedChatId} />;
       case TabEnum.Admin:
         if (userInfo.role === UserRoleEnum.Admin) {
           return <AdminDashboard />;
         }
+        break;
       case TabEnum.Persona:
         if (
           userInfo.role === UserRoleEnum.Admin ||
@@ -102,10 +102,11 @@ export const ChatPage: React.FC = () => {
         ) {
           return <PersonaDashboard />;
         }
+        break;
       default:
         return <Dashboard setSelectedChatId={setSelectedChatId} />;
     }
-  }, [currentTab, isLoading, messages]);
+  }, [currentTab, messages, userInfo.role]);
 
   React.useEffect(() => {
     if (currentTab !== TabEnum.Chat) {
