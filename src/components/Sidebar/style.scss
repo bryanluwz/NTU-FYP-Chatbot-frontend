@@ -14,6 +14,7 @@
   > :not(:first-child),
   > :not(:last-child) {
     overflow-y: auto;
+    overflow-x: hidden;
     flex: 1;
   }
 

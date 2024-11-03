@@ -108,7 +108,7 @@ export const AccountBox: React.FC<AccountBoxProps> = ({
   };
 
   const handleDeleteAllChatsClose = () => {
-    setIsDeleteAllChatsOpen;
+    setIsDeleteAllChatsOpen(false);
   };
 
   const handleDeleteAllChats = async () => {
