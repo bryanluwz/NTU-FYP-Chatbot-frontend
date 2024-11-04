@@ -14,12 +14,13 @@ import {
   ChatListModel,
   ChatMessageModel,
   MinimumChatInfoModel,
+  UserChatMessageModel,
   UserInfoModel,
 } from "../../../apis/ChatPage/typings";
 import { TabEnum, ChatUserTypeEnum, UserRoleEnum } from "../../../apis/enums";
 
 interface ChatPageState {
-  messages: ChatMessageModel[];
+  messages: (ChatMessageModel | UserChatMessageModel)[];
   chatList: ChatListModel[];
   currentChatInfo: ChatInfoModel;
   isLoading: boolean;
@@ -31,8 +32,8 @@ interface ChatPageState {
   appendMessage: (message: ChatMessageModel) => void;
   replaceLastMessage: (message: ChatMessageModel) => void;
   postQueryMessage: (
-    userMessage: ChatMessageModel
-  ) => Promise<ChatMessageModel>;
+    userMessage: UserChatMessageModel
+  ) => Promise<ChatMessageModel | UserChatMessageModel>;
 
   getChatList: () => Promise<ChatListModel[]>;
   getChatInfo: (chatId: string) => Promise<ChatInfoModel>;
@@ -87,11 +88,13 @@ export const useChatPageStore = create<ChatPageState>((set, get) => ({
       messages[messages.length - 1] = message;
       return { messages };
     }),
-  postQueryMessage: async (userMessage: ChatMessageModel) => {
+  postQueryMessage: async (userMessage: UserChatMessageModel) => {
     try {
       // Append the user message to the messages
+      const formattedUserMessage = { ...userMessage };
+
       set((state) => ({
-        messages: [...state.messages, userMessage],
+        messages: [...state.messages, formattedUserMessage],
       }));
 
       const chatId = get().currentChatInfo.chatId;
@@ -100,8 +103,6 @@ export const useChatPageStore = create<ChatPageState>((set, get) => ({
       const response = checkStatus(
         await postQueryMessageApi({ chatId, message: userMessage })
       );
-
-      console.log(response);
 
       const { message: responseMessage } = response.data;
 

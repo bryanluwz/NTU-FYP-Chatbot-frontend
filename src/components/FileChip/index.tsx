@@ -1,19 +1,22 @@
-import { Badge, Box, Icon, IconButton, Stack, Typography } from "@mui/material";
 import React from "react";
 
+import { Badge, Icon, IconButton, Stack, Typography } from "@mui/material";
 import ClearIcon from "@mui/icons-material/Clear";
+import FileIcon from "./utils";
+import cx from "classnames";
 
 import * as styles from "./style.scss";
-import FileIcon from "./utils";
 
 interface FileChipProps {
   file: File;
-  onDelete: () => void;
+  onDelete?: () => void;
+  huge?: boolean;
 }
 
 export const FileChip: React.FC<FileChipProps> = ({
   file: _file,
   onDelete,
+  huge = false,
 }) => {
   const [file, setFile] = React.useState<File | undefined>(undefined);
 
@@ -22,8 +25,8 @@ export const FileChip: React.FC<FileChipProps> = ({
   }, [_file]);
 
   const fileBox = React.useMemo(() => {
-    return (
-      file && (
+    return file ? (
+      onDelete ? (
         <Badge
           className={styles.badge}
           badgeContent={
@@ -32,16 +35,31 @@ export const FileChip: React.FC<FileChipProps> = ({
             </IconButton>
           }
         >
-          <Stack className={styles.imageBox} direction={"row"} gap={2}>
+          <Stack
+            className={cx(styles.imageBox, { [styles.huge]: huge })}
+            direction={"row"}
+            gap={2}
+          >
             <Icon>
               <FileIcon fileType={file.type} />
             </Icon>
             <Typography variant="body1">{file.name}</Typography>
           </Stack>
         </Badge>
+      ) : (
+        <Stack
+          className={cx(styles.imageBox, { [styles.huge]: huge })}
+          direction={"row"}
+          gap={2}
+        >
+          <Icon>
+            <FileIcon fileType={file.type} />
+          </Icon>
+          <Typography variant="body1">{file.name}</Typography>
+        </Stack>
       )
-    );
-  }, [file, onDelete]);
+    ) : null;
+  }, [file, huge, onDelete]);
 
   return <>{fileBox}</>;
 };

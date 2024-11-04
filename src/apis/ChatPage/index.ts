@@ -1,11 +1,11 @@
 import {
-  ChatInfoModel,
   GetChatInfoResponseModel,
   GetChatListResponseModel,
   GetMinimumChatInfoResponseModel,
   GetUserInfoResponseModel,
   MinimumChatInfoModel,
   PostQueryMessageResponseModel,
+  UserChatMessageModel,
 } from "./typings";
 import { HTTPMethod, HTTPStatusBody } from "../typings";
 import {
@@ -16,14 +16,22 @@ import {
 } from "../urls";
 import { fetchWithAuth } from "../utils";
 
-export const postQueryMessageApi = async (data: any) => {
+export const postQueryMessageApi = async (data: {
+  chatId: string;
+  message: UserChatMessageModel;
+}) => {
+  const formData = new FormData();
+
+  formData.append("messageText", data.message.message.text);
+
+  data.message.message.files.forEach((file) => {
+    formData.append("files", file);
+  });
+
   return (
     await fetchWithAuth(postQueryChatMessageUrl, {
       method: HTTPMethod.POST,
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify(data),
+      body: formData,
     })
   ).json() as unknown as PostQueryMessageResponseModel;
 };

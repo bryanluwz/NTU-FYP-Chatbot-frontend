@@ -4,23 +4,22 @@ import {
   FilledInput,
   IconButton,
   InputAdornment,
-  List,
   ListItem,
-  ListItemButton,
-  ListItemText,
   Stack,
 } from "@mui/material";
-import ArrowUpward from "@mui/icons-material/ArrowUpward";
-import AttachFileIcon from "@mui/icons-material/AttachFile";
+
 import { useChatPageStore } from "../../../../zustand/apis/ChatPage";
 import { ChatUserTypeEnum } from "../../../../apis/enums";
-import { ChatMessageModel } from "../../../../apis/ChatPage/typings";
-import * as chatStyles from "../ChatArea/style.scss";
-import * as styles from "./styles.scss";
-import ClearIcon from "@mui/icons-material/Clear";
+import { UserChatMessageModel } from "../../../../apis/ChatPage/typings";
+
+import AttachFileIcon from "@mui/icons-material/AttachFile";
+import ArrowUpward from "@mui/icons-material/ArrowUpward";
 import { ImageChip } from "../../../../components/ImageChip";
-import cx from "classnames";
 import { FileChip } from "../../../../components/FileChip";
+import cx from "classnames";
+
+import * as chatStyles from "../ChatArea/style.scss";
+import * as styles from "./style.scss";
 
 interface ChatInputProps {
   setRef: React.Dispatch<
@@ -38,7 +37,9 @@ export const ChatInput: React.FC<ChatInputProps> = ({
   disabled,
 }) => {
   const [inputValue, setInputValue] = React.useState("");
-  const [pastedImages, setPastedImages] = React.useState<Blob[]>([]);
+  const [pastedImages, setPastedImages] = React.useState<
+    { blob: Blob; base64: string }[]
+  >([]);
   const [attachedFiles, setAttachedFiles] = React.useState<File[]>([]);
 
   // Handle file removal
@@ -52,17 +53,14 @@ export const ChatInput: React.FC<ChatInputProps> = ({
 
   // Handle input submit with text, images, and attachments
   const handleInputSubmit = () => {
-    const messageContent = {
-      text: inputValue.trim(),
-      pastedImages,
-      attachedFiles,
-    };
-
     // Create the user message model
-    const userMessageModel: ChatMessageModel = {
+    const userMessageModel: UserChatMessageModel = {
       messageId: Date.now().toString(),
       userType: ChatUserTypeEnum.User,
-      message: JSON.stringify(messageContent), // Convert content to JSON format
+      message: {
+        text: inputValue.trim(),
+        files: [...pastedImages.map((image) => image.blob), ...attachedFiles],
+      },
     };
 
     // Reset input fields
@@ -103,13 +101,19 @@ export const ChatInput: React.FC<ChatInputProps> = ({
       if (item.type.includes("image")) {
         const file = item.getAsFile();
         if (file) {
-          // Check if the image is already in the pastedImages array
-          if (pastedImages.some((image) => image.name === file.name)) {
-            return;
-          }
+          const reader = new FileReader();
+          reader.onload = (event) => {
+            const base64 = event.target?.result as string;
 
-          // Instead of using FileReader to convert to base64, just use the file directly
-          setPastedImages((prev) => [...prev, file]); // Store the file as a blob
+            // Check if the image (base64) is already in the pastedImages array
+            if (pastedImages.some((image) => image.base64 === base64)) {
+              return; // Duplicate detected, do not add
+            }
+
+            // Store the base64 data instead of the file for uniqueness check
+            setPastedImages((prev) => [...prev, { blob: file, base64 }]);
+          };
+          reader.readAsDataURL(file); // Convert image to base64
         }
       }
     }
@@ -119,7 +123,7 @@ export const ChatInput: React.FC<ChatInputProps> = ({
     <>
       {attachedFiles.length + pastedImages.length > 0 && (
         <Box className={cx(chatStyles.chatInput, styles.attachedContainer)}>
-          <Stack gap={2} sx={{ padding: "1rem" }}>
+          <Stack gap={2} className={styles.attachedStack}>
             {attachedFiles.map((file, index) => (
               <ListItem key={index}>
                 <FileChip
@@ -133,7 +137,7 @@ export const ChatInput: React.FC<ChatInputProps> = ({
             {pastedImages.map((image, index) => (
               <ListItem key={index}>
                 <ImageChip
-                  blob={image}
+                  blob={image.blob}
                   onDelete={() => {
                     setPastedImages((prevImages) =>
                       prevImages.filter((_, i) => i !== index)

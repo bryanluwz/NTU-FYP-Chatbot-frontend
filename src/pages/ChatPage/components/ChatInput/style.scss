@@ -1,0 +1,18 @@
+.attached-container {
+  max-height: 25vh !important;
+  width: min(max(50%, 600px), 80%) !important;
+  overflow-y: scroll;
+  padding: 0px !important;
+  margin-bottom: 1rem;
+
+  overflow-x: hidden;
+
+  width: 100%;
+  background: #0000000f;
+  transition: all 0.4s ease;
+
+  .attached-stack {
+    padding: 1rem;
+    height: max-content;
+  }
+}

@@ -1,10 +1,16 @@
 .badge {
   background-color: none;
+  max-width: 120px;
 }
 
 .image-box {
-  max-height: 60px;
-  width: 60px;
+  max-height: 120px;
+  width: 120px;
   height: auto;
   overflow: hidden;
+
+  &.huge {
+    max-height: 240px;
+    width: 240px;
+  }
 }

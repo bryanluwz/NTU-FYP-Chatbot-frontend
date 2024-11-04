@@ -8,6 +8,8 @@ import {
   IconButton,
   Typography,
   Tooltip,
+  Stack,
+  ListItem,
 } from "@mui/material";
 import { ContentCopy, VolumeUp } from "@mui/icons-material";
 
@@ -17,10 +19,16 @@ import * as styles from "./style.scss";
 import { useChatPageStore } from "../../../../zustand/apis/ChatPage";
 import { usePersonaStore } from "../../../../zustand/apis/Persona";
 import { MarkdownRenderer } from "../../../../components/MarkdownRenderer";
+import {
+  ChatMessageModel,
+  UserChatMessageModel,
+} from "../../../../apis/ChatPage/typings";
+import { FileChip } from "../../../../components/FileChip";
+import { ImageChip } from "../../../../components/ImageChip";
 
 interface ChatMessageBoxProps {
   userType: ChatUserTypeEnum;
-  message: string;
+  message: ChatMessageModel | UserChatMessageModel;
 
   typingIndicatorAnimation?: boolean; // Show the bot is responding in progress
   typingAnimation?: boolean; // Show the message is being typed out
@@ -32,13 +40,18 @@ interface ChatMessageBoxProps {
 
 export const ChatMessageBox: React.FC<ChatMessageBoxProps> = ({
   userType,
-  message,
+  message: messageModel,
   typingIndicatorAnimation = false,
   typingAnimation = false,
   onTypingAnimationEnd,
   isToolboxVisible,
   isToolboxVisibleOnHover = true,
 }) => {
+  const [message, setMessage] = React.useState<
+    string | { text: string; files: (File | Blob)[] }
+  >("");
+  const [messageText, setMessageText] = React.useState("");
+
   const [displayedText, setDisplayedText] = React.useState("");
   const [isMenuVisible, setIsMenuVisible] = React.useState(false);
   const [hoverDebounceId, setHoverDebounceId] =
@@ -46,12 +59,39 @@ export const ChatMessageBox: React.FC<ChatMessageBoxProps> = ({
   const { userInfo } = useChatPageStore();
   const { currentPersona } = usePersonaStore();
 
-  // Handle copy
   const [isCopied, setIsCopied] = React.useState(false);
 
+  React.useEffect(() => {
+    if (messageModel) {
+      const _message = messageModel.message;
+      setMessage(_message);
+    }
+  }, [messageModel]);
+
+  React.useEffect(() => {
+    if (message instanceof String) {
+      setMessageText(message as string);
+    } else if (
+      message instanceof Object &&
+      "text" in message &&
+      "files" in message
+    ) {
+      setMessageText(message.text as string);
+    }
+  }, [message]);
+
+  // Handle copy
   const handleCopy = () => {
     if (navigator.clipboard && navigator.clipboard.writeText) {
-      navigator.clipboard.writeText(message);
+      if (messageModel.message instanceof String) {
+        navigator.clipboard.writeText(messageModel.message as string);
+      } else if (
+        messageModel.message instanceof Object &&
+        "text" in messageModel.message &&
+        "files" in messageModel.message
+      ) {
+        navigator.clipboard.writeText(messageModel.message.text as string);
+      }
     } else {
       console.error(
         "Clipboard API not supported or running in insecure context."
@@ -68,12 +108,12 @@ export const ChatMessageBox: React.FC<ChatMessageBoxProps> = ({
     if (typingAnimation) {
       let i = 0;
 
-      const maxInterval = Math.max(Math.ceil(message.length / 20), 1);
+      const maxInterval = Math.max(Math.ceil(messageText.length / 20), 1);
 
       const interval = setInterval(() => {
         i += maxInterval;
-        setDisplayedText(message.slice(0, i));
-        if (i >= message.length) {
+        setDisplayedText(messageText.slice(0, i));
+        if (i >= messageText.length) {
           clearInterval(interval);
           if (onTypingAnimationEnd) {
             onTypingAnimationEnd();
@@ -81,9 +121,9 @@ export const ChatMessageBox: React.FC<ChatMessageBoxProps> = ({
         }
       }, 50);
     } else {
-      setDisplayedText(message);
+      setDisplayedText(messageText);
     }
-  }, [message, onTypingAnimationEnd, typingAnimation]);
+  }, [messageModel, messageText, onTypingAnimationEnd, typingAnimation]);
 
   // Handle mouse enter or leave the chat message box or the toolbox
   const handleMouseEnter = () => {
@@ -122,7 +162,7 @@ export const ChatMessageBox: React.FC<ChatMessageBoxProps> = ({
     return undefined;
   }, [currentPersona]);
 
-  const messageText = React.useMemo(() => {
+  const messageTextComponent = React.useMemo(() => {
     if (typingIndicatorAnimation || userType === ChatUserTypeEnum.User) {
       return (
         <Typography
@@ -137,6 +177,42 @@ export const ChatMessageBox: React.FC<ChatMessageBoxProps> = ({
     }
     return <MarkdownRenderer text={displayedText} />;
   }, [displayedText, typingIndicatorAnimation, userType]);
+
+  const messageFilesComponents = React.useMemo(() => {
+    let attachedImagesCount = 0;
+    let attachedFiles = null;
+
+    if (message instanceof Object && "text" in message && "files" in message) {
+      attachedFiles = (
+        <>
+          {message.files.map((file, index) => {
+            let chip = null;
+            if (file instanceof File) {
+              if (file.name.split(".")[0] === "image") {
+                attachedImagesCount++;
+              } else {
+                chip = <FileChip file={file} />;
+              }
+            }
+
+            return chip && <ListItem key={index}>{chip}</ListItem>;
+          })}
+        </>
+      );
+    }
+
+    return (
+      <>
+        {attachedImagesCount > 0 && (
+          <Typography>
+            {attachedImagesCount} image{attachedImagesCount >= 1 ? "s" : ""}{" "}
+            attached
+          </Typography>
+        )}
+        {attachedFiles}
+      </>
+    );
+  }, [message]);
 
   return (
     <div
@@ -158,47 +234,50 @@ export const ChatMessageBox: React.FC<ChatMessageBoxProps> = ({
           ? userInfo.username.charAt(0)
           : ":/"}
       </Avatar>
-      <div
-        className={cx(styles.messageBox, {
-          [styles.user]: userType === ChatUserTypeEnum.User,
-          [styles.nonUser]:
-            userType !== ChatUserTypeEnum.User && !typingIndicatorAnimation,
-          [styles.nonColor]:
-            userType !== ChatUserTypeEnum.User && typingIndicatorAnimation,
-        })}
-        onMouseOver={handleMouseEnter}
-        onMouseLeave={handleMouseLeave}
-      >
-        {messageText}
-        {(isMenuVisible || isToolboxVisible) && (
-          <div
-            className={cx(styles.actionMenu, {
-              [styles.left]: userType !== ChatUserTypeEnum.User,
-              [styles.right]: userType === ChatUserTypeEnum.User,
-            })}
-            onMouseOver={handleMouseEnter}
-            onMouseLeave={handleMouseLeave}
-          >
-            <ButtonGroup variant="outlined">
-              <IconButton onClick={handleCopy}>
-                <Tooltip title={isCopied ? "Copied" : "Copy"}>
-                  <ContentCopy />
-                </Tooltip>
-              </IconButton>
-              <IconButton
-                onClick={() =>
-                  console.log(
-                    "Unfornunately, the developer does not have enough budget"
-                  )
-                }
-              >
-                <Tooltip title={"Not available in your region"}>
-                  <VolumeUp />
-                </Tooltip>
-              </IconButton>
-            </ButtonGroup>
-          </div>
-        )}
+      <div className={styles.messageBox}>
+        {messageFilesComponents}
+        <div
+          className={cx(styles.messageText, {
+            [styles.user]: userType === ChatUserTypeEnum.User,
+            [styles.nonUser]:
+              userType !== ChatUserTypeEnum.User && !typingIndicatorAnimation,
+            [styles.nonColor]:
+              userType !== ChatUserTypeEnum.User && typingIndicatorAnimation,
+          })}
+          onMouseOver={handleMouseEnter}
+          onMouseLeave={handleMouseLeave}
+        >
+          {messageTextComponent}
+          {(isMenuVisible || isToolboxVisible) && (
+            <div
+              className={cx(styles.actionMenu, {
+                [styles.left]: userType !== ChatUserTypeEnum.User,
+                [styles.right]: userType === ChatUserTypeEnum.User,
+              })}
+              onMouseOver={handleMouseEnter}
+              onMouseLeave={handleMouseLeave}
+            >
+              <ButtonGroup variant="outlined">
+                <IconButton onClick={handleCopy}>
+                  <Tooltip title={isCopied ? "Copied" : "Copy"}>
+                    <ContentCopy />
+                  </Tooltip>
+                </IconButton>
+                <IconButton
+                  onClick={() =>
+                    console.log(
+                      "Unfornunately, the developer does not have enough budget"
+                    )
+                  }
+                >
+                  <Tooltip title={"Not available in your region"}>
+                    <VolumeUp />
+                  </Tooltip>
+                </IconButton>
+              </ButtonGroup>
+            </div>
+          )}
+        </div>
       </div>
     </div>
   );

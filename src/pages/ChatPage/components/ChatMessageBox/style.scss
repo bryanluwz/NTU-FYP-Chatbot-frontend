@@ -12,32 +12,37 @@
   &.user {
     flex-direction: row-reverse;
   }
-
   .message-box {
-    border-radius: 1.2rem;
-    justify-content: flex-start;
-
     min-width: max(10%, 10rem);
     max-width: min(70%, 80rem);
-    padding: 0.5rem 1rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
 
-    position: relative;
+    .message-text {
+      border-radius: 1.2rem;
+      justify-content: flex-start;
 
-    word-wrap: break-word;
-    white-space: pre-wrap;
-    word-break: break-word;
-    overflow-wrap: break-word;
+      padding: 0.5rem 1rem;
 
-    &.non-color {
-      background-color: none;
-    }
+      position: relative;
 
-    &.non-user {
-      background-color: var(--secondary-background-color);
-    }
+      word-wrap: break-word;
+      white-space: pre-wrap;
+      word-break: break-word;
+      overflow-wrap: break-word;
 
-    &.user {
-      background-color: var(--primary-background-color);
+      &.non-color {
+        background-color: none;
+      }
+
+      &.non-user {
+        background-color: var(--secondary-background-color);
+      }
+
+      &.user {
+        background-color: var(--primary-background-color);
+      }
     }
   }
 

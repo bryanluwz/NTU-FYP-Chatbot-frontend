@@ -32,7 +32,7 @@ export const ChatArea: React.FC<ChatAreaProps> = ({
   const chatContainerBottomRef = React.useRef<HTMLDivElement>(null);
 
   // On reply end
-  const onReplyEnd = () => {
+  const onReplyEnd = React.useCallback(() => {
     // Focus on the input
     setIsAITyping(false);
     setTimeout(() => {
@@ -40,7 +40,7 @@ export const ChatArea: React.FC<ChatAreaProps> = ({
         inputRef.current.focus();
       }
     }, 10); // Delay to prevent attempting to focus when disabled
-  };
+  }, [inputRef]);
 
   // Only render the chat message box when the messages change
   const chatMessageBoxes = React.useMemo(() => {
@@ -54,7 +54,7 @@ export const ChatArea: React.FC<ChatAreaProps> = ({
             <ChatMessageBox
               key={index}
               userType={message.userType}
-              message={message.message}
+              message={message}
               typingAnimation={
                 isAITyping &&
                 index === messages.length - 1 &&
@@ -71,7 +71,7 @@ export const ChatArea: React.FC<ChatAreaProps> = ({
         })}
       </>
     );
-  }, [isAIResponding, isAITyping, messages]);
+  }, [isAIResponding, isAITyping, messages, onReplyEnd]);
 
   // Scroll to bottom when messages change
   React.useEffect(() => {
@@ -123,7 +123,7 @@ export const ChatArea: React.FC<ChatAreaProps> = ({
             {isAIResponding && (
               <ChatMessageBox
                 userType={ChatUserTypeEnum.AI}
-                message=""
+                message={{} as ChatMessageModel}
                 typingIndicatorAnimation={isAIResponding}
               />
             )}

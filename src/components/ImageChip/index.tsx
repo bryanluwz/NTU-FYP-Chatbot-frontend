@@ -1,18 +1,21 @@
-import { Badge, Box, IconButton } from "@mui/material";
 import React from "react";
+import { Badge, Box, IconButton } from "@mui/material";
 
 import ClearIcon from "@mui/icons-material/Clear";
+import cx from "classnames";
 
 import * as styles from "./style.scss";
 
 interface ImageChipProps {
   blob: Blob;
-  onDelete: () => void;
+  onDelete?: () => void;
+  huge?: boolean;
 }
 
 export const ImageChip: React.FC<ImageChipProps> = ({
   blob: _blob,
   onDelete,
+  huge = false,
 }) => {
   const [blob, setBlob] = React.useState<Blob | undefined>(undefined);
 
@@ -21,8 +24,8 @@ export const ImageChip: React.FC<ImageChipProps> = ({
   }, [_blob]);
 
   const imageBox = React.useMemo(() => {
-    return (
-      blob && (
+    return blob ? (
+      onDelete ? (
         <Badge
           className={styles.badge}
           badgeContent={
@@ -34,12 +37,18 @@ export const ImageChip: React.FC<ImageChipProps> = ({
           <Box
             component={"img"}
             src={URL.createObjectURL(blob)}
-            className={styles.imageBox}
+            className={cx(styles.imageBox, { [styles.huge]: huge })}
           />
         </Badge>
+      ) : (
+        <Box
+          component={"img"}
+          src={URL.createObjectURL(blob)}
+          className={cx(styles.imageBox, { [styles.huge]: huge })}
+        />
       )
-    );
-  }, [blob, onDelete]);
+    ) : null;
+  }, [blob, huge, onDelete]);
 
   return <>{imageBox}</>;
 };
