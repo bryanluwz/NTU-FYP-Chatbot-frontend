@@ -69,15 +69,19 @@ export const ChatMessageBox: React.FC<ChatMessageBoxProps> = ({
   }, [messageModel]);
 
   React.useEffect(() => {
-    if (typeof message === "string") {
-      setMessageText(message as string);
+    let jsonMessage;
+    try {
+      jsonMessage = JSON.parse(message as string);
+    } catch {
+      jsonMessage = message;
+    }
+    if (typeof jsonMessage === "string") {
+      setMessageText(jsonMessage as string);
     } else if (
-      message instanceof Object &&
-      "text" in message &&
-      "files" in message
+      jsonMessage instanceof Object &&
+      ("text" in jsonMessage || "files" in jsonMessage)
     ) {
-      console.log(message.text);
-      setMessageText(message.text as string);
+      setMessageText(jsonMessage.text as string);
     }
   }, [message]);
 
