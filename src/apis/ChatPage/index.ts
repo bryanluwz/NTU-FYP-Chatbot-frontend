@@ -1,4 +1,5 @@
 import {
+  ChatMessageModel,
   GetChatInfoResponseModel,
   GetChatListResponseModel,
   GetMinimumChatInfoResponseModel,
@@ -22,7 +23,17 @@ export const postQueryMessageApi = async (data: {
 }) => {
   const formData = new FormData();
 
-  formData.append("messageText", data.message.message.text);
+  formData.append(
+    "messageInfo",
+    JSON.stringify({
+      chatId: data.chatId,
+      message: JSON.stringify({
+        messageId: data.message.messageId,
+        userType: data.message.userType,
+        message: data.message.message.text,
+      } as ChatMessageModel),
+    })
+  );
 
   data.message.message.files.forEach((file) => {
     formData.append("files", file);

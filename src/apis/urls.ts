@@ -1,5 +1,5 @@
-// const baseUrl = ""; // for dev use "http://localhost:3000" or whatever the port is, for prod use ""
-const baseUrl = "https://localhost:3000"; // for dev use "http://localhost:3000" or whatever the port is, for prod use ""
+const baseUrl = ""; // for dev use "http://localhost:3000" or whatever the port is, for prod use ""
+// const baseUrl = "https://localhost:3000"; // for dev use "http://localhost:3000" or whatever the port is, for prod use ""
 
 export const postQueryChatMessageUrl = `${baseUrl}/api/chat/message`;
 export const getChatListUrl = `${baseUrl}/api/chat/list`;

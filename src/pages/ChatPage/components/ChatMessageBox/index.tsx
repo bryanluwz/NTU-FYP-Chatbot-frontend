@@ -69,13 +69,14 @@ export const ChatMessageBox: React.FC<ChatMessageBoxProps> = ({
   }, [messageModel]);
 
   React.useEffect(() => {
-    if (message instanceof String) {
+    if (typeof message === "string") {
       setMessageText(message as string);
     } else if (
       message instanceof Object &&
       "text" in message &&
       "files" in message
     ) {
+      console.log(message.text);
       setMessageText(message.text as string);
     }
   }, [message]);
