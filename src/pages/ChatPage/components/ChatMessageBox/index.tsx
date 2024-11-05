@@ -8,7 +8,6 @@ import {
   IconButton,
   Typography,
   Tooltip,
-  Stack,
   ListItem,
 } from "@mui/material";
 import { ContentCopy, VolumeUp } from "@mui/icons-material";
@@ -24,7 +23,6 @@ import {
   UserChatMessageModel,
 } from "../../../../apis/ChatPage/typings";
 import { FileChip } from "../../../../components/FileChip";
-import { ImageChip } from "../../../../components/ImageChip";
 
 interface ChatMessageBoxProps {
   userType: ChatUserTypeEnum;
@@ -187,16 +185,28 @@ export const ChatMessageBox: React.FC<ChatMessageBoxProps> = ({
     let attachedImagesCount = 0;
     let attachedFiles = null;
 
-    if (message instanceof Object && "text" in message && "files" in message) {
+    let jsonMessage;
+    try {
+      jsonMessage = JSON.parse(message as string);
+    } catch {
+      jsonMessage = message;
+    }
+
+    if (
+      jsonMessage instanceof Object &&
+      "text" in jsonMessage &&
+      "files" in jsonMessage
+    ) {
+      jsonMessage = jsonMessage as { text: string; files: File[] };
       attachedFiles = (
         <>
-          {message.files.map((file, index) => {
+          {jsonMessage.files.map((file, index) => {
             let chip = null;
-            if (file instanceof File) {
+            if ("name" in file) {
               if (file.name.split(".")[0] === "image") {
                 attachedImagesCount++;
               } else {
-                chip = <FileChip file={file} />;
+                chip = <FileChip file={new File([], file.name)} />;
               }
             }
 
@@ -210,7 +220,7 @@ export const ChatMessageBox: React.FC<ChatMessageBoxProps> = ({
       <>
         {attachedImagesCount > 0 && (
           <Typography>
-            {attachedImagesCount} image{attachedImagesCount >= 1 ? "s" : ""}{" "}
+            {attachedImagesCount} image{attachedImagesCount > 1 ? "s" : ""}{" "}
             attached
           </Typography>
         )}

@@ -39,7 +39,7 @@ export const ChatArea: React.FC<ChatAreaProps> = ({
       if (inputRef?.current) {
         inputRef.current.focus();
       }
-    }, 10); // Delay to prevent attempting to focus when disabled
+    }, 100); // Delay to prevent attempting to focus when disabled
   }, [inputRef]);
 
   // Only render the chat message box when the messages change
@@ -61,7 +61,9 @@ export const ChatArea: React.FC<ChatAreaProps> = ({
                 message.userType === ChatUserTypeEnum.AI
               }
               onTypingAnimationEnd={onReplyEnd}
-              isToolboxVisibleOnHover={!isAIResponding}
+              isToolboxVisibleOnHover={
+                !isAIResponding && index === messages.length - 1
+              }
               isToolboxVisible={
                 index === messages.length - 1 &&
                 message.userType !== ChatUserTypeEnum.User
