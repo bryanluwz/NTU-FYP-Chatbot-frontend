@@ -119,34 +119,40 @@ export const ChatInput: React.FC<ChatInputProps> = ({
     }
   };
 
+  const attachedComponent = React.useMemo(() => {
+    return (
+      <Stack gap={2} className={styles.attachedStack}>
+        {attachedFiles.map((file, index) => (
+          <ListItem key={index}>
+            <FileChip
+              file={file}
+              onDelete={() => {
+                handleFileRemove(file);
+              }}
+            />
+          </ListItem>
+        ))}
+        {pastedImages.map((image, index) => (
+          <ListItem key={index}>
+            <ImageChip
+              blob={image.blob}
+              onDelete={() => {
+                setPastedImages((prevImages) =>
+                  prevImages.filter((_, i) => i !== index)
+                );
+              }}
+            />
+          </ListItem>
+        ))}
+      </Stack>
+    );
+  }, [attachedFiles, pastedImages]);
+
   return (
     <>
       {attachedFiles.length + pastedImages.length > 0 && (
         <Box className={cx(chatStyles.chatInput, styles.attachedContainer)}>
-          <Stack gap={2} className={styles.attachedStack}>
-            {attachedFiles.map((file, index) => (
-              <ListItem key={index}>
-                <FileChip
-                  file={file}
-                  onDelete={() => {
-                    handleFileRemove(file);
-                  }}
-                />
-              </ListItem>
-            ))}
-            {pastedImages.map((image, index) => (
-              <ListItem key={index}>
-                <ImageChip
-                  blob={image.blob}
-                  onDelete={() => {
-                    setPastedImages((prevImages) =>
-                      prevImages.filter((_, i) => i !== index)
-                    );
-                  }}
-                />
-              </ListItem>
-            ))}
-          </Stack>
+          {attachedComponent}
         </Box>
       )}
       <FilledInput
