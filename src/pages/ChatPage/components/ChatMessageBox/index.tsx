@@ -23,6 +23,7 @@ import {
   UserChatMessageModel,
 } from "../../../../apis/ChatPage/typings";
 import { FileChip } from "../../../../components/FileChip";
+import { ImageChip } from "../../../../components/ImageChip";
 
 interface ChatMessageBoxProps {
   userType: ChatUserTypeEnum;
@@ -46,7 +47,8 @@ export const ChatMessageBox: React.FC<ChatMessageBoxProps> = ({
   isToolboxVisibleOnHover = true,
 }) => {
   const [message, setMessage] = React.useState<
-    string | { text: string; files: (File | Blob)[] }
+    | string
+    | { text: string; files: { url: string; type: string; name?: string }[] }
   >("");
   const [messageText, setMessageText] = React.useState("");
 
@@ -197,17 +199,21 @@ export const ChatMessageBox: React.FC<ChatMessageBoxProps> = ({
       "text" in jsonMessage &&
       "files" in jsonMessage
     ) {
-      jsonMessage = jsonMessage as { text: string; files: File[] };
+      jsonMessage = jsonMessage as {
+        text: string;
+        files: { url: string; type: string; name?: string }[];
+      };
       attachedFiles = (
         <>
           {jsonMessage.files.map((file, index) => {
             let chip = null;
-            if ("name" in file) {
-              if (file.name.split(".")[0] === "image") {
-                attachedImagesCount++;
-              } else {
-                chip = <FileChip file={new File([], file.name)} />;
-              }
+
+            // Load file from backend (only images is loaded, file is a dummy file)
+            // If is of mimetype image, then do ImageChip, else do fileChip
+            if (file.type.startsWith("image")) {
+              chip = <ImageChip blob={file.url} />;
+            } else {
+              chip = <FileChip file={file.url} />;
             }
 
             return chip && <ListItem key={index}>{chip}</ListItem>;
