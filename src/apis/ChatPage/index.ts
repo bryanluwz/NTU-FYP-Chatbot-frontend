@@ -38,12 +38,8 @@ export const postQueryMessageApi = async (data: {
 
   // Convert files and blobs and append to formData
   const filePromises = data.message.message.files.map(async (file) => {
-    let appended;
-    if (file.type === "blob") {
-      appended = await urlToBlob(file.url);
-    } else if (file.type === "file") {
-      appended = await urlToFile(file.url, file.name || "");
-    }
+    const appended = await urlToFile(file.url, file.name || "");
+
     if (appended) {
       formData.append("files", appended);
     }

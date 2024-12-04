@@ -9,12 +9,14 @@ import * as styles from "./style.scss";
 
 interface FileChipProps {
   file: File | string;
+  filename?: string;
   onDelete?: () => void;
   huge?: boolean;
 }
 
 export const FileChip: React.FC<FileChipProps> = ({
   file: _file,
+  filename,
   onDelete,
   huge = false,
 }) => {
@@ -34,13 +36,17 @@ export const FileChip: React.FC<FileChipProps> = ({
         .then((response) => response.blob())
         .then((blob) => {
           setGettedFile(
-            new File([blob], file.split("/").pop() || "defaultFilename", {
-              type: blob.type,
-            })
+            new File(
+              [blob],
+              filename || file.split("/").pop() || "defaultFilename",
+              {
+                type: blob.type,
+              }
+            )
           );
         });
     }
-  }, [file]);
+  }, [file, filename]);
 
   React.useEffect(() => {
     if (file instanceof File) {

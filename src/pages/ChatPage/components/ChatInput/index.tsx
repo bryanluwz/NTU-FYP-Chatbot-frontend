@@ -41,23 +41,17 @@ export const ChatInput: React.FC<ChatInputProps> = ({
   const [pastedImages, setPastedImages] = React.useState<
     { name: string; url: string }[]
   >([]);
+
   const [attachedFiles, setAttachedFiles] = React.useState<
     { name: string; url: string }[]
   >([]);
 
   const [pastedImagesComponent, setPastedImagesComponent] = React.useState<
-    Blob[]
+    File[]
   >([]);
   const [attachedFilesComponent, setAttachedFilesComponent] = React.useState<
     File[]
   >([]);
-
-  // Handle file removal
-  const handleFileRemove = (fileToRemove: File) => {
-    setAttachedFiles((prevFiles) =>
-      prevFiles.filter((file) => file.name !== fileToRemove.name)
-    );
-  };
 
   const { postQueryMessage } = useChatPageStore.getState();
 
@@ -72,7 +66,7 @@ export const ChatInput: React.FC<ChatInputProps> = ({
         files: [
           ...pastedImages.map((i) => ({
             url: i.url,
-            type: "blob",
+            type: "image",
             name: i.name,
           })),
           ...attachedFiles.map((i) => ({
@@ -102,17 +96,38 @@ export const ChatInput: React.FC<ChatInputProps> = ({
       });
   };
 
-  // Handle file attachment
+  // Handle file attachment (if image, move it to pastedImages)
   const handleFileAttachment = (files: FileList) => {
     const filesArray = Array.from(files); // Convert FileList to array
 
-    // Prevent duplicate file with the same name
-    const filteredFilesArray = filesArray.filter((file) =>
+    // Separate image files and non-image files
+    const imageFiles = filesArray.filter((file) =>
+      file.type.startsWith("image/")
+    );
+    const nonImageFiles = filesArray.filter(
+      (file) => !file.type.startsWith("image/")
+    );
+
+    // Filter out duplicates for images
+    const uniqueImageFiles = imageFiles.filter((file) =>
+      pastedImages.every((image) => image.name !== file.name)
+    );
+
+    // Generate local URLs for images and add to pastedImages
+    const imageUrls = uniqueImageFiles.map((file) => ({
+      name: file.name,
+      url: URL.createObjectURL(file),
+    }));
+
+    setPastedImages((prev) => [...prev, ...imageUrls]);
+
+    // Filter out duplicates for non-image files
+    const uniqueNonImageFiles = nonImageFiles.filter((file) =>
       attachedFiles.every((attachedFile) => attachedFile.name !== file.name)
     );
 
-    // Generate local URLs for the filtered files
-    const fileUrls = filteredFilesArray.map((file) => ({
+    // Generate local URLs for non-image files and add to attachedFiles
+    const fileUrls = uniqueNonImageFiles.map((file) => ({
       name: file.name,
       url: URL.createObjectURL(file),
     }));
@@ -150,10 +165,10 @@ export const ChatInput: React.FC<ChatInputProps> = ({
 
   React.useEffect(() => {
     const convert = async () => {
-      const blobs = await Promise.all(
-        pastedImages.map((image) => urlToBlob(image.url))
+      const files = await Promise.all(
+        pastedImages.map((image) => urlToFile(image.url, image.name))
       );
-      setPastedImagesComponent(blobs);
+      setPastedImagesComponent(files);
     };
     convert();
   }, [pastedImages]);

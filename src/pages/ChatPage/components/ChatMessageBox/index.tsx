@@ -203,17 +203,20 @@ export const ChatMessageBox: React.FC<ChatMessageBoxProps> = ({
         text: string;
         files: { url: string; type: string; name?: string }[];
       };
+      console.log(jsonMessage.files);
       attachedFiles = (
         <>
           {jsonMessage.files.map((file, index) => {
             let chip = null;
+
+            console.log(file);
 
             // Load file from backend (only images is loaded, file is a dummy file)
             // If is of mimetype image, then do ImageChip, else do fileChip
             if (file.type.startsWith("image")) {
               chip = <ImageChip blob={file.url} />;
             } else {
-              chip = <FileChip file={file.url} />;
+              chip = <FileChip file={file.url} filename={file.name} />;
             }
 
             return chip && <ListItem key={index}>{chip}</ListItem>;
