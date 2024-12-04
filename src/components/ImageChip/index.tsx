@@ -7,7 +7,7 @@ import cx from "classnames";
 import * as styles from "./style.scss";
 
 interface ImageChipProps {
-  blob: Blob;
+  blob: Blob | string;
   onDelete?: () => void;
   huge?: boolean;
 }
@@ -17,7 +17,7 @@ export const ImageChip: React.FC<ImageChipProps> = ({
   onDelete,
   huge = false,
 }) => {
-  const [blob, setBlob] = React.useState<Blob | undefined>(undefined);
+  const [blob, setBlob] = React.useState<Blob | string | undefined>(undefined);
 
   React.useEffect(() => {
     setBlob(_blob);
@@ -36,14 +36,14 @@ export const ImageChip: React.FC<ImageChipProps> = ({
         >
           <Box
             component={"img"}
-            src={URL.createObjectURL(blob)}
+            src={typeof blob === "string" ? blob : URL.createObjectURL(blob)}
             className={cx(styles.imageBox, { [styles.huge]: huge })}
           />
         </Badge>
       ) : (
         <Box
           component={"img"}
-          src={URL.createObjectURL(blob)}
+          src={typeof blob === "string" ? blob : URL.createObjectURL(blob)}
           className={cx(styles.imageBox, { [styles.huge]: huge })}
         />
       )

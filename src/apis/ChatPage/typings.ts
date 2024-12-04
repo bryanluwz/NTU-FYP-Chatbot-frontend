@@ -14,7 +14,7 @@ export interface ChatMessageModel extends BaseMessageModel {
 export interface UserChatMessageModel extends BaseMessageModel {
   message: {
     text: string;
-    files: (File | Blob)[];
+    files: { url: string; type: string; name?: string }[]; // asset pointer to local uploaded files, type is either "blob" or "file"
   };
 }
 

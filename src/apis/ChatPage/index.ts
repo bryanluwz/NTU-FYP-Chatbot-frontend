@@ -16,6 +16,7 @@ import {
   updateChatMessageUrl,
 } from "../urls";
 import { fetchWithAuth } from "../utils";
+import { urlToBlob, urlToFile } from "../../utils";
 
 export const postQueryMessageApi = async (data: {
   chatId: string;
@@ -35,9 +36,17 @@ export const postQueryMessageApi = async (data: {
     })
   );
 
-  data.message.message.files.forEach((file) => {
-    formData.append("files", file);
+  // Convert files and blobs and append to formData
+  const filePromises = data.message.message.files.map(async (file) => {
+    const appended = await urlToFile(file.url, file.name || "");
+
+    if (appended) {
+      formData.append("files", appended);
+    }
   });
+
+  // Wait for all file uploads to complete
+  await Promise.all(filePromises);
 
   return (
     await fetchWithAuth(postQueryChatMessageUrl, {
