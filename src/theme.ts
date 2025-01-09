@@ -24,6 +24,26 @@ const themeOptions: ThemeOptions = {
       fontSize: "1.4rem",
       fontWeight: 600,
     },
+    h4: {
+      fontSize: "1.6rem",
+      fontWeight: 600,
+    },
+    h3: {
+      fontSize: "1.8rem",
+      fontWeight: 600,
+    },
+    h2: {
+      fontSize: "2rem",
+      fontWeight: 600,
+    },
+    h1: {
+      fontSize: "2.2rem",
+      fontWeight: 600,
+    },
+    body1: {
+      fontSize: "1rem",
+      fontWeight: 400,
+    },
     body2: {
       fontSize: "1rem",
       fontWeight: 600,
@@ -31,6 +51,10 @@ const themeOptions: ThemeOptions = {
     subtitle1: {
       fontSize: "0.9rem",
       fontWeight: 400,
+    },
+    subtitle2: {
+      fontSize: "0.9rem",
+      fontWeight: 600,
     },
   },
   components: {

@@ -20,7 +20,7 @@ import cx from "classnames";
 
 import * as chatStyles from "../ChatArea/style.scss";
 import * as styles from "./style.scss";
-import { urlToBlob, urlToFile } from "../../../../utils";
+import { urlToFile } from "../../../../utils";
 
 interface ChatInputProps {
   setRef: React.Dispatch<

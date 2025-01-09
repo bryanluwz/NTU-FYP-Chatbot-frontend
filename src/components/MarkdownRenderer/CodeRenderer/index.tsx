@@ -31,8 +31,8 @@ export const CodeRenderer: React.FC<CodeRendererProps> = ({ children }) => {
 
   React.useEffect(() => {
     if (childrenString) {
-      const codeLanguage = childrenString.className.replace("lang-", "");
-      const text = childrenString.children;
+      const codeLanguage = childrenString?.className?.replace("lang-", "");
+      const text = childrenString?.children;
 
       setCodeLanguage(codeLanguage);
       setText(text);
@@ -72,7 +72,7 @@ export const CodeRenderer: React.FC<CodeRendererProps> = ({ children }) => {
             padding: "0rem 1rem",
           }}
         >
-          <pre>{codeLanguage}</pre>
+          <pre>{codeLanguage ?? "text"}</pre>
           <IconButton onClick={handleCopy}>
             <Tooltip title={isCopied ? "Copied!" : "Copy"}>
               <ContentCopy sx={{ color: "white" }} />
