@@ -88,14 +88,26 @@ export const ChatMessageBox: React.FC<ChatMessageBoxProps> = ({
   // Handle copy
   const handleCopy = () => {
     if (navigator.clipboard && navigator.clipboard.writeText) {
-      if (messageModel.message instanceof String) {
+      // Check if messageModel.message is JSON deserialisable
+      let isJson = false;
+      let parsed = null;
+      try {
+        parsed = JSON.parse(messageModel.message as string);
+        isJson = true;
+      } catch {
+        isJson = false;
+      }
+
+      if (!isJson && typeof messageModel.message === "string") {
         navigator.clipboard.writeText(messageModel.message as string);
       } else if (
-        messageModel.message instanceof Object &&
-        "text" in messageModel.message &&
-        "files" in messageModel.message
+        isJson &&
+        parsed &&
+        typeof parsed === "object" &&
+        "text" in parsed &&
+        "files" in parsed
       ) {
-        navigator.clipboard.writeText(messageModel.message.text as string);
+        navigator.clipboard.writeText(parsed.text as string);
       }
     } else {
       console.error(
@@ -203,13 +215,10 @@ export const ChatMessageBox: React.FC<ChatMessageBoxProps> = ({
         text: string;
         files: { url: string; type: string; name?: string }[];
       };
-      console.log(jsonMessage.files);
       attachedFiles = (
         <>
           {jsonMessage.files.map((file, index) => {
             let chip = null;
-
-            console.log(file);
 
             // Load file from backend (only images is loaded, file is a dummy file)
             // If is of mimetype image, then do ImageChip, else do fileChip

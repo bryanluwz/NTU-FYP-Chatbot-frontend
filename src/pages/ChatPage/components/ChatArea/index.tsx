@@ -62,7 +62,7 @@ export const ChatArea: React.FC<ChatAreaProps> = ({
               }
               onTypingAnimationEnd={onReplyEnd}
               isToolboxVisibleOnHover={
-                !isAIResponding && index === messages.length - 1
+                !isAIResponding && index !== messages.length - 1
               }
               isToolboxVisible={
                 index === messages.length - 1 &&
