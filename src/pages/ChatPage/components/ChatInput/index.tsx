@@ -14,6 +14,8 @@ import { UserChatMessageModel } from "../../../../apis/ChatPage/typings";
 
 import AttachFileIcon from "@mui/icons-material/AttachFile";
 import ArrowUpward from "@mui/icons-material/ArrowUpward";
+import MicNoneIcon from "@mui/icons-material/MicNone";
+import SettingsVoiceIcon from "@mui/icons-material/SettingsVoice";
 import { ImageChip } from "../../../../components/ImageChip";
 import { FileChip } from "../../../../components/FileChip";
 import cx from "classnames";
@@ -21,6 +23,7 @@ import cx from "classnames";
 import * as chatStyles from "../ChatArea/style.scss";
 import * as styles from "./style.scss";
 import { urlToFile } from "../../../../utils";
+import { useSpeechTranscript } from "../../../../context/SpeechTranscriptContext";
 
 interface ChatInputProps {
   setRef: React.Dispatch<
@@ -53,7 +56,17 @@ export const ChatInput: React.FC<ChatInputProps> = ({
     File[]
   >([]);
 
+  const [isSSTActive, setIsSSTActive] = React.useState(false);
+  const [originalInputValue, setOriginalInputValue] = React.useState("");
+
   const { postQueryMessage } = useChatPageStore.getState();
+  const {
+    transcript,
+    resetTranscript,
+    startListening,
+    stopListening,
+    isListening,
+  } = useSpeechTranscript();
 
   // Handle input submit with text, images, and attachments
   const handleInputSubmit = () => {
@@ -95,6 +108,38 @@ export const ChatInput: React.FC<ChatInputProps> = ({
         setIsAIResponding(false);
       });
   };
+
+  // Handle microphone button press
+  const handleMicrophonePress = () => {
+    setIsSSTActive((prev) => !prev);
+  };
+
+  React.useEffect(() => {
+    if (isSSTActive && !isListening) {
+      startListening();
+      setOriginalInputValue(inputValue);
+    } else if (!isSSTActive && isListening) {
+      stopListening();
+      setInputValue(originalInputValue.trim() + " " + transcript);
+      setOriginalInputValue("");
+      resetTranscript();
+    }
+  }, [
+    inputValue,
+    isListening,
+    isSSTActive,
+    originalInputValue,
+    resetTranscript,
+    startListening,
+    stopListening,
+    transcript,
+  ]);
+
+  React.useEffect(() => {
+    if (isListening && transcript) {
+      setInputValue(originalInputValue.trim() + " " + transcript);
+    }
+  }, [isListening, transcript, originalInputValue]);
 
   // Handle file attachment (if image, move it to pastedImages)
   const handleFileAttachment = (files: FileList) => {
@@ -256,14 +301,21 @@ export const ChatInput: React.FC<ChatInputProps> = ({
           </InputAdornment>
         }
         endAdornment={
-          <InputAdornment
-            position="end"
-            disablePointerEvents={disabled || inputValue === ""}
-          >
-            <IconButton onMouseDown={handleInputSubmit}>
-              <ArrowUpward />
-            </IconButton>
-          </InputAdornment>
+          <Stack gap={1} direction={"row"}>
+            <InputAdornment position="end" disablePointerEvents={disabled}>
+              <IconButton onMouseDown={handleMicrophonePress}>
+                {isSSTActive ? <SettingsVoiceIcon /> : <MicNoneIcon />}
+              </IconButton>
+            </InputAdornment>
+            <InputAdornment
+              position="end"
+              disablePointerEvents={disabled || inputValue === ""}
+            >
+              <IconButton onMouseDown={handleInputSubmit}>
+                <ArrowUpward />
+              </IconButton>
+            </InputAdornment>
+          </Stack>
         }
       />
     </>
