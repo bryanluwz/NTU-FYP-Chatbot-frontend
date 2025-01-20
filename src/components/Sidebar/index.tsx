@@ -23,8 +23,14 @@ export const Sidebar: React.FC<SidebarProps> = ({
   selectedChatId,
   setSelectedChatId,
 }) => {
-  const { userInfo, currentTab, setCurrentTab, deleteChat, getChatList } =
-    useChatPageStore();
+  const {
+    userInfo,
+    currentTab,
+    setCurrentTab,
+    deleteChat,
+    getChatList,
+    isProcessing,
+  } = useChatPageStore();
 
   const handleNewChat = () => {
     if (currentTab !== TabEnum.Dashboard) {
@@ -39,14 +45,19 @@ export const Sidebar: React.FC<SidebarProps> = ({
 
   return (
     <div className={styles.sidebarContainer}>
-      <AccountBox username={userInfo.username} userAvatar={userInfo.avatar} />
+      <AccountBox
+        username={userInfo.username}
+        userAvatar={userInfo.avatar}
+        disabled={isProcessing}
+      />
       <ChatList
         chatList={chatList}
         selectedChatId={selectedChatId}
         setSelectedChatId={setSelectedChatId}
         deleteChat={handleDeleteChat}
+        disabled={isProcessing}
       />
-      <Button onClick={handleNewChat}>
+      <Button onClick={handleNewChat} disabled={isProcessing}>
         <ListItemText>New Chat</ListItemText>
         <ListItemIcon>
           <AddIcon />

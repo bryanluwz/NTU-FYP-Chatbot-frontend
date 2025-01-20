@@ -12,6 +12,7 @@ interface ChatListItemProps {
   onDelete?: () => void;
   isActive?: boolean;
   setActiveChat?: (title: string) => void;
+  disabled?: boolean;
 }
 
 export const ChatListItem: React.FC<ChatListItemProps> = ({
@@ -20,18 +21,28 @@ export const ChatListItem: React.FC<ChatListItemProps> = ({
   onDelete = () => {},
   isActive = false,
   setActiveChat = () => {},
+  disabled = false,
 }) => {
   const [isHovered, setIsHovered] = React.useState(false);
 
   const handleMouseEnter = () => {
+    if (disabled) {
+      return;
+    }
     setIsHovered(true);
   };
 
   const handleMouseLeave = () => {
+    if (disabled) {
+      return;
+    }
     setIsHovered(false);
   };
 
   const handleMouseDown = () => {
+    if (disabled) {
+      return;
+    }
     setActiveChat(id);
   };
 

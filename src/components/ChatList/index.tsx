@@ -15,6 +15,7 @@ interface ChatListProps {
   selectedChatId: string;
   setSelectedChatId: (chatId: string) => void;
   deleteChat: (chatId: string) => void;
+  disabled?: boolean;
 }
 
 export const ChatList: React.FC<ChatListProps> = ({
@@ -22,6 +23,7 @@ export const ChatList: React.FC<ChatListProps> = ({
   selectedChatId,
   setSelectedChatId,
   deleteChat,
+  disabled = false,
 }) => {
   const { currentTab, setCurrentTab } = useChatPageStore();
 
@@ -55,6 +57,7 @@ export const ChatList: React.FC<ChatListProps> = ({
                 }}
                 isActive={selectedChatId === chatListItem.chatId}
                 setActiveChat={handleSelectActiveChat}
+                disabled={disabled}
               />
             </ListItem>
           );

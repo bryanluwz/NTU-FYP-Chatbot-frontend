@@ -24,6 +24,7 @@ interface ChatPageState {
   chatList: ChatListModel[];
   currentChatInfo: ChatInfoModel;
   isLoading: boolean;
+  isProcessing: boolean;
   currentTab: TabEnum;
 
   userInfo: UserInfoModel;
@@ -64,6 +65,7 @@ const initialStates = {
     updatedAt: 0,
   },
   isLoading: false,
+  isProcessing: false,
   currentTab: TabEnum.Chat,
   userInfo: {
     id: "",
@@ -95,6 +97,7 @@ export const useChatPageStore = create<ChatPageState>((set, get) => ({
 
       set((state) => ({
         messages: [...state.messages, formattedUserMessage],
+        isProcessing: true,
       }));
 
       const chatId = get().currentChatInfo.chatId;
@@ -109,6 +112,7 @@ export const useChatPageStore = create<ChatPageState>((set, get) => ({
       // Append the AI response to the messages
       set((state) => ({
         messages: [...state.messages, responseMessage],
+        isProcessing: false,
       }));
 
       return responseMessage;

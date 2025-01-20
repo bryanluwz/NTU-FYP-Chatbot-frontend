@@ -28,11 +28,13 @@ import { UpdatePasswordDialog } from "../UpdatePasswordModal";
 interface AccountBoxProps {
   username?: string;
   userAvatar?: string;
+  disabled?: boolean;
 }
 
 export const AccountBox: React.FC<AccountBoxProps> = ({
   username = "Lyon the Lion",
   userAvatar,
+  disabled = false,
 }) => {
   const [isMenuOpen, setIsMenuOpen] = React.useState(false);
   const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
@@ -64,6 +66,9 @@ export const AccountBox: React.FC<AccountBoxProps> = ({
 
   // Menu
   const handleAvatarClick = (event: React.MouseEvent<HTMLElement>) => {
+    if (disabled) {
+      return;
+    }
     setAnchorEl(event.currentTarget);
     if (event.currentTarget === null) {
       setIsMenuOpen(false);
