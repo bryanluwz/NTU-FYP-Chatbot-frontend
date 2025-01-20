@@ -56,7 +56,7 @@ export const ChatListItem: React.FC<ChatListItemProps> = ({
       <Typography variant="body1">{title}</Typography>
       <ListItemIcon>
         <DeleteIcon
-          onClick={onDelete}
+          onClick={disabled ? () => {} : onDelete}
           style={{ visibility: isHovered || isActive ? "visible" : "hidden" }}
         />
       </ListItemIcon>
