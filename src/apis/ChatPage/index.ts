@@ -139,7 +139,7 @@ export const getUserSettingsApi = async () => {
       headers: {
         "Content-Type": "application/json",
       },
-      body: JSON.stringify({ actions: "get" }),
+      body: JSON.stringify({ action: "get" }),
     })
   ).json() as unknown as GetUserSettingsResponseModel;
 };
@@ -154,7 +154,7 @@ export const updateUserSettingsApi = async (body: {
         "Content-Type": "application/json",
       },
       body: JSON.stringify({
-        actions: "update",
+        action: "update",
         userSettings: body.updatedUserSettings,
       }),
     })
