@@ -6,8 +6,10 @@ import {
   getChatInfoApi,
   getChatListApi,
   getUserInfoApi,
+  getUserSettingsApi,
   postQueryMessageApi,
   updateChatApi,
+  updateUserSettingsApi,
 } from "../../../apis/ChatPage";
 import {
   ChatInfoModel,
@@ -16,6 +18,7 @@ import {
   MinimumChatInfoModel,
   UserChatMessageModel,
   UserInfoModel,
+  UserSettingsModel,
 } from "../../../apis/ChatPage/typings";
 import { TabEnum, ChatUserTypeEnum, UserRoleEnum } from "../../../apis/enums";
 
@@ -28,6 +31,7 @@ interface ChatPageState {
   currentTab: TabEnum;
 
   userInfo: UserInfoModel;
+  userSettings: UserSettingsModel;
 
   setMessages: (messages: ChatMessageModel[]) => void;
   appendMessage: (message: ChatMessageModel) => void;
@@ -46,6 +50,11 @@ interface ChatPageState {
   updateChat: (
     updateModel: MinimumChatInfoModel
   ) => Promise<MinimumChatInfoModel>;
+
+  getUserSettings: () => Promise<UserSettingsModel>;
+  updateUserSettings: (
+    userSettings: UserSettingsModel
+  ) => Promise<UserSettingsModel>;
 
   setCurrentTab: (tab: TabEnum) => void;
 
@@ -73,6 +82,9 @@ const initialStates = {
     email: "",
     avatar: "",
     role: UserRoleEnum.User,
+  },
+  userSettings: {
+    ttsName: "",
   },
 };
 
@@ -237,5 +249,29 @@ export const useChatPageStore = create<ChatPageState>((set, get) => ({
   },
   clearUserInfo: () => {
     set({ userInfo: initialStates.userInfo });
+  },
+  getUserSettings: async () => {
+    try {
+      const response = checkStatus(await getUserSettingsApi());
+
+      set({ userSettings: response.data.settings });
+      return response.data.settings;
+    } catch (error) {
+      handleError(error);
+      return { ttsName: "" };
+    }
+  },
+  updateUserSettings: async (userSettings: UserSettingsModel) => {
+    try {
+      const response = checkStatus(
+        await updateUserSettingsApi({ updatedUserSettings: userSettings })
+      );
+
+      set({ userSettings: userSettings });
+      return userSettings;
+    } catch (error) {
+      handleError(error);
+      return { ttsName: "" };
+    }
   },
 }));

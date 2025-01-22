@@ -49,6 +49,10 @@ export interface LoginRequestModel {
   password: string; // hashed
 }
 
+export interface UserSettingsModel {
+  ttsName: string;
+}
+
 // Return types
 export interface PostQueryMessageResponseModel {
   status: HTTPStatusBody;
@@ -82,5 +86,12 @@ export interface GetUserInfoResponseModel {
   status: HTTPStatusBody;
   data: {
     userInfo: UserInfoModel;
+  };
+}
+
+export interface GetUserSettingsResponseModel {
+  status: HTTPStatusBody;
+  data: {
+    settings: UserSettingsModel;
   };
 }

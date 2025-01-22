@@ -24,6 +24,7 @@ import { ConfirmModal } from "../ConfirmModal";
 import { EditUserDialog } from "../EditUserDialog";
 import { useDashboardStore } from "../../zustand/apis/Dashboard";
 import { UpdatePasswordDialog } from "../UpdatePasswordModal";
+import { SettingsDialog } from "../SettingsDialog";
 
 interface AccountBoxProps {
   username?: string;
@@ -50,6 +51,7 @@ export const AccountBox: React.FC<AccountBoxProps> = ({
 
   const [isUpdateUserOpen, setIsUpdateUserOpen] = React.useState(false);
   const [isUpdatePasswordOpen, setIsUpdatePasswordOpen] = React.useState(false);
+  const [isUpdateSettingsOpen, setIsUpdateSettingsOpen] = React.useState(false);
 
   const { logout } = React.useContext(AuthContext);
 
@@ -126,6 +128,15 @@ export const AccountBox: React.FC<AccountBoxProps> = ({
     return true;
   };
 
+  const handleUpdateSettingsOpen = () => {
+    setIsMenuOpen(false);
+    setIsUpdateSettingsOpen(true);
+  };
+
+  const handleUpdateSettingsClose = () => {
+    setIsUpdateSettingsOpen(false);
+  };
+
   return (
     <>
       <div className={styles.accountContainer}>
@@ -184,6 +195,13 @@ export const AccountBox: React.FC<AccountBoxProps> = ({
               <SettingsIcon />
             </ListItemIcon>
             <ListItemText>Update Profile</ListItemText>
+          </MenuItem>
+
+          <MenuItem onClick={handleUpdateSettingsOpen}>
+            <ListItemIcon>
+              <SettingsIcon />
+            </ListItemIcon>
+            <ListItemText>Settings</ListItemText>
           </MenuItem>
 
           <MenuItem onClick={handleUpdatePasswordOpen}>
@@ -245,6 +263,10 @@ export const AccountBox: React.FC<AccountBoxProps> = ({
         title="Delete All Chats?"
         onConfirm={handleDeleteAllChats}
         onCancel={handleDeleteAllChatsClose}
+      />
+      <SettingsDialog
+        isOpen={isUpdateSettingsOpen}
+        onClose={handleUpdateSettingsClose}
       />
     </>
   );

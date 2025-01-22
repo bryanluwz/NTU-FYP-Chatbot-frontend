@@ -4,9 +4,11 @@ import {
   GetChatListResponseModel,
   GetMinimumChatInfoResponseModel,
   GetUserInfoResponseModel,
+  GetUserSettingsResponseModel,
   MinimumChatInfoModel,
   PostQueryMessageResponseModel,
   UserChatMessageModel,
+  UserSettingsModel,
 } from "./typings";
 import { HTTPMethod, HTTPStatusBody } from "../typings";
 import {
@@ -14,6 +16,7 @@ import {
   getUserInfoUrl,
   postQueryChatMessageUrl,
   updateChatMessageUrl,
+  updateUserSettingsUrl,
 } from "../urls";
 import { fetchWithAuth } from "../utils";
 import { urlToBlob, urlToFile } from "../../utils";
@@ -127,4 +130,33 @@ export const getUserInfoApi = async () => {
       method: HTTPMethod.GET,
     })
   ).json() as unknown as GetUserInfoResponseModel;
+};
+
+export const getUserSettingsApi = async () => {
+  return (
+    await fetchWithAuth(updateUserSettingsUrl, {
+      method: HTTPMethod.POST,
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ actions: "get" }),
+    })
+  ).json() as unknown as GetUserSettingsResponseModel;
+};
+
+export const updateUserSettingsApi = async (body: {
+  updatedUserSettings: UserSettingsModel;
+}) => {
+  return (
+    await fetchWithAuth(updateUserSettingsUrl, {
+      method: HTTPMethod.POST,
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        actions: "update",
+        userSettings: body.updatedUserSettings,
+      }),
+    })
+  ).json() as unknown as GetUserSettingsResponseModel;
 };

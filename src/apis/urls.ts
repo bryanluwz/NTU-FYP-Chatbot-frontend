@@ -20,6 +20,7 @@ export const updateUserUrl = `${baseUrl}/api/user/update`;
 export const deleteUserUrl = `${baseUrl}/api/user/delete`;
 export const createUserUrl = `${baseUrl}/api/user/create`;
 export const updatePasswordUrl = `${baseUrl}/api/user/updatepw`;
+export const updateUserSettingsUrl = `${baseUrl}/api/user/settings`;
 
 // Personas
 export const getPersonasUrl = `${baseUrl}/api/persona/available`;
