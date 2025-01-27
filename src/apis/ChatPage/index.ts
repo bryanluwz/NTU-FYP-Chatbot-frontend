@@ -15,6 +15,7 @@ import { HTTPMethod, HTTPStatusBody } from "../typings";
 import {
   getChatListUrl,
   getUserInfoUrl,
+  postQueryChatMessageTTSUrl,
   postQueryChatMessageUrl,
   updateChatMessageUrl,
   updateUserSettingsUrl,
@@ -164,17 +165,20 @@ export const updateUserSettingsApi = async (body: {
 
 export const postQueryMessageTTSApi = async (data: {
   ttsName: string;
+  chatId: string;
   messageId: string;
 }) => {
-  const formData = new FormData();
-
-  formData.append("ttsName", data.ttsName);
-  formData.append("text", data.messageId);
-
   return (
-    await fetchWithAuth(postQueryChatMessageUrl, {
+    await fetchWithAuth(postQueryChatMessageTTSUrl, {
       method: HTTPMethod.POST,
-      body: formData,
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        ttsName: data.ttsName,
+        chatId: data.chatId,
+        messageId: data.messageId,
+      }),
     })
   ).json() as unknown as PostQueryMessageTTSResponseModel;
 };

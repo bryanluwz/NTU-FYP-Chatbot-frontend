@@ -305,9 +305,9 @@ export const ChatMessageBox: React.FC<ChatMessageBoxProps> = ({
                 </IconButton>
                 <IconButton
                   onClick={() => {
-                    if (isSpeakingAloud && onSpeakAloud) {
+                    if (!isSpeakingAloud && onSpeakAloud) {
                       onSpeakAloud(messageModel.messageId);
-                    } else if (!isSpeakingAloud && onStopSpeakAloud) {
+                    } else if (isSpeakingAloud && onStopSpeakAloud) {
                       onStopSpeakAloud();
                     }
                   }}

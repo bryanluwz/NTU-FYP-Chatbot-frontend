@@ -282,6 +282,7 @@ export const useChatPageStore = create<ChatPageState>((set, get) => ({
       const response = checkStatus(
         await postQueryMessageTTSApi({
           ttsName: get().userSettings.ttsName,
+          chatId: get().currentChatInfo.chatId,
           messageId,
         })
       );
