@@ -9,6 +9,7 @@ import { ChatUserTypeEnum } from "../../../../apis/enums";
 
 import * as styles from "./style.scss";
 import { ChatInput } from "../ChatInput";
+import { useChatPageStore } from "../../../../zustand/apis/ChatPage";
 
 interface ChatAreaProps {
   isLoading: boolean;
@@ -42,6 +43,59 @@ export const ChatArea: React.FC<ChatAreaProps> = ({
     }, 100); // Delay to prevent attempting to focus when disabled
   }, [inputRef]);
 
+  // Handle chat message speak aloud
+  const [speakAloudMessageId, setSpeakAloudMessageId] =
+    React.useState<string>("");
+
+  const speakAloudTTSFileSaveDict: { [id: string]: File } = {
+    // id (messageId-ttsName): File
+  };
+  const [currentTTSAudio, setCurrentTTSAudio] = React.useState<
+    HTMLAudioElement | undefined
+  >(new Audio());
+
+  const { userSettings, postQueryMessageTTS } = useChatPageStore();
+
+  const handleSpeakAloud = async (messageId: string) => {
+    setSpeakAloudMessageId(messageId);
+
+    const ttsFileName = `${messageId}-${userSettings.ttsName}`;
+
+    // Search through local tts files
+    if (speakAloudTTSFileSaveDict[ttsFileName]) {
+      const ttsFile = speakAloudTTSFileSaveDict[ttsFileName];
+      setCurrentTTSAudio(new Audio(URL.createObjectURL(ttsFile)));
+      return;
+    }
+
+    // Call API to get the tts audios
+    const ttsAudio = await postQueryMessageTTS(messageId);
+
+    if (ttsAudio) {
+      speakAloudTTSFileSaveDict[ttsFileName] = ttsAudio;
+      setCurrentTTSAudio(new Audio(URL.createObjectURL(ttsAudio)));
+    } else {
+      setSpeakAloudMessageId("");
+      setCurrentTTSAudio(undefined);
+      console.error("Failed to get TTS audio");
+      alert("Failed to get TTS audio :/");
+    }
+  };
+
+  const handleStopSpeakAloud = () => {
+    setSpeakAloudMessageId("");
+    setCurrentTTSAudio((current) => {
+      current?.pause();
+      return undefined;
+    });
+  };
+
+  React.useEffect(() => {
+    if (currentTTSAudio) {
+      currentTTSAudio.play();
+    }
+  }, [currentTTSAudio]);
+
   // Only render the chat message box when the messages change
   const chatMessageBoxes = React.useMemo(() => {
     if (!messages || messages.length === 0) {
@@ -68,6 +122,9 @@ export const ChatArea: React.FC<ChatAreaProps> = ({
                 index === messages.length - 1 &&
                 message.userType !== ChatUserTypeEnum.User
               }
+              onSpeakAloud={handleSpeakAloud}
+              onStopSpeakAloud={handleStopSpeakAloud}
+              isSpeakingAloud={message.messageId === speakAloudMessageId}
             />
           );
         })}

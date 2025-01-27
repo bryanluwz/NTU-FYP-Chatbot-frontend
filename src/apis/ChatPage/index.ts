@@ -6,6 +6,7 @@ import {
   GetUserInfoResponseModel,
   GetUserSettingsResponseModel,
   MinimumChatInfoModel,
+  PostQueryMessageTTSResponseModel,
   PostQueryMessageResponseModel,
   UserChatMessageModel,
   UserSettingsModel,
@@ -159,4 +160,21 @@ export const updateUserSettingsApi = async (body: {
       }),
     })
   ).json() as unknown as GetUserSettingsResponseModel;
+};
+
+export const postQueryMessageTTSApi = async (data: {
+  ttsName: string;
+  messageId: string;
+}) => {
+  const formData = new FormData();
+
+  formData.append("ttsName", data.ttsName);
+  formData.append("text", data.messageId);
+
+  return (
+    await fetchWithAuth(postQueryChatMessageUrl, {
+      method: HTTPMethod.POST,
+      body: formData,
+    })
+  ).json() as unknown as PostQueryMessageTTSResponseModel;
 };

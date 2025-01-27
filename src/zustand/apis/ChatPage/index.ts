@@ -8,6 +8,7 @@ import {
   getUserInfoApi,
   getUserSettingsApi,
   postQueryMessageApi,
+  postQueryMessageTTSApi,
   updateChatApi,
   updateUserSettingsApi,
 } from "../../../apis/ChatPage";
@@ -60,6 +61,8 @@ interface ChatPageState {
 
   getUserInfo: () => Promise<UserInfoModel>;
   clearUserInfo: () => void;
+
+  postQueryMessageTTS: (messageId: string) => Promise<File | undefined>;
 }
 
 const initialStates = {
@@ -272,6 +275,21 @@ export const useChatPageStore = create<ChatPageState>((set, get) => ({
     } catch (error) {
       handleError(error);
       return { ttsName: "" };
+    }
+  },
+  postQueryMessageTTS: async (messageId: string) => {
+    try {
+      const response = checkStatus(
+        await postQueryMessageTTSApi({
+          ttsName: get().userSettings.ttsName,
+          messageId,
+        })
+      );
+
+      return response.data.ttsFile;
+    } catch (error) {
+      handleError(error);
+      return undefined;
     }
   },
 }));
