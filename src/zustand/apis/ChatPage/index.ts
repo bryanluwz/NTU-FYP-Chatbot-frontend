@@ -62,7 +62,7 @@ interface ChatPageState {
   getUserInfo: () => Promise<UserInfoModel>;
   clearUserInfo: () => void;
 
-  postQueryMessageTTS: (messageId: string) => Promise<File | undefined>;
+  postQueryMessageTTS: (messageId: string) => Promise<string | undefined>;
 }
 
 const initialStates = {

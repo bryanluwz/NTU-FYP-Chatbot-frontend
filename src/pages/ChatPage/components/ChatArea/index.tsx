@@ -10,6 +10,7 @@ import { ChatUserTypeEnum } from "../../../../apis/enums";
 import * as styles from "./style.scss";
 import { ChatInput } from "../ChatInput";
 import { useChatPageStore } from "../../../../zustand/apis/ChatPage";
+import { getTTSFileApi } from "../../../../apis/ChatPage";
 
 interface ChatAreaProps {
   isLoading: boolean;
@@ -47,33 +48,31 @@ export const ChatArea: React.FC<ChatAreaProps> = ({
   const [speakAloudMessageId, setSpeakAloudMessageId] =
     React.useState<string>("");
 
-  const speakAloudTTSFileSaveDict: { [id: string]: File } = {
-    // id (messageId-ttsName): File
-  };
   const [currentTTSAudio, setCurrentTTSAudio] = React.useState<
     HTMLAudioElement | undefined
-  >(new Audio());
+  >(undefined);
 
-  const { userSettings, postQueryMessageTTS } = useChatPageStore();
+  const { postQueryMessageTTS } = useChatPageStore();
 
   const handleSpeakAloud = async (messageId: string) => {
-    setSpeakAloudMessageId(messageId);
+    setSpeakAloudMessageId(() => {
+      if (currentTTSAudio) {
+        currentTTSAudio.pause();
+      }
+      return messageId;
+    });
 
-    const ttsFileName = `${messageId}-${userSettings.ttsName}`;
-
-    // Search through local tts files
-    if (speakAloudTTSFileSaveDict[ttsFileName]) {
-      const ttsFile = speakAloudTTSFileSaveDict[ttsFileName];
-      setCurrentTTSAudio(new Audio(URL.createObjectURL(ttsFile)));
-      return;
-    }
+    // I'm assuming the browser will cache the audio file when it's fetched
 
     // Call API to get the tts audios
     const ttsAudio = await postQueryMessageTTS(messageId);
 
     if (ttsAudio) {
-      speakAloudTTSFileSaveDict[ttsFileName] = ttsAudio;
-      setCurrentTTSAudio(new Audio(URL.createObjectURL(ttsAudio)));
+      const audioResponse = await getTTSFileApi(ttsAudio);
+      setCurrentTTSAudio((current) => {
+        current?.pause(); // Pause the current audio if it exists (why twice tho fr fr)
+        return new Audio(URL.createObjectURL(audioResponse));
+      });
     } else {
       setSpeakAloudMessageId("");
       setCurrentTTSAudio(undefined);
@@ -93,6 +92,10 @@ export const ChatArea: React.FC<ChatAreaProps> = ({
   React.useEffect(() => {
     if (currentTTSAudio) {
       currentTTSAudio.play();
+
+      currentTTSAudio.onended = () => {
+        setSpeakAloudMessageId("");
+      };
     }
   }, [currentTTSAudio]);
 
@@ -130,7 +133,7 @@ export const ChatArea: React.FC<ChatAreaProps> = ({
         })}
       </>
     );
-  }, [isAIResponding, isAITyping, messages, onReplyEnd]);
+  }, [isAIResponding, isAITyping, messages, onReplyEnd, speakAloudMessageId]);
 
   // Scroll to bottom when messages change
   React.useEffect(() => {

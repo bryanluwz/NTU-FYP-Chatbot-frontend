@@ -99,6 +99,6 @@ export interface GetUserSettingsResponseModel {
 export interface PostQueryMessageTTSResponseModel {
   status: HTTPStatusBody;
   data: {
-    ttsFile: File;
+    ttsFile: string;
   };
 }

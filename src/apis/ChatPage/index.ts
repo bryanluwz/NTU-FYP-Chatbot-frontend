@@ -182,3 +182,9 @@ export const postQueryMessageTTSApi = async (data: {
     })
   ).json() as unknown as PostQueryMessageTTSResponseModel;
 };
+
+export const getTTSFileApi = async (ttsFileName: string) => {
+  return await fetchWithAuth(`${ttsFileName}`, {
+    method: HTTPMethod.GET,
+  }).then((response) => response.blob());
+};

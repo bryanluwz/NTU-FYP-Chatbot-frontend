@@ -22,8 +22,12 @@ import { UserSettingsModel } from "../../apis/ChatPage/typings";
 import { useChatPageStore } from "../../zustand/apis/ChatPage";
 
 enum AvailableVoices {
-  Voice1 = "Voice 1",
-  Voice2 = "Voice 2",
+  Heart = "Heart",
+  Bella = "Bella",
+  Nicole = "Nicole",
+  Michael = "Michael",
+  Santa = "Santa",
+  Facebook = "Facebook",
 }
 
 interface SettingsDialogProps {
