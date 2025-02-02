@@ -124,7 +124,7 @@ export const SettingsDialog: React.FC<SettingsDialogProps> = ({
                       }}
                     >
                       <Typography variant="body1">
-                        {currentUserSettings.ttsName ?? "Select Voice"}
+                        {currentUserSettings.ttsName ?? AvailableVoices.Heart}
                       </Typography>
                     </ListItem>
                   </Stack>

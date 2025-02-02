@@ -9,6 +9,7 @@ import {
   Typography,
   Tooltip,
   ListItem,
+  CircularProgress,
 } from "@mui/material";
 import { ContentCopy, VolumeUp, Stop } from "@mui/icons-material";
 
@@ -39,6 +40,7 @@ interface ChatMessageBoxProps {
   onSpeakAloud?: (messageId: string) => void;
   onStopSpeakAloud?: () => void;
   isSpeakingAloud?: boolean;
+  isSpeakingProcessing?: boolean;
 }
 
 export const ChatMessageBox: React.FC<ChatMessageBoxProps> = ({
@@ -52,6 +54,7 @@ export const ChatMessageBox: React.FC<ChatMessageBoxProps> = ({
   onSpeakAloud,
   isSpeakingAloud = false,
   onStopSpeakAloud,
+  isSpeakingProcessing = false,
 }) => {
   const [message, setMessage] = React.useState<
     | string
@@ -288,7 +291,7 @@ export const ChatMessageBox: React.FC<ChatMessageBoxProps> = ({
           onMouseLeave={handleMouseLeave}
         >
           {messageTextComponent}
-          {(isMenuVisible || isToolboxVisible) && (
+          {(isMenuVisible || isToolboxVisible) && !typingIndicatorAnimation && (
             <div
               className={cx(styles.actionMenu, {
                 [styles.left]: userType !== ChatUserTypeEnum.User,
@@ -315,7 +318,17 @@ export const ChatMessageBox: React.FC<ChatMessageBoxProps> = ({
                   <Tooltip
                     title={isSpeakingAloud ? "Stop speaking" : "Speak aloud"}
                   >
-                    {isSpeakingAloud ? <Stop /> : <VolumeUp />}
+                    {isSpeakingAloud ? (
+                      <Stop />
+                    ) : isSpeakingProcessing ? (
+                      <CircularProgress
+                        size={24}
+                        color="inherit"
+                        disableShrink
+                      />
+                    ) : (
+                      <VolumeUp />
+                    )}
                   </Tooltip>
                 </IconButton>
               </ButtonGroup>

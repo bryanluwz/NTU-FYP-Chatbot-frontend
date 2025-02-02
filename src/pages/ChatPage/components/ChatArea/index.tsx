@@ -52,9 +52,15 @@ export const ChatArea: React.FC<ChatAreaProps> = ({
     HTMLAudioElement | undefined
   >(undefined);
 
+  const [isSpeakingProcessing, setIsSpeakingProcessing] = React.useState(false);
+
   const { postQueryMessageTTS } = useChatPageStore();
 
   const handleSpeakAloud = async (messageId: string) => {
+    if (isSpeakingProcessing) {
+      return;
+    }
+
     setSpeakAloudMessageId(() => {
       if (currentTTSAudio) {
         currentTTSAudio.pause();
@@ -63,9 +69,12 @@ export const ChatArea: React.FC<ChatAreaProps> = ({
     });
 
     // I'm assuming the browser will cache the audio file when it's fetched
-
+    // TODO: Add a loading spinner or something to indicate that the audio is being fetched
+    // TODO: Add abort previous fetch when a new one is called
     // Call API to get the tts audios
+    setIsSpeakingProcessing(true);
     const ttsAudio = await postQueryMessageTTS(messageId);
+    setIsSpeakingProcessing(false);
 
     if (ttsAudio) {
       const audioResponse = await getTTSFileApi(ttsAudio);
@@ -77,12 +86,13 @@ export const ChatArea: React.FC<ChatAreaProps> = ({
       setSpeakAloudMessageId("");
       setCurrentTTSAudio(undefined);
       console.error("Failed to get TTS audio");
-      alert("Failed to get TTS audio :/");
+      // alert("Failed to get TTS audio :/");
     }
   };
 
   const handleStopSpeakAloud = () => {
     setSpeakAloudMessageId("");
+    setIsSpeakingProcessing(false);
     setCurrentTTSAudio((current) => {
       current?.pause();
       return undefined;
@@ -128,12 +138,20 @@ export const ChatArea: React.FC<ChatAreaProps> = ({
               onSpeakAloud={handleSpeakAloud}
               onStopSpeakAloud={handleStopSpeakAloud}
               isSpeakingAloud={message.messageId === speakAloudMessageId}
+              isSpeakingProcessing={isSpeakingProcessing}
             />
           );
         })}
       </>
     );
-  }, [isAIResponding, isAITyping, messages, onReplyEnd, speakAloudMessageId]);
+  }, [
+    isAIResponding,
+    isAITyping,
+    messages,
+    onReplyEnd,
+    speakAloudMessageId,
+    isSpeakingProcessing,
+  ]);
 
   // Scroll to bottom when messages change
   React.useEffect(() => {
