@@ -10,6 +10,7 @@ export const getUserInfoUrl = `${baseUrl}/api/user/info`;
 export const getUserListUrl = `${baseUrl}/api/dashboard/admin/users`;
 export const postChatUrl = `/api/chat/`; // Same for create, update and delete
 export const postQueryChatMessageTTSUrl = `${baseUrl}/api/chat/message/tts`;
+export const postSTTAudioUrl = `${baseUrl}/api/stt/audio`;
 
 // Auth
 export const loginUrl = `${baseUrl}/api/auth/login`;

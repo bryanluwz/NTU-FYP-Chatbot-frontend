@@ -9,6 +9,7 @@ import {
   getUserSettingsApi,
   postQueryMessageApi,
   postQueryMessageTTSApi,
+  postSTTAudioApi,
   updateChatApi,
   updateUserSettingsApi,
 } from "../../../apis/ChatPage";
@@ -63,6 +64,7 @@ interface ChatPageState {
   clearUserInfo: () => void;
 
   postQueryMessageTTS: (messageId: string) => Promise<string | undefined>;
+  postSTTAudio: (audioBlob: Blob) => Promise<string | undefined>;
 }
 
 const initialStates = {
@@ -294,6 +296,16 @@ export const useChatPageStore = create<ChatPageState>((set, get) => ({
       );
 
       return response.data.ttsFile;
+    } catch (error) {
+      handleError(error);
+      return undefined;
+    }
+  },
+  postSTTAudio: async (audioBlob: Blob) => {
+    try {
+      const response = checkStatus(await postSTTAudioApi(audioBlob));
+
+      return response.data.sttText;
     } catch (error) {
       handleError(error);
       return undefined;
