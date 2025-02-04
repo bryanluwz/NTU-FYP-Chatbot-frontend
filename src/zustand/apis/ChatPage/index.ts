@@ -24,7 +24,7 @@ import {
 import { TabEnum, ChatUserTypeEnum, UserRoleEnum } from "../../../apis/enums";
 
 interface ChatPageState {
-  messages: (ChatMessageModel | UserChatMessageModel)[];
+  messages: ChatMessageModel[];
   chatList: ChatListModel[];
   currentChatInfo: ChatInfoModel;
   isLoading: boolean;
@@ -111,7 +111,10 @@ export const useChatPageStore = create<ChatPageState>((set, get) => ({
       const formattedUserMessage = { ...userMessage };
 
       set((state) => ({
-        messages: [...state.messages, formattedUserMessage],
+        messages: [
+          ...state.messages,
+          formattedUserMessage as unknown as ChatMessageModel,
+        ],
         isProcessing: true,
       }));
 
@@ -126,7 +129,10 @@ export const useChatPageStore = create<ChatPageState>((set, get) => ({
 
       // Append the AI response to the messages
       set((state) => ({
-        messages: [...state.messages, responseMessage],
+        messages: [
+          ...state.messages,
+          responseMessage as unknown as ChatMessageModel,
+        ],
         isProcessing: false,
       }));
 
