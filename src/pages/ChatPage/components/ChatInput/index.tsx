@@ -65,6 +65,8 @@ export const ChatInput: React.FC<ChatInputProps> = ({
 
   const [transcript, setTranscript] = React.useState("");
   const resetTranscript = () => setTranscript("");
+  const intervalRef = React.useRef<NodeJS.Timeout | null>(null);
+  const [isTranscripting, setIsTranscripting] = React.useState(false);
 
   // On initial render, reset mediaRecorderRef
   React.useEffect(() => {
@@ -117,41 +119,15 @@ export const ChatInput: React.FC<ChatInputProps> = ({
   // Handle microphone button press
   const handleMicrophonePress = async () => {
     // If STT is active, stop listening
+    // TODO: stillsome bugs here but im too lazy to fix it
     if (isSTTActive) {
-      if (mediaRecorderRef.current) {
-        try {
-          // Create an array to store chunks
-          const audioChunks: BlobPart[] = [];
-
-          // Ensure we collect data when available
-          mediaRecorderRef.current.ondataavailable = (event) => {
-            if (event.data.size > 0) {
-              audioChunks.push(event.data);
-            }
-          };
-
-          // Wait for `stop` to trigger the last `ondataavailable`
-          await new Promise((resolve) => {
-            if (mediaRecorderRef.current) {
-              mediaRecorderRef.current.onstop = resolve;
-              mediaRecorderRef.current.stop(); // Stop recording (this triggers ondataavailable one last time)
-            }
-          });
-
-          // Create and send the final audio blob
-          const audioBlob = new Blob(audioChunks, { type: "audio/webm" });
-          const sttResult = await postSTTAudio(audioBlob);
-          setTranscript((prev) =>
-            (prev.trim() + " " + sttResult?.trim()).trim()
-          );
-        } catch (error) {
-          console.error("Error sending last audio chunk:", error);
-        } finally {
-          mediaRecorderRef.current = null;
-          // setIsSTTActive(false);
-        }
+      if (intervalRef.current) {
+        clearInterval(intervalRef.current);
       }
-
+      if (mediaRecorderRef.current) {
+        mediaRecorderRef.current?.stop();
+        setIsTranscripting(true);
+      }
       setIsSTTActive(false);
       return;
     }
@@ -159,25 +135,49 @@ export const ChatInput: React.FC<ChatInputProps> = ({
     // If STT is not active, start listening
     try {
       const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+
+      // Destroy previous mediaRecorder instance if it exists
       const mediaRecorder = new MediaRecorder(stream, {
-        mimeType: "audio/webm",
+        mimeType: "audio/webm;codecs=opus",
         audioBitsPerSecond: 16000,
       });
+
       mediaRecorderRef.current = mediaRecorder;
 
+      // Should be available every start timeslice and when stop is called
       mediaRecorder.ondataavailable = async (event) => {
         if (event.data.size > 0) {
-          const sttResult = await postSTTAudio(event.data); // Send audio chunk
+          setIsTranscripting(true);
+
+          const blob = new Blob([event.data], {
+            type: "audio/webm;codecs=opus",
+          });
+
+          const sttResult = await postSTTAudio(blob); // Send audio chunk
+
+          if (!sttResult || sttResult.trim() === "") return;
 
           setTranscript((prev) =>
-            (prev.trim() + " " + sttResult?.trim()).trim()
+            (prev.trim() + " " + sttResult.trim()).trim()
           );
+
+          setIsTranscripting(false);
         }
       };
 
-      mediaRecorder.start(3000); // Capture chunks every 3 sec
+      // Manually request finalized chunks every 3s
+      intervalRef.current = setInterval(() => {
+        if (mediaRecorder.state === "recording") {
+          mediaRecorder.stop();
+          mediaRecorder.start();
+        }
+      }, 3000);
+
+      mediaRecorder.start();
+
       setIsSTTActive(true);
     } catch (error) {
+      setIsTranscripting(false);
       console.error("Error accessing microphone:", error);
     }
   };
@@ -186,12 +186,12 @@ export const ChatInput: React.FC<ChatInputProps> = ({
   React.useEffect(() => {
     if (isSTTActive) {
       setOriginalInputValue(inputValue);
-    } else if (!isSTTActive) {
+    } else if (!isSTTActive && !isTranscripting) {
       setInputValue((originalInputValue.trim() + " " + transcript).trim());
       setOriginalInputValue("");
       resetTranscript();
     }
-  }, [isSTTActive]);
+  }, [isSTTActive, isTranscripting]);
 
   React.useEffect(() => {
     if (transcript) {
