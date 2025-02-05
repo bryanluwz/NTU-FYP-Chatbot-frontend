@@ -119,7 +119,6 @@ export const ChatInput: React.FC<ChatInputProps> = ({
   // Handle microphone button press
   const handleMicrophonePress = async () => {
     // If STT is active, stop listening
-    // TODO: stillsome bugs here but im too lazy to fix it
     if (isSTTActive) {
       if (intervalRef.current) {
         clearInterval(intervalRef.current);
@@ -194,7 +193,7 @@ export const ChatInput: React.FC<ChatInputProps> = ({
   }, [isSTTActive, isTranscripting]);
 
   React.useEffect(() => {
-    if (transcript) {
+    if (transcript && isSTTActive) {
       setInputValue(originalInputValue.trim() + " " + transcript);
     }
   }, [transcript, originalInputValue]);
