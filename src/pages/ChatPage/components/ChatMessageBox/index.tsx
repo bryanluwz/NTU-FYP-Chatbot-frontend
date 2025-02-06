@@ -9,6 +9,7 @@ import {
   Typography,
   Tooltip,
   ListItem,
+  CircularProgress,
 } from "@mui/material";
 import { ContentCopy, VolumeUp, Stop } from "@mui/icons-material";
 
@@ -24,7 +25,6 @@ import {
 } from "../../../../apis/ChatPage/typings";
 import { FileChip } from "../../../../components/FileChip";
 import { ImageChip } from "../../../../components/ImageChip";
-import { useSpeechSynthesis } from "../../../../context/SpeechSynthesisContext";
 
 interface ChatMessageBoxProps {
   userType: ChatUserTypeEnum;
@@ -36,6 +36,11 @@ interface ChatMessageBoxProps {
 
   isToolboxVisible?: boolean;
   isToolboxVisibleOnHover?: boolean;
+
+  onSpeakAloud?: (messageId: string) => void;
+  onStopSpeakAloud?: () => void;
+  isSpeakingAloud?: boolean;
+  isSpeakingProcessing?: boolean;
 }
 
 export const ChatMessageBox: React.FC<ChatMessageBoxProps> = ({
@@ -46,6 +51,10 @@ export const ChatMessageBox: React.FC<ChatMessageBoxProps> = ({
   onTypingAnimationEnd,
   isToolboxVisible,
   isToolboxVisibleOnHover = true,
+  onSpeakAloud,
+  isSpeakingAloud = false,
+  onStopSpeakAloud,
+  isSpeakingProcessing = false,
 }) => {
   const [message, setMessage] = React.useState<
     | string
@@ -61,18 +70,6 @@ export const ChatMessageBox: React.FC<ChatMessageBoxProps> = ({
   const { currentPersona } = usePersonaStore();
 
   const [isCopied, setIsCopied] = React.useState(false);
-
-  // TODO: cannot press another message speak aloud button to stop the current speaking message and start the new one
-  // currently all messages share the same speaking state
-  // Should fix or not?
-  const {
-    isSpeakingAloud,
-    setIsSpeakingAloud,
-    isCurrentSpeaking,
-    setIsCurrentSpeaking,
-  } = useSpeechSynthesis();
-  // const [isSpeakingAloud, setIsSpeakingAloud] = React.useState(false);
-  // const [isCurrentSpeaking, setIsCurrentSpeaking] = React.useState(false);
 
   React.useEffect(() => {
     if (messageModel) {
@@ -132,22 +129,6 @@ export const ChatMessageBox: React.FC<ChatMessageBoxProps> = ({
     setTimeout(() => {
       setIsCopied(false);
     }, 1000);
-  };
-
-  // Handle speak aloud
-  const handleSpeakAloud = () => {
-    if (isSpeakingAloud) {
-      window.speechSynthesis.cancel();
-      setIsSpeakingAloud(false);
-      setIsCurrentSpeaking(false);
-    } else {
-      const utterance = new SpeechSynthesisUtterance(messageText);
-      window.speechSynthesis.cancel();
-      window.speechSynthesis.speak(utterance);
-
-      setIsSpeakingAloud(true);
-      setIsCurrentSpeaking(true);
-    }
   };
 
   React.useEffect(() => {
@@ -310,7 +291,7 @@ export const ChatMessageBox: React.FC<ChatMessageBoxProps> = ({
           onMouseLeave={handleMouseLeave}
         >
           {messageTextComponent}
-          {(isMenuVisible || isToolboxVisible) && (
+          {(isMenuVisible || isToolboxVisible) && !typingIndicatorAnimation && (
             <div
               className={cx(styles.actionMenu, {
                 [styles.left]: userType !== ChatUserTypeEnum.User,
@@ -325,16 +306,26 @@ export const ChatMessageBox: React.FC<ChatMessageBoxProps> = ({
                     <ContentCopy />
                   </Tooltip>
                 </IconButton>
-                <IconButton onClick={handleSpeakAloud}>
-                  <Tooltip
-                    title={
-                      isSpeakingAloud && isCurrentSpeaking
-                        ? "Stop speaking"
-                        : "Speak aloud"
+                <IconButton
+                  onClick={() => {
+                    if (!isSpeakingAloud && onSpeakAloud) {
+                      onSpeakAloud(messageModel.messageId);
+                    } else if (isSpeakingAloud && onStopSpeakAloud) {
+                      onStopSpeakAloud();
                     }
+                  }}
+                >
+                  <Tooltip
+                    title={isSpeakingAloud ? "Stop speaking" : "Speak aloud"}
                   >
-                    {isSpeakingAloud && isCurrentSpeaking ? (
+                    {isSpeakingAloud ? (
                       <Stop />
+                    ) : isSpeakingProcessing ? (
+                      <CircularProgress
+                        size={24}
+                        color="inherit"
+                        disableShrink
+                      />
                     ) : (
                       <VolumeUp />
                     )}

@@ -8,6 +8,8 @@ import {
   getUserInfoApi,
   getUserSettingsApi,
   postQueryMessageApi,
+  postQueryMessageTTSApi,
+  postSTTAudioApi,
   updateChatApi,
   updateUserSettingsApi,
 } from "../../../apis/ChatPage";
@@ -23,7 +25,7 @@ import {
 import { TabEnum, ChatUserTypeEnum, UserRoleEnum } from "../../../apis/enums";
 
 interface ChatPageState {
-  messages: (ChatMessageModel | UserChatMessageModel)[];
+  messages: ChatMessageModel[];
   chatList: ChatListModel[];
   currentChatInfo: ChatInfoModel;
   isLoading: boolean;
@@ -60,6 +62,9 @@ interface ChatPageState {
 
   getUserInfo: () => Promise<UserInfoModel>;
   clearUserInfo: () => void;
+
+  postQueryMessageTTS: (messageId: string) => Promise<string | undefined>;
+  postSTTAudio: (audioBlob: Blob) => Promise<string | undefined>;
 }
 
 const initialStates = {
@@ -108,7 +113,10 @@ export const useChatPageStore = create<ChatPageState>((set, get) => ({
       const formattedUserMessage = { ...userMessage };
 
       set((state) => ({
-        messages: [...state.messages, formattedUserMessage],
+        messages: [
+          ...state.messages,
+          formattedUserMessage as unknown as ChatMessageModel,
+        ],
         isProcessing: true,
       }));
 
@@ -123,7 +131,10 @@ export const useChatPageStore = create<ChatPageState>((set, get) => ({
 
       // Append the AI response to the messages
       set((state) => ({
-        messages: [...state.messages, responseMessage],
+        messages: [
+          ...state.messages,
+          responseMessage as unknown as ChatMessageModel,
+        ],
         isProcessing: false,
       }));
 
@@ -272,6 +283,32 @@ export const useChatPageStore = create<ChatPageState>((set, get) => ({
     } catch (error) {
       handleError(error);
       return { ttsName: "" };
+    }
+  },
+  postQueryMessageTTS: async (messageId: string) => {
+    try {
+      const response = checkStatus(
+        await postQueryMessageTTSApi({
+          ttsName: get().userSettings.ttsName,
+          chatId: get().currentChatInfo.chatId,
+          messageId,
+        })
+      );
+
+      return response.data.ttsFile;
+    } catch (error) {
+      handleError(error);
+      return undefined;
+    }
+  },
+  postSTTAudio: async (audioBlob: Blob) => {
+    try {
+      const response = checkStatus(await postSTTAudioApi(audioBlob));
+
+      return response.data.sttText;
+    } catch (error) {
+      handleError(error);
+      return undefined;
     }
   },
 }));

@@ -95,3 +95,10 @@ export interface GetUserSettingsResponseModel {
     settings: UserSettingsModel;
   };
 }
+
+export interface PostQueryMessageTTSResponseModel {
+  status: HTTPStatusBody;
+  data: {
+    ttsFile: string;
+  };
+}

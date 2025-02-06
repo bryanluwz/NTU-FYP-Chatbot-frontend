@@ -6,6 +6,7 @@ import {
   GetUserInfoResponseModel,
   GetUserSettingsResponseModel,
   MinimumChatInfoModel,
+  PostQueryMessageTTSResponseModel,
   PostQueryMessageResponseModel,
   UserChatMessageModel,
   UserSettingsModel,
@@ -14,7 +15,9 @@ import { HTTPMethod, HTTPStatusBody } from "../typings";
 import {
   getChatListUrl,
   getUserInfoUrl,
+  postQueryChatMessageTTSUrl,
   postQueryChatMessageUrl,
+  postSTTAudioUrl,
   updateChatMessageUrl,
   updateUserSettingsUrl,
 } from "../urls";
@@ -159,4 +162,40 @@ export const updateUserSettingsApi = async (body: {
       }),
     })
   ).json() as unknown as GetUserSettingsResponseModel;
+};
+
+export const postQueryMessageTTSApi = async (data: {
+  ttsName: string;
+  chatId: string;
+  messageId: string;
+}) => {
+  return (
+    await fetchWithAuth(postQueryChatMessageTTSUrl, {
+      method: HTTPMethod.POST,
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        ttsName: data.ttsName,
+        chatId: data.chatId,
+        messageId: data.messageId,
+      }),
+    })
+  ).json() as unknown as PostQueryMessageTTSResponseModel;
+};
+
+export const getTTSFileApi = async (ttsFileName: string) => {
+  return await fetchWithAuth(`${ttsFileName}`, {
+    method: HTTPMethod.GET,
+  }).then((response) => response.blob());
+};
+
+export const postSTTAudioApi = async (blob: Blob) => {
+  const formData = new FormData();
+  formData.append("audio", blob);
+
+  return await fetchWithAuth(postSTTAudioUrl, {
+    method: HTTPMethod.POST,
+    body: formData,
+  }).then((response) => response.json());
 };

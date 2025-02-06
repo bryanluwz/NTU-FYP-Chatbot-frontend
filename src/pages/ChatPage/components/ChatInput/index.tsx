@@ -6,6 +6,7 @@ import {
   InputAdornment,
   ListItem,
   Stack,
+  Tooltip,
 } from "@mui/material";
 
 import { useChatPageStore } from "../../../../zustand/apis/ChatPage";
@@ -14,7 +15,7 @@ import { UserChatMessageModel } from "../../../../apis/ChatPage/typings";
 
 import AttachFileIcon from "@mui/icons-material/AttachFile";
 import ArrowUpward from "@mui/icons-material/ArrowUpward";
-import MicNoneIcon from "@mui/icons-material/MicNone";
+import HearingIcon from "@mui/icons-material/Hearing";
 import SettingsVoiceIcon from "@mui/icons-material/SettingsVoice";
 import { ImageChip } from "../../../../components/ImageChip";
 import { FileChip } from "../../../../components/FileChip";
@@ -56,17 +57,23 @@ export const ChatInput: React.FC<ChatInputProps> = ({
     File[]
   >([]);
 
-  const [isSSTActive, setIsSSTActive] = React.useState(false);
+  const [isSTTActive, setIsSTTActive] = React.useState(false);
+  const mediaRecorderRef = React.useRef<MediaRecorder | null>(null);
   const [originalInputValue, setOriginalInputValue] = React.useState("");
 
-  const { postQueryMessage } = useChatPageStore.getState();
-  const {
-    transcript,
-    resetTranscript,
-    startListening,
-    stopListening,
-    isListening,
-  } = useSpeechTranscript();
+  const { postQueryMessage, postSTTAudio } = useChatPageStore.getState();
+
+  const [transcript, setTranscript] = React.useState("");
+  const resetTranscript = () => setTranscript("");
+  const intervalRef = React.useRef<NodeJS.Timeout | null>(null);
+  const [isTranscripting, setIsTranscripting] = React.useState(false);
+
+  // On initial render, reset mediaRecorderRef
+  React.useEffect(() => {
+    return () => {
+      mediaRecorderRef.current?.stop();
+    };
+  }, []);
 
   // Handle input submit with text, images, and attachments
   const handleInputSubmit = () => {
@@ -110,36 +117,86 @@ export const ChatInput: React.FC<ChatInputProps> = ({
   };
 
   // Handle microphone button press
-  const handleMicrophonePress = () => {
-    setIsSSTActive((prev) => !prev);
+  const handleMicrophonePress = async () => {
+    // If STT is active, stop listening
+    if (isSTTActive) {
+      if (intervalRef.current) {
+        clearInterval(intervalRef.current);
+      }
+      if (mediaRecorderRef.current) {
+        mediaRecorderRef.current?.stop();
+        setIsTranscripting(true);
+      }
+      setIsSTTActive(false);
+      return;
+    }
+
+    // If STT is not active, start listening
+    try {
+      const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+
+      // Destroy previous mediaRecorder instance if it exists
+      const mediaRecorder = new MediaRecorder(stream, {
+        mimeType: "audio/webm;codecs=opus",
+        audioBitsPerSecond: 16000,
+      });
+
+      mediaRecorderRef.current = mediaRecorder;
+
+      // Should be available every start timeslice and when stop is called
+      mediaRecorder.ondataavailable = async (event) => {
+        if (event.data.size > 0) {
+          setIsTranscripting(true);
+
+          const blob = new Blob([event.data], {
+            type: "audio/webm;codecs=opus",
+          });
+
+          const sttResult = await postSTTAudio(blob); // Send audio chunk
+
+          if (!sttResult || sttResult.trim() === "") return;
+
+          setTranscript((prev) =>
+            (prev.trim() + " " + sttResult.trim()).trim()
+          );
+
+          setIsTranscripting(false);
+        }
+      };
+
+      // Manually request finalized chunks every 3s
+      intervalRef.current = setInterval(() => {
+        if (mediaRecorder.state === "recording") {
+          mediaRecorder.stop();
+          mediaRecorder.start();
+        }
+      }, 3000);
+
+      mediaRecorder.start();
+
+      setIsSTTActive(true);
+    } catch (error) {
+      setIsTranscripting(false);
+      console.error("Error accessing microphone:", error);
+    }
   };
 
+  // TODO: Check logic for next 2 useEffects
   React.useEffect(() => {
-    if (isSSTActive && !isListening) {
-      startListening();
+    if (isSTTActive) {
       setOriginalInputValue(inputValue);
-    } else if (!isSSTActive && isListening) {
-      stopListening();
-      setInputValue(originalInputValue.trim() + " " + transcript);
+    } else if (!isSTTActive && !isTranscripting) {
+      setInputValue((originalInputValue.trim() + " " + transcript).trim());
       setOriginalInputValue("");
       resetTranscript();
     }
-  }, [
-    inputValue,
-    isListening,
-    isSSTActive,
-    originalInputValue,
-    resetTranscript,
-    startListening,
-    stopListening,
-    transcript,
-  ]);
+  }, [isSTTActive, isTranscripting]);
 
   React.useEffect(() => {
-    if (isListening && transcript) {
+    if (transcript && isSTTActive) {
       setInputValue(originalInputValue.trim() + " " + transcript);
     }
-  }, [isListening, transcript, originalInputValue]);
+  }, [transcript, originalInputValue]);
 
   // Handle file attachment (if image, move it to pastedImages)
   const handleFileAttachment = (files: FileList) => {
@@ -303,9 +360,13 @@ export const ChatInput: React.FC<ChatInputProps> = ({
         endAdornment={
           <Stack gap={1} direction={"row"}>
             <InputAdornment position="end" disablePointerEvents={disabled}>
-              <IconButton onMouseDown={handleMicrophonePress}>
-                {isSSTActive ? <SettingsVoiceIcon /> : <MicNoneIcon />}
-              </IconButton>
+              <Tooltip
+                title={isSTTActive ? "Stop listening" : "Start listening"}
+              >
+                <IconButton onMouseDown={handleMicrophonePress}>
+                  {isSTTActive ? <HearingIcon /> : <SettingsVoiceIcon />}
+                </IconButton>
+              </Tooltip>
             </InputAdornment>
             <InputAdornment
               position="end"
