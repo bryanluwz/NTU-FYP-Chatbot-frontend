@@ -128,9 +128,7 @@ export const ChatArea: React.FC<ChatAreaProps> = ({
                 message.userType === ChatUserTypeEnum.AI
               }
               onTypingAnimationEnd={onReplyEnd}
-              isToolboxVisibleOnHover={
-                !isAIResponding && index !== messages.length - 1
-              }
+              isToolboxVisibleOnHover={index !== messages.length - 1}
               isToolboxVisible={
                 index === messages.length - 1 &&
                 message.userType !== ChatUserTypeEnum.User

@@ -164,6 +164,10 @@ export const ChatInput: React.FC<ChatInputProps> = ({
         }
       };
 
+      mediaRecorder.onstop = () => {
+        mediaRecorder.stream.getTracks().forEach((track) => track.stop());
+      };
+
       // Manually request finalized chunks every 3s
       intervalRef.current = setInterval(() => {
         if (mediaRecorder.state === "recording") {

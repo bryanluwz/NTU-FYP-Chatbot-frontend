@@ -32,6 +32,11 @@
       word-break: break-word;
       overflow-wrap: break-word;
 
+      > span {
+        font-family: var(--font-family);
+        font-size: 1rem;
+      }
+
       &.non-color {
         background-color: none;
       }
