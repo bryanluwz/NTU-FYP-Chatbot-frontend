@@ -233,7 +233,7 @@ export const ChatMessageBox: React.FC<ChatMessageBoxProps> = ({
             // Load file from backend (only images is loaded, file is a dummy file)
             // If is of mimetype image, then do ImageChip, else do fileChip
             if (file.type.startsWith("image")) {
-              chip = <ImageChip blob={file.url} />;
+              chip = <ImageChip blob={file.url} huge={true} />;
             } else {
               chip = <FileChip file={file.url} filename={file.name} />;
             }
