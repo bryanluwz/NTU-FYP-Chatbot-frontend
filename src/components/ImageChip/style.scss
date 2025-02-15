@@ -8,10 +8,26 @@
   width: 120px;
   height: auto;
   overflow: hidden;
+  border-radius: 0.6rem;
 
   &.huge {
     max-height: 240px;
     width: 240px;
-    border-radius: 1.2rem;
+    cursor: pointer;
   }
+}
+
+@keyframes popOutAnimation {
+  0% {
+    transform: scale(0.2);
+    opacity: 0;
+  }
+  100% {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
+.pop-out {
+  animation: popOutAnimation 0.3s ease-out;
 }
