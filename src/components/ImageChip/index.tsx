@@ -86,7 +86,7 @@ export const ImageChip: React.FC<ImageChipProps> = ({
               justifyContent: "center",
               alignItems: "center",
               height: "100vh", // Take full screen height
-              width: "100vw", // Take full screen width
+              // width: "100vw", // Take full screen width
               background: "rgba(0, 0, 0, 0)", // Transparent background
             }}
           >
