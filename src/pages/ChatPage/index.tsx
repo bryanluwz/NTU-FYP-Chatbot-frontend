@@ -62,9 +62,9 @@ export const ChatPage: React.FC = () => {
     if (selectedChatId && selectedChatId !== "") {
       getChatInfo(selectedChatId);
       setCurrentTab(TabEnum.Chat);
-    } else {
+    } else if (currentTab === TabEnum.Chat) {
       setSelectedChatInfo(undefined);
-      // setCurrentTab(TabEnum.Dashboard);
+      setCurrentTab(TabEnum.Dashboard);
     }
   }, [selectedChatId]);
 
