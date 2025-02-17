@@ -13,8 +13,6 @@ import {
 } from "@mui/material";
 import { ContentCopy, VolumeUp, Stop } from "@mui/icons-material";
 
-import DefaultAIAvatar from "../../../../assets/ai-avatar-default.png";
-
 import * as styles from "./style.scss";
 import { useChatPageStore } from "../../../../zustand/apis/ChatPage";
 import { usePersonaStore } from "../../../../zustand/apis/Persona";
@@ -270,7 +268,7 @@ export const ChatMessageBox: React.FC<ChatMessageBoxProps> = ({
             ? userInfo.avatar
             : personaAvatar
             ? personaAvatar
-            : DefaultAIAvatar
+            : undefined
         }
       >
         {userType === ChatUserTypeEnum.User

@@ -11,10 +11,9 @@ import {
   Typography,
 } from "@mui/material";
 
-import DefaultChatAvatar from "../../../../assets/ai-avatar-default.png";
 import * as styles from "./style.scss";
 import { useChatPageStore } from "../../../../zustand/apis/ChatPage";
-import { TabEnum, UserRoleEnum } from "../../../../apis/enums";
+import { TabEnum } from "../../../../apis/enums";
 import { usePersonaStore } from "../../../../zustand/apis/Persona";
 
 interface DashboardProps {
@@ -120,7 +119,7 @@ export const Dashboard: React.FC<DashboardProps> = ({ setSelectedChatId }) => {
                 }}
               >
                 <ListItemAvatar>
-                  <Avatar src={chat.personaAvatar ?? DefaultChatAvatar} />
+                  <Avatar src={chat.personaAvatar ?? undefined} />
                 </ListItemAvatar>
                 <ListItemText>
                   <Typography variant="body2">{chat.personaName}</Typography>
