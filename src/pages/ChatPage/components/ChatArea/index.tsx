@@ -85,8 +85,6 @@ export const ChatArea: React.FC<ChatAreaProps> = ({
     } else {
       setSpeakAloudMessageId("");
       setCurrentTTSAudio(undefined);
-      console.error("Failed to get TTS audio");
-      // alert("Failed to get TTS audio :/");
     }
   };
 
@@ -114,6 +112,7 @@ export const ChatArea: React.FC<ChatAreaProps> = ({
     if (!messages || messages.length === 0) {
       return <></>;
     }
+
     return (
       <>
         {messages.map((message, index) => {
@@ -153,7 +152,12 @@ export const ChatArea: React.FC<ChatAreaProps> = ({
 
   // Scroll to bottom when messages change
   React.useEffect(() => {
-    chatContainerBottomRef.current?.scrollIntoView({ behavior: "smooth" });
+    setTimeout(() => {
+      // Scroll to bottom after 200ms delay to prevent ref undefined (unless your computer potato)
+      chatContainerBottomRef.current?.scrollIntoView({
+        behavior: "smooth",
+      });
+    }, 200);
   }, [messages, isAIResponding, isAITyping]);
 
   React.useEffect(() => {

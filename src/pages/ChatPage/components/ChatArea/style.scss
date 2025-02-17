@@ -1,7 +1,7 @@
 .chat-area-container {
   display: flex;
   flex-direction: column;
-  width: 100%;
+  width: 0; // Dont ask me why it's 0 i have no idea
   height: calc(100% - 4rem);
   margin: 4rem 0rem;
 
@@ -38,7 +38,6 @@
   }
 
   .chat-input-container {
-    width: 100%;
     padding-top: 1rem;
     display: flex;
     flex-direction: column;

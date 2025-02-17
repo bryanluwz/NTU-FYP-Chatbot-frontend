@@ -125,6 +125,9 @@ export const ChatInput: React.FC<ChatInputProps> = ({
       }
       if (mediaRecorderRef.current) {
         mediaRecorderRef.current?.stop();
+        mediaRecorderRef.current?.stream
+          .getTracks()
+          .forEach((track) => track.stop());
         setIsTranscripting(true);
       }
       setIsSTTActive(false);
@@ -162,10 +165,6 @@ export const ChatInput: React.FC<ChatInputProps> = ({
 
           setIsTranscripting(false);
         }
-      };
-
-      mediaRecorder.onstop = () => {
-        mediaRecorder.stream.getTracks().forEach((track) => track.stop());
       };
 
       // Manually request finalized chunks every 3s
