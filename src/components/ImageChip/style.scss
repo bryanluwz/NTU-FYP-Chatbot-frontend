@@ -12,7 +12,10 @@
 
   &.huge {
     max-height: 240px;
-    width: 240px;
+    max-width: 240px;
+    width: auto;
+    height: auto;
+    object-fit: contain;
     cursor: pointer;
   }
 }
