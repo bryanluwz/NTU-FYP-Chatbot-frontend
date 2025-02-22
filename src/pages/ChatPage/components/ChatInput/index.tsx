@@ -24,7 +24,6 @@ import cx from "classnames";
 import * as chatStyles from "../ChatArea/style.scss";
 import * as styles from "./style.scss";
 import { urlToFile } from "../../../../utils";
-import { useSpeechTranscript } from "../../../../context/SpeechTranscriptContext";
 
 interface ChatInputProps {
   setRef: React.Dispatch<
@@ -118,7 +117,6 @@ export const ChatInput: React.FC<ChatInputProps> = ({
 
   // Handle microphone button press
   const handleMicrophonePress = async () => {
-    // If STT is active, stop listening
     if (isSTTActive) {
       if (intervalRef.current) {
         clearInterval(intervalRef.current);
@@ -134,11 +132,9 @@ export const ChatInput: React.FC<ChatInputProps> = ({
       return;
     }
 
-    // If STT is not active, start listening
     try {
       const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
 
-      // Destroy previous mediaRecorder instance if it exists
       const mediaRecorder = new MediaRecorder(stream, {
         mimeType: "audio/webm;codecs=opus",
         audioBitsPerSecond: 16000,
@@ -146,7 +142,6 @@ export const ChatInput: React.FC<ChatInputProps> = ({
 
       mediaRecorderRef.current = mediaRecorder;
 
-      // Should be available every start timeslice and when stop is called
       mediaRecorder.ondataavailable = async (event) => {
         if (event.data.size > 0) {
           setIsTranscripting(true);
@@ -155,19 +150,16 @@ export const ChatInput: React.FC<ChatInputProps> = ({
             type: "audio/webm;codecs=opus",
           });
 
-          const sttResult = await postSTTAudio(blob); // Send audio chunk
+          const sttResult = await postSTTAudio(blob);
 
           if (!sttResult || sttResult.trim() === "") return;
 
-          setTranscript((prev) =>
-            (prev.trim() + " " + sttResult.trim()).trim()
-          );
+          setTranscript((prev) => prev + " " + sttResult.trim());
 
           setIsTranscripting(false);
         }
       };
 
-      // Manually request finalized chunks every 3s
       intervalRef.current = setInterval(() => {
         if (mediaRecorder.state === "recording") {
           mediaRecorder.stop();
@@ -177,6 +169,8 @@ export const ChatInput: React.FC<ChatInputProps> = ({
 
       mediaRecorder.start();
 
+      setOriginalInputValue(inputValue);
+      setTranscript("");
       setIsSTTActive(true);
     } catch (error) {
       setIsTranscripting(false);
@@ -184,12 +178,9 @@ export const ChatInput: React.FC<ChatInputProps> = ({
     }
   };
 
-  // TODO: Check logic for next 2 useEffects
   React.useEffect(() => {
-    if (isSTTActive) {
-      setOriginalInputValue(inputValue);
-    } else if (!isSTTActive && !isTranscripting) {
-      setInputValue((originalInputValue.trim() + " " + transcript).trim());
+    if (!isSTTActive && !isTranscripting) {
+      setInputValue((prev) => (prev + " " + transcript).trim());
       setOriginalInputValue("");
       resetTranscript();
     }
@@ -197,9 +188,10 @@ export const ChatInput: React.FC<ChatInputProps> = ({
 
   React.useEffect(() => {
     if (transcript && isSTTActive) {
-      setInputValue(originalInputValue.trim() + " " + transcript);
+      setInputValue((prev) => prev + " " + transcript);
+      resetTranscript();
     }
-  }, [transcript, originalInputValue]);
+  }, [transcript]);
 
   // Handle file attachment (if image, move it to pastedImages)
   const handleFileAttachment = (files: FileList) => {

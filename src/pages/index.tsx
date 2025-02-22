@@ -1,7 +1,5 @@
 import React from "react";
-import { AuthContext, AuthProvider } from "../context/AuthContext";
-import { SpeechSynthesisProvider } from "../context/SpeechSynthesisContext";
-import { SpeechTranscriptProvider } from "../context/SpeechTranscriptContext";
+import { AuthContext } from "../context/AuthContext";
 import { ChatPage } from "./ChatPage";
 import { SignInPage } from "./SignInPage";
 import { Box, CircularProgress } from "@mui/material";
@@ -15,19 +13,15 @@ export const MainPage: React.FC = () => {
 
   return (
     <>
-      <SpeechTranscriptProvider>
-        <SpeechSynthesisProvider>
-          {auth.user ? (
-            <ChatPage />
-          ) : auth.token ? (
-            <Box sx={{ display: "flex" }}>
-              <CircularProgress />
-            </Box>
-          ) : (
-            <SignInPage />
-          )}
-        </SpeechSynthesisProvider>
-      </SpeechTranscriptProvider>
+      {auth.user ? (
+        <ChatPage />
+      ) : auth.token ? (
+        <Box sx={{ display: "flex" }}>
+          <CircularProgress />
+        </Box>
+      ) : (
+        <SignInPage />
+      )}
     </>
   );
 };
