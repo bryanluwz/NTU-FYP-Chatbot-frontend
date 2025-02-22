@@ -26,7 +26,7 @@ interface EditPersonaDialogProps {
   isOpen: boolean;
   onClose: () => void;
   personaInfo?: PersonaModel;
-  onSubmit: (personaInfo: PersonaModel) => void;
+  onSubmit: (personaInfo: PersonaModel) => Promise<void>;
   editorRole: UserRoleEnum; // User / Educator can change personaName, avatar and password, Admin can change all fields except password and avatar
 }
 
@@ -65,6 +65,8 @@ export const EditPersonaDialog: React.FC<EditPersonaDialogProps> = ({
   const [descriptionError, setDescriptionError] = React.useState(false);
   const [descriptionErrorMessage, setDescriptionErrorMessage] =
     React.useState("");
+
+  const [isBlocked, setIsBlocked] = React.useState(false);
 
   React.useEffect(() => {
     if (personaInfo) {
@@ -163,8 +165,10 @@ export const EditPersonaDialog: React.FC<EditPersonaDialogProps> = ({
       };
 
       setNewAvatarSrc(null);
-
-      onSubmitProp(updatedPersonaInfo);
+      setIsBlocked(true);
+      onSubmitProp(updatedPersonaInfo).then(() => {
+        setIsBlocked(false);
+      });
     }
   };
 
@@ -173,7 +177,19 @@ export const EditPersonaDialog: React.FC<EditPersonaDialogProps> = ({
       <>
         <Dialog
           open={isOpen}
-          onClose={onClose}
+          onClose={(event, reason) => {
+            if (
+              isBlocked ||
+              (isBlocked &&
+                reason &&
+                (reason === "backdropClick" || reason === "escapeKeyDown"))
+            ) {
+              return;
+            }
+            if (!isBlocked) {
+              onClose();
+            }
+          }}
           aria-labelledby="modal-modal-title"
           aria-describedby="modal-modal-description"
         >
@@ -218,6 +234,7 @@ export const EditPersonaDialog: React.FC<EditPersonaDialogProps> = ({
                       <Button
                         variant="contained"
                         color="primary"
+                        disabled={isBlocked}
                         onClick={() => {
                           avatarFileInputRef?.click();
                         }}
@@ -245,7 +262,9 @@ export const EditPersonaDialog: React.FC<EditPersonaDialogProps> = ({
                     </Stack>
                   </FormControl>
                   <FormControl
-                    disabled={!inputFields.includes(InputFieldEnum.Name)}
+                    disabled={
+                      !inputFields.includes(InputFieldEnum.Name) || isBlocked
+                    }
                   >
                     <FormLabel htmlFor="personaName">Persona Name</FormLabel>
                     <TextField
@@ -277,7 +296,10 @@ export const EditPersonaDialog: React.FC<EditPersonaDialogProps> = ({
                 </Stack>
                 {/* Editing Description */}
                 <FormControl
-                  disabled={!inputFields.includes(InputFieldEnum.Description)}
+                  disabled={
+                    !inputFields.includes(InputFieldEnum.Description) ||
+                    isBlocked
+                  }
                 >
                   <FormLabel htmlFor="description">
                     Persona Description
@@ -316,6 +338,7 @@ export const EditPersonaDialog: React.FC<EditPersonaDialogProps> = ({
                     onClick={() => {
                       documentFileInputRef?.click();
                     }}
+                    disabled={isBlocked}
                   >
                     Upload Documents
                     <input
@@ -342,16 +365,21 @@ export const EditPersonaDialog: React.FC<EditPersonaDialogProps> = ({
                 </FormControl>
               </Stack>
               <DialogActions>
-                <Button autoFocus onClick={onClose} color="primary">
+                <Button
+                  autoFocus
+                  onClick={onClose}
+                  disabled={isBlocked}
+                  color="primary"
+                >
                   Close
                 </Button>
                 <Button
                   id="submit-button"
                   type="submit"
                   color="primary"
-                  disabled={!checkIfChanged()}
+                  disabled={!checkIfChanged() || isBlocked}
                 >
-                  Save changes
+                  {isBlocked ? "Processing changes..." : "Save changes"}
                 </Button>
               </DialogActions>
             </Box>

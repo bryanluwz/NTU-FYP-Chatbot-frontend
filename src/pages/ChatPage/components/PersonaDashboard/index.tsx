@@ -460,8 +460,8 @@ export const PersonaDashboard: React.FC = () => {
         personaInfo={data.find(
           (persona) => persona.personaId === editPersonaId
         )}
-        onSubmit={(personaInfo: PersonaModel) => {
-          updatePersona({ ...personaInfo });
+        onSubmit={async (personaInfo: PersonaModel) => {
+          await updatePersona({ ...personaInfo });
           handleEditClose();
         }}
         editorRole={userInfo.role}
