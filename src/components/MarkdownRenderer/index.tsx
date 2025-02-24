@@ -7,16 +7,21 @@ interface MarkdownRendererProps {
 }
 
 export const MarkdownRenderer: React.FC<MarkdownRendererProps> = ({ text }) => {
+  const normalizeMarkdown = (text: string) => {
+    return text.replace(/\n\s*```/g, "\n\n```"); // Ensure a newline before code blocks
+  };
+
   return (
     <MuiMarkdown
       overrides={{
         ...getOverrides(),
+        // pre is block, code is inline
         pre: {
           component: CodeRenderer,
         },
       }}
     >
-      {text}
+      {normalizeMarkdown(text)}
     </MuiMarkdown>
   );
 };
