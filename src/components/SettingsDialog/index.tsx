@@ -21,15 +21,6 @@ import { UserSettingsModel } from "../../apis/ChatPage/typings";
 
 import { useChatPageStore } from "../../zustand/apis/ChatPage";
 
-enum AvailableVoices {
-  Heart = "Heart",
-  Bella = "Bella",
-  Nicole = "Nicole",
-  Michael = "Michael",
-  Santa = "Santa",
-  Facebook = "Facebook",
-}
-
 interface SettingsDialogProps {
   title?: string;
   isOpen: boolean;
@@ -41,8 +32,13 @@ export const SettingsDialog: React.FC<SettingsDialogProps> = ({
   isOpen,
   onClose,
 }) => {
-  const { userSettings, getUserSettings, updateUserSettings } =
-    useChatPageStore();
+  const {
+    userSettings,
+    getUserSettings,
+    updateUserSettings,
+    voices,
+    getQueryVoices,
+  } = useChatPageStore();
   const [currentUserSettings, setCurrentUserSettings] =
     React.useState<UserSettingsModel | null>(null);
   const [isSaveDisabled, setIsSaveDisabled] = React.useState(true);
@@ -124,7 +120,7 @@ export const SettingsDialog: React.FC<SettingsDialogProps> = ({
                       }}
                     >
                       <Typography variant="body1">
-                        {currentUserSettings.ttsName ?? AvailableVoices.Heart}
+                        {currentUserSettings.ttsName}
                       </Typography>
                     </ListItem>
                   </Stack>
@@ -136,7 +132,7 @@ export const SettingsDialog: React.FC<SettingsDialogProps> = ({
                       setIsVoiceMenuOpen(false);
                     }}
                   >
-                    {Object.values(AvailableVoices).map((voice) => (
+                    {voices.map((voice) => (
                       <MenuItem
                         key={voice}
                         onClick={() => {

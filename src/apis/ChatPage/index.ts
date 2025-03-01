@@ -14,6 +14,7 @@ import {
 import { HTTPMethod, HTTPStatusBody } from "../typings";
 import {
   getChatListUrl,
+  getQueryVoicesUrl,
   getUserInfoUrl,
   postQueryChatMessageTTSUrl,
   postQueryChatMessageUrl,
@@ -198,4 +199,12 @@ export const postSTTAudioApi = async (blob: Blob) => {
     method: HTTPMethod.POST,
     body: formData,
   }).then((response) => response.json());
+};
+
+export const getQueryVoicesApi = async () => {
+  return (
+    await fetchWithAuth(getQueryVoicesUrl, {
+      method: HTTPMethod.GET,
+    })
+  ).json() as unknown as { data: { response: string[] } };
 };

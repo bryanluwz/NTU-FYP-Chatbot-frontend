@@ -5,6 +5,7 @@ import {
   deleteChatApi,
   getChatInfoApi,
   getChatListApi,
+  getQueryVoicesApi,
   getUserInfoApi,
   getUserSettingsApi,
   postQueryMessageApi,
@@ -34,6 +35,7 @@ interface ChatPageState {
 
   userInfo: UserInfoModel;
   userSettings: UserSettingsModel;
+  voices: string[];
 
   setMessages: (messages: ChatMessageModel[]) => void;
   appendMessage: (message: ChatMessageModel) => void;
@@ -65,6 +67,7 @@ interface ChatPageState {
 
   postQueryMessageTTS: (messageId: string) => Promise<string | undefined>;
   postSTTAudio: (audioBlob: Blob) => Promise<string | undefined>;
+  getQueryVoices: () => Promise<string[]>;
 }
 
 const initialStates = {
@@ -91,6 +94,7 @@ const initialStates = {
   userSettings: {
     ttsName: "",
   },
+  voices: [],
 };
 
 export const useChatPageStore = create<ChatPageState>((set, get) => ({
@@ -265,6 +269,13 @@ export const useChatPageStore = create<ChatPageState>((set, get) => ({
     try {
       const response = checkStatus(await getUserSettingsApi());
 
+      // Set the user settings to default if the value doesnt match the available voices
+      const { ttsName } = response.data.settings;
+      const voices = await get().getQueryVoices();
+      if (!voices.includes(ttsName)) {
+        response.data.settings.ttsName = "default";
+      }
+
       set({ userSettings: response.data.settings });
       return response.data.settings;
     } catch (error) {
@@ -309,6 +320,17 @@ export const useChatPageStore = create<ChatPageState>((set, get) => ({
     } catch (error) {
       handleError(error);
       return undefined;
+    }
+  },
+  getQueryVoices: async () => {
+    try {
+      const response = checkStatus(await getQueryVoicesApi());
+      set({ voices: response.data.response });
+      return response.data.response;
+    } catch (error) {
+      handleError(error);
+      set({ voices: [] });
+      return [];
     }
   },
 }));
