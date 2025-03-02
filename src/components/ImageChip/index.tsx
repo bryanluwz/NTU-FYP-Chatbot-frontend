@@ -85,8 +85,8 @@ export const ImageChip: React.FC<ImageChipProps> = ({
               display: "flex",
               justifyContent: "center",
               alignItems: "center",
-              height: "100vh", // Take full screen height
-              // width: "100vw", // Take full screen width
+              height: "100%",
+              // width: "100vw",
               background: "rgba(0, 0, 0, 0)", // Transparent background
             }}
           >
@@ -108,8 +108,9 @@ export const ImageChip: React.FC<ImageChipProps> = ({
               component="img"
               src={typeof blob === "string" ? blob : URL.createObjectURL(blob)}
               style={{
-                maxHeight: "100vh",
-                maxWidth: "100vw",
+                maxHeight: "80%",
+                maxWidth: "80%",
+                objectFit: "contain",
               }}
               className={styles.popOut}
               onClick={(e) => e.stopPropagation()} // Prevent closing on image click
