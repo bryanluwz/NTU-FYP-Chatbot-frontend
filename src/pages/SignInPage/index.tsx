@@ -20,6 +20,7 @@ import { ForgotPassword } from "./ForgotPassword";
 import { useAuthStore } from "../../zustand/apis/Auth";
 import { AuthContext } from "../../context/AuthContext";
 import { validateEmail, validatePassword } from "../../utils";
+import { BrokeUniStudent } from "../../components/BrokeUniStudent";
 
 // Huge thanks to https://github.com/mui/material-ui/blob/v6.1.1/docs/data/material/getting-started/templates/sign-in/SignIn.tsx
 const Card = styled(MuiCard)(({ theme }) => ({
@@ -71,7 +72,8 @@ export const SignInPage: React.FC = () => {
   const [passwordError, setPasswordError] = React.useState(false);
   const [passwordErrorMessage, setPasswordErrorMessage] = React.useState("");
 
-  const [open, setOpen] = React.useState(false);
+  const [isForgotPasswordOpen, setIsForgotPasswordOpen] = React.useState(false);
+  const [isWarningOpen, setIsWarningOpen] = React.useState(false);
 
   const [isSignUp, setIsSignUp] = React.useState(false);
 
@@ -83,13 +85,30 @@ export const SignInPage: React.FC = () => {
   const handleForgotPasswordOpen = (event: React.MouseEvent) => {
     event.preventDefault();
     if (event.target === document.activeElement) {
-      setOpen(true);
+      setIsForgotPasswordOpen(true);
     }
   };
 
   const handleForgotPasswordClose = () => {
-    setOpen(false);
+    setIsForgotPasswordOpen(false);
   };
+
+  const handleWarningOpen = () => {
+    setIsWarningOpen(true);
+  };
+
+  const handleWarningClose = () => {
+    alert(
+      "You have agreed to the terms and conditions. This message will not appear again after signing up. :3"
+    );
+    setIsWarningOpen(false);
+  };
+
+  React.useEffect(() => {
+    if (isSignUp) {
+      handleWarningOpen();
+    }
+  }, [isSignUp]);
 
   const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
@@ -287,7 +306,15 @@ export const SignInPage: React.FC = () => {
               }}
             />
           </FormControl>
-          <ForgotPassword open={open} handleClose={handleForgotPasswordClose} />
+          <ForgotPassword
+            open={isForgotPasswordOpen}
+            handleClose={handleForgotPasswordClose}
+          />
+          <BrokeUniStudent
+            isOpen={isWarningOpen}
+            onCancel={handleWarningClose}
+            onConfirm={handleWarningClose}
+          />
           <Button
             id="submit-button"
             type="submit"

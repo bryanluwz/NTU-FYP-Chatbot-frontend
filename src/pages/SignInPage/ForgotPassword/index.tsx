@@ -61,7 +61,7 @@ export const ForgotPassword: React.FC<ForgotPasswordProps> = ({
           variant="contained"
           type="submit"
           onClick={() => {
-            alert("Lol, you thought this would work?");
+            alert("Unfortunately, this feature is not available yet. :/");
           }}
         >
           Continue
