@@ -52,6 +52,10 @@ export const usePersonaStore = create<PersonaState>((set, get) => ({
   },
   createPersona: async (personaInfo: PersonaModel) => {
     try {
+      alert(
+        "This website is running on a potato, hence this feature is disabled."
+      );
+      return;
       const response = checkStatus(await createPersonaApi(personaInfo));
       get().postPersonaList();
       return;
@@ -62,6 +66,10 @@ export const usePersonaStore = create<PersonaState>((set, get) => ({
   },
   updatePersona: async (personaInfo: PersonaModel) => {
     try {
+      alert(
+        "This website is running on a potato, hence this feature is disabled."
+      );
+      return;
       const response = checkStatus(await updatePersonaApi(personaInfo));
       get().postPersonaList();
       return;
@@ -72,6 +80,10 @@ export const usePersonaStore = create<PersonaState>((set, get) => ({
   },
   deletePersona: async (personaId: string) => {
     try {
+      alert(
+        "This website is running on a potato, hence this feature is disabled."
+      );
+      return;
       const response = checkStatus(await deletePersonaApi(personaId));
       get().postPersonaList();
       return;
