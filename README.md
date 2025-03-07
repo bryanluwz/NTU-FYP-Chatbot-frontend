@@ -2,6 +2,10 @@
 
 This repository contains the frontend implementation for the NTU Final Year Project (FYP) Chatbot. The frontend is built using React (TypeScript) for handling user interactions and displaying chatbot responses.
 
+## Prelogue
+
+If you're running the node server to serve the frontend files, then you don't have to run this, just make sure that the `dist` folder exist.
+
 ## Features
 
 The key features of the frontend include:
